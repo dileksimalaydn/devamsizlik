@@ -19,8 +19,7 @@ export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<string>(todayISO());
 
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [sheetCourse, setSheetCourse] = useState<Course | null>(null);
-
+  const [sheetCourse, setSheetCourse] = useState<(Course & { id: string }) | null>(null);
   // 🔹 LOGOUT
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -146,9 +145,9 @@ export default function DashboardPage() {
 
     if (!error) {
       setAttendance((prev) => ({
-        ...prev,
-        [c.id]: 0,
-      }));
+  ...prev,
+  [c.id!]: 0,
+}));
     }
   };
 
