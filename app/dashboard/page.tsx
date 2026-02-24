@@ -163,17 +163,35 @@ export default function DashboardPage() {
       <AppHeader
         right={
           <div className="flex gap-2">
-            <button onClick={handleLogout} className="rounded-2xl bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-800">
+            <button onClick={handleLogout} className="rounded-2xl bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-200 transition-colors">
               Çıkış
             </button>
-            <a href="/setup" className="rounded-2xl bg-slate-900 px-3 py-2 text-xs font-semibold text-white">
-              + Ders
+            <a href="/setup" className="rounded-2xl bg-slate-900 px-3 py-2 text-xs font-semibold text-white shadow-md hover:bg-slate-800 transition-all active:scale-95">
+              Ders Ekle +
             </a>
           </div>
         }
       />
 
       <div className="mx-auto max-w-md px-4 pt-4">
+        
+        {/* Haftalık Program Butonu */}
+        <button 
+          onClick={() => router.push('/weekly')}
+          className="w-full mb-6 p-4 bg-white border border-slate-200 rounded-[2rem] shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all"
+        >
+          <div className="flex items-center gap-3">
+            <div className="bg-indigo-50 h-10 w-10 rounded-2xl flex items-center justify-center text-lg">
+              📅
+            </div>
+            <div className="text-left">
+              <div className="text-sm font-bold text-slate-900">Weekly Schedule</div>
+              <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">View Full Grid</div>
+            </div>
+          </div>
+          <span className="text-slate-300 group-hover:text-slate-900 transition-colors pr-2">›</span>
+        </button>
+
         {/* Tarih Seçici */}
         <div className="flex items-center justify-between rounded-3xl bg-white px-4 py-4 shadow-sm border border-slate-200">
           <button 
@@ -190,7 +208,7 @@ export default function DashboardPage() {
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="rounded-xl border border-slate-400 px-3 py-1.5 text-xs font-medium text-slate-900 focus:outline-none"
+                className="rounded-xl border border-slate-400 px-3 py-1.5 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-200"
               />
               <button 
                 onClick={goToday} 
@@ -214,7 +232,7 @@ export default function DashboardPage() {
         <div className="mt-4 space-y-3">
           {todaysCourses.length === 0 ? (
             <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm font-semibold text-slate-900">
-              Bugün ders yok 🎉🎉🎉
+              Bugün ders yok 🥳✨
             </div>
           ) : (
             todaysCourses.map((c) => (
@@ -230,7 +248,7 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* ✅ İMZA BURADA (Doğru Yer) */}
+        {/* İmza */}
         <div className="mt-12 pb-8 text-center">
           <p className="text-[10px] font-medium tracking-[0.2em] text-slate-400 uppercase opacity-70">
             Developed by Dilek Şimal Aydın
