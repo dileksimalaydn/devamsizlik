@@ -83,7 +83,7 @@ export default function DashboardPage() {
   const goNext = () => setSelectedDate((d) => addDays(d, +1));
   const goToday = () => setSelectedDate(todayISO());
 
-  const missedFor = (c: Course) => attendance[c.id] ?? 0;
+  const missedFor = (c: Course) => attendance[c.id!] ?? 0;
 
   const openMissed = (c: Course) => {
     setSheetCourse(c);
