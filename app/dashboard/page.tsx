@@ -120,7 +120,7 @@ export default function DashboardPage() {
     if (!error) {
       setAttendance((prev) => ({
         ...prev,
-        [sheetCourse.id]: capped,
+       [sheetCourse.id as string]: capped,
       }));
     }
 
