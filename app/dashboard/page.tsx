@@ -1,21 +1,19 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import CourseCard from "@/components/CourseCard";
 import MissedSheet from "@/components/MissedSheet";
 import type { Course } from "@/lib/types";
 import { addDays, dayNameTR, prettyTR, todayISO, toMinutes } from "@/lib/date";
-import { attKey, loadAttendance, loadCourses, saveAttendance } from "@/lib/storage";
 import { normalizeCourseName } from "@/lib/normalize";
-
-// Oturum key'i (attendance key'lerinde kullanılan kısım ile aynı mantık)
-function sessionKey(c: Course) {
-  return c.id ?? `${c.courseName}|${c.day}|${c.start}|${c.end}|${c.blocks}`;
-}
+import { supabase } from "@/lib/supabaseClient";
 
 export default function DashboardPage() {
+  const router = useRouter();
+
   const [courses, setCourses] = useState<Course[]>([]);
   const [attendance, setAttendance] = useState<Record<string, number>>({});
   const [selectedDate, setSelectedDate] = useState<string>(todayISO());
@@ -23,16 +21,61 @@ export default function DashboardPage() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [sheetCourse, setSheetCourse] = useState<Course | null>(null);
 
+  // 🔹 LOGOUT
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+  };
+
+  // 🔹 COURSES LOAD (RLS user scoped)
   useEffect(() => {
-    setCourses(loadCourses());
-    setAttendance(loadAttendance());
+    const loadCourses = async () => {
+      const { data, error } = await supabase
+        .from("courses")
+        .select("*")
+        .order("start", { ascending: true });
+
+      if (!error && data) setCourses(data as Course[]);
+    };
+
+    loadCourses();
   }, []);
+
+  // 🔹 ATTENDANCE LOAD (user + date scoped)
+  useEffect(() => {
+    const loadAttendance = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("attendance")
+        .select("course_id, missed_blocks")
+        .eq("user_id", user.id)
+        .eq("date", selectedDate);
+
+      if (error || !data) return;
+
+      const map: Record<string, number> = {};
+      data.forEach((row: any) => {
+        map[row.course_id] = row.missed_blocks ?? 0;
+      });
+
+      setAttendance(map);
+    };
+
+    loadAttendance();
+  }, [selectedDate]);
 
   const selectedDayName = useMemo(() => dayNameTR(selectedDate), [selectedDate]);
 
   const todaysCourses = useMemo(() => {
-    const list = courses.filter((c) => c.day === selectedDayName);
-    return [...list].sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
+    return courses
+      .filter((c) => c.day === selectedDayName)
+      .slice()
+      .sort((a, b) => toMinutes(a.start) - toMinutes(b.start));
   }, [courses, selectedDayName]);
 
   const isToday = selectedDate === todayISO();
@@ -40,71 +83,95 @@ export default function DashboardPage() {
   const goNext = () => setSelectedDate((d) => addDays(d, +1));
   const goToday = () => setSelectedDate(todayISO());
 
-  const missedFor = (c: Course) => attendance[attKey(selectedDate, c)] ?? 0;
+  const missedFor = (c: Course) => attendance[c.id] ?? 0;
 
   const openMissed = (c: Course) => {
     setSheetCourse(c);
     setSheetOpen(true);
   };
+
   const closeMissed = () => {
     setSheetOpen(false);
     setSheetCourse(null);
   };
 
-  const setMissedHours = (hours: number) => {
+  // 🔹 ATTENDANCE UPSERT
+  const setMissedHours = async (hours: number) => {
     if (!sheetCourse) return;
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return;
+
     const capped = Math.max(0, Math.min(hours, sheetCourse.blocks));
-    const key = attKey(selectedDate, sheetCourse);
-    const next = { ...attendance, [key]: capped };
-    setAttendance(next);
-    saveAttendance(next);
+
+    const { error } = await supabase.from("attendance").upsert(
+      {
+        user_id: user.id,
+        course_id: sheetCourse.id,
+        date: selectedDate,
+        missed_blocks: capped,
+      },
+      { onConflict: "user_id,course_id,date" }
+    );
+
+    if (!error) {
+      setAttendance((prev) => ({
+        ...prev,
+        [sheetCourse.id]: capped,
+      }));
+    }
+
     closeMissed();
   };
 
-  const clearMissed = (c: Course) => {
-    const key = attKey(selectedDate, c);
-    const next = { ...attendance, [key]: 0 };
-    setAttendance(next);
-    saveAttendance(next);
+  const clearMissed = async (c: Course) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return;
+
+    const { error } = await supabase.from("attendance").upsert(
+      {
+        user_id: user.id,
+        course_id: c.id,
+        date: selectedDate,
+        missed_blocks: 0,
+      },
+      { onConflict: "user_id,course_id,date" }
+    );
+
+    if (!error) {
+      setAttendance((prev) => ({
+        ...prev,
+        [c.id]: 0,
+      }));
+    }
   };
 
-  const navBtn =
-    "grid h-10 w-10 place-items-center rounded-2xl bg-slate-100 text-lg font-bold text-slate-800 shadow-sm hover:bg-slate-200 transition active:scale-95";
-
-  // ✅ TOPLAM DEVAMSIZLIK: ders adı normalize ederek grupla
+  // 🔹 SUMMARY (normalize ile grupla)
   const totalsByNormalizedName = useMemo(() => {
-    // groupKey -> { displayName, missed, sessions }
     const map: Record<
       string,
       { displayName: string; missed: number; sessions: Course[] }
     > = {};
 
-    // önce grupları course list'inden oluştur
     for (const c of courses) {
-      const g = normalizeCourseName(c.courseName);
+      const g = normalizeCourseName(c.course_name);
+
       if (!map[g]) {
-        map[g] = { displayName: c.courseName.trim(), missed: 0, sessions: [] };
+        map[g] = {
+          displayName: c.course_name.trim(),
+          missed: 0,
+          sessions: [],
+        };
       }
+
       map[g].sessions.push(c);
-    }
-
-    // sessionKey -> groupKey lookup (hızlı olsun)
-    const sessionToGroup: Record<string, string> = {};
-    for (const c of courses) {
-      sessionToGroup[sessionKey(c)] = normalizeCourseName(c.courseName);
-    }
-
-    // attendance topla
-    for (const [k, v] of Object.entries(attendance)) {
-      const idx = k.indexOf("|");
-      if (idx === -1) continue;
-      const sk = k.slice(idx + 1); // date|SESSIONKEY kısmından sessionKey'i aldık
-
-      const g = sessionToGroup[sk];
-      if (!g) continue;
-
-      if (!map[g]) map[g] = { displayName: sk, missed: 0, sessions: [] };
-      map[g].missed += Number(v) || 0;
+      map[g].missed += attendance[c.id] ?? 0;
     }
 
     return Object.entries(map)
@@ -112,16 +179,28 @@ export default function DashboardPage() {
       .sort((a, b) => a.displayName.localeCompare(b.displayName, "tr"));
   }, [attendance, courses]);
 
+  const navBtn =
+    "grid h-10 w-10 place-items-center rounded-2xl bg-slate-100 text-lg font-bold text-slate-800 shadow-sm hover:bg-slate-200 transition active:scale-95";
+
   return (
     <main className="min-h-screen bg-slate-50 pb-24">
       <AppHeader
         right={
-          <a
-            href="/setup"
-            className="rounded-2xl bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800 transition"
-          >
-            + Ders
-          </a>
+          <div className="flex gap-2">
+            <button
+              onClick={handleLogout}
+              className="rounded-2xl bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-200"
+            >
+              Çıkış
+            </button>
+
+            <a
+              href="/setup"
+              className="rounded-2xl bg-slate-900 px-3 py-2 text-xs font-semibold text-white"
+            >
+              + Ders
+            </a>
+          </div>
         }
       />
 
@@ -133,7 +212,7 @@ export default function DashboardPage() {
           </button>
 
           <div className="flex flex-col items-center">
-            <div className="text-base font-bold text-slate-900 tracking-tight">
+            <div className="text-base font-bold text-slate-900">
               {prettyTR(selectedDate)}
             </div>
 
@@ -142,13 +221,13 @@ export default function DashboardPage() {
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-900 outline-none focus:border-slate-500"
+                className="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium"
               />
 
               <button
                 onClick={goToday}
                 disabled={isToday}
-                className="rounded-xl bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40 hover:bg-slate-800 transition"
+                className="rounded-xl bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40"
               >
                 Bugün
               </button>
@@ -164,13 +243,15 @@ export default function DashboardPage() {
         <div className="mt-4 space-y-3">
           {todaysCourses.length === 0 ? (
             <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-6 text-center">
-              <div className="text-sm font-semibold text-slate-900">Bugün ders yok</div>
+              <div className="text-sm font-semibold text-slate-900">
+                Bugün ders yok
+              </div>
               <div className="mt-1 text-xs text-slate-600">
                 {selectedDayName} günü için kayıt bulunamadı.
               </div>
               <a
                 href="/setup"
-                className="mt-4 inline-block rounded-2xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-slate-800 transition"
+                className="mt-4 inline-block rounded-2xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
               >
                 Ders Ekle
               </a>
@@ -178,7 +259,7 @@ export default function DashboardPage() {
           ) : (
             todaysCourses.map((c) => (
               <CourseCard
-                key={c.id ?? `${c.courseName}-${c.day}-${c.start}`}
+                key={c.id}
                 course={c}
                 missed={missedFor(c)}
                 onOpenMissed={() => openMissed(c)}
@@ -188,33 +269,27 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* ✅ Totals by course name (normalize) */}
+        {/* Totals */}
         {totalsByNormalizedName.length > 0 && (
           <div className="mt-6 rounded-3xl bg-white p-4 shadow-sm border border-slate-100">
-            <div className="text-sm font-bold text-slate-900">Toplam Devamsızlıklar</div>
-            <div className="mt-2 text-xs text-slate-600">
-              Aynı dersin farklı günlerdeki oturumları tek satırda toplanır.
+            <div className="text-sm font-bold text-slate-900">
+              Toplam Devamsızlıklar
             </div>
 
             <div className="mt-3 space-y-2">
               {totalsByNormalizedName.map((g) => (
                 <div
                   key={g.groupKey}
-                  className="flex items-center justify-between rounded-2xl border border-slate-100 px-3 py-3"
+                  className="flex items-center justify-between rounded-2xl border px-3 py-3"
                 >
                   <div>
-                    <div className="text-sm font-semibold text-slate-900">{g.displayName}</div>
-                    <div className="mt-0.5 text-xs text-slate-600">
+                    <div className="text-sm font-semibold">{g.displayName}</div>
+                    <div className="text-xs text-slate-600">
                       {g.sessions.length} oturum
                     </div>
                   </div>
 
-                  <div className="text-right">
-                    <div className="text-sm font-bold text-slate-900">
-                      {g.missed} saat
-                    </div>
-                    <div className="text-xs text-slate-600">devamsızlık</div>
-                  </div>
+                  <div className="text-sm font-bold">{g.missed} saat</div>
                 </div>
               ))}
             </div>
@@ -226,7 +301,7 @@ export default function DashboardPage() {
 
       <MissedSheet
         open={sheetOpen && !!sheetCourse}
-        courseName={sheetCourse?.courseName ?? ""}
+        courseName={sheetCourse?.course_name ?? ""}
         blocks={sheetCourse?.blocks ?? 1}
         onPick={setMissedHours}
         onClose={closeMissed}
