@@ -68,10 +68,28 @@ export default function SetupPage() {
   }, []);
 
   const handleSave = async () => {
-    // ✅ BURADA: İsmi temizle ve tamamen BÜYÜK HARFE çevir
     const name = courseName.trim().toUpperCase(); 
-    
     if (!name) return alert("Ders adı boş olamaz.");
+
+    // 🚀 ÇAKIŞMA KONTROLÜ BAŞLANGIÇ
+    const newStartIdx = slotTimes.indexOf(start);
+    const newEndIdx = newStartIdx + blocks;
+
+    const collision = myCourses.find(existing => {
+      if (existing.day !== day) return false;
+
+      const existStartIdx = slotTimes.indexOf(existing.start);
+      const existEndIdx = existStartIdx + existing.blocks;
+
+      // Matematiksel çakışma kontrolü:
+      // (Yeni Başlangıç < Mevcut Bitiş) VE (Yeni Bitiş > Mevcut Başlangıç)
+      return newStartIdx < existEndIdx && newEndIdx > existStartIdx;
+    });
+
+    if (collision) {
+      return alert(`HATA: Bu saatlerde zaten "${collision.course_name}" dersin var!`);
+    }
+    // 🚀 ÇAKIŞMA KONTROLÜ BİTİŞ
 
     setSaving(true);
 
@@ -87,7 +105,7 @@ export default function SetupPage() {
     const payload = {
       id: crypto.randomUUID(),
       user_id: userData.user.id,
-      course_name: name, // Artık hep büyük harf gidecek
+      course_name: name,
       day,
       start,
       end,

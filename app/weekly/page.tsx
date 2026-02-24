@@ -24,76 +24,67 @@ export default function WeeklyPage() {
     loadAllCourses();
   }, [router]);
 
-  // Bir hücrenin bir dersin devamı (blok parçası) olup olmadığını anlayan fonksiyon
+  // Hücrede hangi dersin görünmesi gerektiğini bulan fonksiyon
   const getCourseForCell = (day: string, time: string) => {
-    return courses.find(course => {
-      if (course.day !== day) return false;
-      const startIndex = TIME_SLOTS.indexOf(course.start);
-      const currentIndex = TIME_SLOTS.indexOf(time);
-      // Eğer şu anki saat, dersin başlangıç saati ile (başlangıç + blok sayısı) arasındaysa bu hücre doludur
-      return currentIndex >= startIndex && currentIndex < startIndex + course.blocks;
+    return courses.find(c => {
+      if (c.day !== day) return false;
+      const startIdx = TIME_SLOTS.indexOf(c.start);
+      const currentIdx = TIME_SLOTS.indexOf(time);
+      // Şu anki saat dilimi, dersin başlangıcı ve blok süresi içindeyse o dersi döndür
+      return currentIdx >= startIdx && currentIdx < startIdx + c.blocks;
     });
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 pb-24 text-slate-900">
+    <main className="min-h-screen bg-white pb-24 text-slate-900">
       <AppHeader 
-        title="Ders Programı" 
+        title="Haftalık Program" 
         left={<button onClick={() => router.push('/dashboard')} className="p-2 text-2xl">‹</button>} 
       />
 
       <div className="p-2 overflow-x-auto">
-        <div className="min-w-[800px] bg-white border border-slate-200 shadow-sm overflow-hidden rounded-xl">
-          {/* Gün Başlıkları */}
-          <div className="grid grid-cols-[70px_repeat(5,1fr)] bg-slate-900 text-white border-b border-slate-800 text-center">
-            <div className="p-3 text-[10px] font-bold uppercase text-slate-500 border-r border-slate-800">Saat</div>
-            {DAYS.map(day => (
-              <div key={day} className="p-3 text-[11px] font-bold uppercase border-r border-slate-800 last:border-0">{day}</div>
-            ))}
-          </div>
-
-          {/* Izgara Akışı */}
-          <div className="divide-y divide-slate-100">
+        <table className="w-full min-w-[800px] border-collapse border border-slate-200 shadow-sm">
+          <thead>
+            <tr className="bg-slate-900 text-white">
+              <th className="p-2 border border-slate-700 text-[10px] uppercase w-20">Saat</th>
+              {DAYS.map(day => (
+                <th key={day} className="p-2 border border-slate-700 text-[11px] uppercase">{day}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
             {TIME_SLOTS.map((time) => (
-              <div key={time} className="grid grid-cols-[70px_repeat(5,1fr)] min-h-[70px]">
-                {/* Sol Saat Sütunu */}
-                <div className="bg-slate-50 border-r border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-400">
+              <tr key={time} className="h-12">
+                <td className="bg-slate-50 border border-slate-200 text-center text-[10px] font-bold text-slate-400">
                   {time}
-                </div>
-
-                {/* Gün Hücreleri */}
+                </td>
                 {DAYS.map(day => {
                   const course = getCourseForCell(day, time);
-                  const isStart = course?.start === time;
-
+                  
                   return (
-                    <div key={day + time} className="border-r border-slate-100 last:border-0 p-1 relative flex items-stretch">
-                      {course && (
-                        <div className={`w-full h-full p-2 flex flex-col items-center justify-center text-center transition-all
-                          ${isStart ? 'rounded-t-lg' : ''} 
-                          ${(TIME_SLOTS.indexOf(time) === TIME_SLOTS.indexOf(course.start) + course.blocks - 1) ? 'rounded-b-lg' : ''}
-                          ${course.course_name.includes('ENG') ? 'bg-blue-100/50 text-blue-800' : 
-                            course.course_name.includes('MATH') ? 'bg-indigo-100/50 text-indigo-800' : 
+                    <td key={day + time} className="border border-slate-100 p-1 min-w-[120px]">
+                      {course ? (
+                        <div className={`h-full w-full rounded p-1 flex items-center justify-center text-center text-[10px] font-black uppercase tracking-tighter
+                          ${course.course_name.includes('ENG') ? 'bg-blue-100 text-blue-800' : 
+                            course.course_name.includes('MATH') ? 'bg-indigo-100 text-indigo-800' : 
                             'bg-slate-100 text-slate-700'}
                         `}>
-                          {isStart ? (
-                            <>
-                              <div className="text-[10px] font-black leading-tight uppercase">{course.course_name}</div>
-                              <div className="text-[9px] font-bold opacity-40 mt-1">{course.blocks} Blok</div>
-                            </>
-                          ) : (
-                            <div className="w-1 h-1 bg-current opacity-20 rounded-full" /> 
-                          )}
+                          {course.course_name}
                         </div>
-                      )}
-                    </div>
+                      ) : null}
+                    </td>
                   );
                 })}
-              </div>
+              </tr>
             ))}
-          </div>
-        </div>
+          </tbody>
+        </table>
       </div>
+      
+      <div className="px-6 mt-4">
+        <p className="text-[10px] text-slate-400 italic">* Ders adları her blok için ilgili hücrede tekrar eder.</p>
+      </div>
+
       <BottomNav />
     </main>
   );
