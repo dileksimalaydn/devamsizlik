@@ -8,7 +8,6 @@ import CourseCard from "@/components/CourseCard";
 import MissedSheet from "@/components/MissedSheet";
 import type { Course } from "@/lib/types";
 import { addDays, dayNameTR, prettyTR, todayISO, toMinutes } from "@/lib/date";
-import { normalizeCourseName } from "@/lib/normalize";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function DashboardPage() {
@@ -19,34 +18,38 @@ export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<string>(todayISO());
 
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [sheetCourse, setSheetCourse] = useState<(Course & { id: string }) | null>(null);
-  // 🔹 LOGOUT
+  const [sheetCourse, setSheetCourse] = useState<Course | null>(null);
+
+  // Çıkış İşlemi
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/login");
   };
 
-  // 🔹 COURSES LOAD (RLS user scoped)
+  // Dersleri Yükle (Sadece giriş yapan kullanıcının dersleri)
   useEffect(() => {
     const loadCourses = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.replace("/login");
+        return;
+      }
+
       const { data, error } = await supabase
         .from("courses")
         .select("*")
+        .eq("user_id", user.id) 
         .order("start", { ascending: true });
 
       if (!error && data) setCourses(data as Course[]);
     };
-
     loadCourses();
-  }, []);
+  }, [router]);
 
-  // 🔹 ATTENDANCE LOAD (user + date scoped)
+  // Yoklamaları Yükle (Sadece seçili gün ve aktif kullanıcı için)
   useEffect(() => {
     const loadAttendance = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase
@@ -55,16 +58,17 @@ export default function DashboardPage() {
         .eq("user_id", user.id)
         .eq("date", selectedDate);
 
-      if (error || !data) return;
+      if (error || !data) {
+        setAttendance({});
+        return;
+      }
 
       const map: Record<string, number> = {};
-      data.forEach((row: any) => {
-        map[row.course_id] = row.missed_blocks ?? 0;
+      data.forEach((row) => {
+        if (row.course_id) map[row.course_id] = row.missed_blocks;
       });
-
       setAttendance(map);
     };
-
     loadAttendance();
   }, [selectedDate]);
 
@@ -82,7 +86,7 @@ export default function DashboardPage() {
   const goNext = () => setSelectedDate((d) => addDays(d, +1));
   const goToday = () => setSelectedDate(todayISO());
 
-  const missedFor = (c: Course) => attendance[c.id!] ?? 0;
+  const missedFor = (c: Course) => (c.id ? (attendance[c.id] ?? 0) : 0);
 
   const openMissed = (c: Course) => {
     setSheetCourse(c);
@@ -94,14 +98,11 @@ export default function DashboardPage() {
     setSheetCourse(null);
   };
 
-  // 🔹 ATTENDANCE UPSERT
+  // Yoklama Kaydet/Güncelle
   const setMissedHours = async (hours: number) => {
-    if (!sheetCourse) return;
+    if (!sheetCourse || !sheetCourse.id) return;
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
     const capped = Math.max(0, Math.min(hours, sheetCourse.blocks));
@@ -117,20 +118,16 @@ export default function DashboardPage() {
     );
 
     if (!error) {
-      setAttendance((prev) => ({
-        ...prev,
-       [sheetCourse.id as string]: capped,
-      }));
+      const courseId = String(sheetCourse.id);
+      setAttendance((prev) => ({ ...prev, [courseId]: capped }));
     }
-
     closeMissed();
   };
 
+  // Yoklamayı Sıfırla
   const clearMissed = async (c: Course) => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
+    if (!c.id) return;
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
     const { error } = await supabase.from("attendance").upsert(
@@ -144,59 +141,20 @@ export default function DashboardPage() {
     );
 
     if (!error) {
-      setAttendance((prev) => ({
-  ...prev,
-  [c.id!]: 0,
-}));
+      const courseId = String(c.id);
+      setAttendance((prev) => ({ ...prev, [courseId]: 0 }));
     }
   };
-
-  // 🔹 SUMMARY (normalize ile grupla)
-  const totalsByNormalizedName = useMemo(() => {
-    const map: Record<
-      string,
-      { displayName: string; missed: number; sessions: Course[] }
-    > = {};
-
-    for (const c of courses) {
-      const g = normalizeCourseName(c.course_name);
-
-      if (!map[g]) {
-        map[g] = {
-          displayName: c.course_name.trim(),
-          missed: 0,
-          sessions: [],
-        };
-      }
-
-      map[g].sessions.push(c);
-      map[g].missed += attendance[c.id] ?? 0;
-    }
-
-    return Object.entries(map)
-      .map(([groupKey, val]) => ({ groupKey, ...val }))
-      .sort((a, b) => a.displayName.localeCompare(b.displayName, "tr"));
-  }, [attendance, courses]);
-
-  const navBtn =
-    "grid h-10 w-10 place-items-center rounded-2xl bg-slate-100 text-lg font-bold text-slate-800 shadow-sm hover:bg-slate-200 transition active:scale-95";
 
   return (
     <main className="min-h-screen bg-slate-50 pb-24">
       <AppHeader
         right={
           <div className="flex gap-2">
-            <button
-              onClick={handleLogout}
-              className="rounded-2xl bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-200"
-            >
+            <button onClick={handleLogout} className="rounded-2xl bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-800">
               Çıkış
             </button>
-
-            <a
-              href="/setup"
-              className="rounded-2xl bg-slate-900 px-3 py-2 text-xs font-semibold text-white"
-            >
+            <a href="/setup" className="rounded-2xl bg-slate-900 px-3 py-2 text-xs font-semibold text-white">
               + Ders
             </a>
           </div>
@@ -204,56 +162,31 @@ export default function DashboardPage() {
       />
 
       <div className="mx-auto max-w-md px-4 pt-4">
-        {/* Date bar */}
+        {/* Tarih Seçici */}
         <div className="flex items-center justify-between rounded-3xl bg-white px-4 py-4 shadow-sm border border-slate-200">
-          <button onClick={goPrev} className={navBtn} aria-label="Geri">
-            ‹
-          </button>
-
+          <button onClick={goPrev} className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-100 font-bold">‹</button>
           <div className="flex flex-col items-center">
-            <div className="text-base font-bold text-slate-900">
-              {prettyTR(selectedDate)}
-            </div>
-
+            <div className="text-base font-bold text-slate-900">{prettyTR(selectedDate)}</div>
             <div className="mt-2 flex items-center gap-2">
               <input
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium"
+                className="rounded-xl border border-slate-300 px-3 py-1.5 text-xs focus:outline-none"
               />
-
-              <button
-                onClick={goToday}
-                disabled={isToday}
-                className="rounded-xl bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-40"
-              >
+              <button onClick={goToday} disabled={isToday} className="rounded-xl bg-slate-900 px-3 py-1.5 text-xs text-white disabled:opacity-40">
                 Bugün
               </button>
             </div>
           </div>
-
-          <button onClick={goNext} className={navBtn} aria-label="İleri">
-            ›
-          </button>
+          <button onClick={goNext} className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-100 font-bold">›</button>
         </div>
 
-        {/* Courses today */}
+        {/* Ders Listesi */}
         <div className="mt-4 space-y-3">
           {todaysCourses.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-6 text-center">
-              <div className="text-sm font-semibold text-slate-900">
-                Bugün ders yok
-              </div>
-              <div className="mt-1 text-xs text-slate-600">
-                {selectedDayName} günü için kayıt bulunamadı.
-              </div>
-              <a
-                href="/setup"
-                className="mt-4 inline-block rounded-2xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white"
-              >
-                Ders Ekle
-              </a>
+            <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm font-semibold text-slate-900">
+              Bugün ders yok
             </div>
           ) : (
             todaysCourses.map((c) => (
@@ -267,33 +200,6 @@ export default function DashboardPage() {
             ))
           )}
         </div>
-
-        {/* Totals */}
-        {totalsByNormalizedName.length > 0 && (
-          <div className="mt-6 rounded-3xl bg-white p-4 shadow-sm border border-slate-100">
-            <div className="text-sm font-bold text-slate-900">
-              Toplam Devamsızlıklar
-            </div>
-
-            <div className="mt-3 space-y-2">
-              {totalsByNormalizedName.map((g) => (
-                <div
-                  key={g.groupKey}
-                  className="flex items-center justify-between rounded-2xl border px-3 py-3"
-                >
-                  <div>
-                    <div className="text-sm font-semibold">{g.displayName}</div>
-                    <div className="text-xs text-slate-600">
-                      {g.sessions.length} oturum
-                    </div>
-                  </div>
-
-                  <div className="text-sm font-bold">{g.missed} saat</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       <BottomNav />
