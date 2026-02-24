@@ -69,22 +69,8 @@ export default function DashboardPage() {
     loadAttendance();
   }, [selectedDate]);
 
-  const handleDeleteCourse = async (courseId: string | number) => {
-    const confirmDelete = confirm("Bu dersi ve bu derse ait tüm yoklama geçmişini silmek istediğinize emin misiniz? Bu işlem geri alınamaz.");
-    
-    if (!confirmDelete) return;
-
-    const { error } = await supabase
-      .from("courses")
-      .delete()
-      .eq("id", courseId);
-
-    if (error) {
-      alert("Ders silinirken bir hata oluştu: " + error.message);
-    } else {
-      setCourses((prev) => prev.filter((c) => c.id !== courseId));
-    }
-  };
+  // NOT: handleDeleteCourse fonksiyonunu sildim çünkü artık Dashboard'da kullanılmıyor.
+  // Bu işlem güvenliği artırır ve kodu temizler.
 
   const selectedDayName = useMemo(() => dayNameTR(selectedDate), [selectedDate]);
 
@@ -242,7 +228,7 @@ export default function DashboardPage() {
                 missed={missedFor(c)}
                 onOpenMissed={() => openMissed(c)}
                 onClearMissed={() => clearMissed(c)}
-                onDelete={() => c.id && handleDeleteCourse(c.id)}
+                // ✅ onDelete PROP'UNU SİLDİK, ÇÖP KUTUSU GİTTİ!
               />
             ))
           )}

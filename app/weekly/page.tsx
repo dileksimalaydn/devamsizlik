@@ -2,103 +2,113 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import AppHeader from "@/components/AppHeader";
+import BottomNav from "@/components/BottomNav";
 import { supabase } from "@/lib/supabaseClient";
 import type { Course } from "@/lib/types";
-import AppHeader from "@/components/AppHeader";
-import { colorFor } from "@/lib/colors";
 
 const DAYS = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma"];
+// Sol tarafta görünecek saat dilimleri (Senin OBS sistemine uygun)
+const TIME_SLOTS = [
+  "08:30", "09:25", "10:20", "11:15", "12:10", 
+  "13:05", "14:00", "14:55", "15:50", "16:45", 
+  "17:40", "18:35", "19:30", "20:25", "21:20"
+];
 
 export default function WeeklyPage() {
-  const [courses, setCourses] = useState<Course[]>([]);
   const router = useRouter();
+  const [courses, setCourses] = useState<Course[]>([]);
 
   useEffect(() => {
-    const fetchAllCourses = async () => {
+    const loadAllCourses = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) return router.replace("/login");
 
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("courses")
         .select("*")
         .eq("user_id", user.id);
 
-      if (data) setCourses(data as Course[]);
+      if (!error && data) setCourses(data as Course[]);
     };
-    fetchAllCourses();
-  }, []);
+    loadAllCourses();
+  }, [router]);
 
   return (
     <main className="min-h-screen bg-slate-50 pb-24">
       <AppHeader 
+        title="Weekly Timetable" 
         left={
-          <button onClick={() => router.back()} className="p-2 text-slate-600 font-bold text-xl">
+          <button onClick={() => router.push('/dashboard')} className="p-2 text-2xl text-slate-900 active:scale-75 transition-transform">
             ‹
           </button>
         }
       />
-      
-      <div className="p-4 overflow-x-auto">
-        {/* Yatayda kaydırılabilir alan (Mobilde rahat görünmesi için) */}
-        <div className="min-w-[800px] bg-white rounded-3xl border border-slate-200 shadow-sm p-6">
-          
-          {/* Gün Başlıkları */}
-          <div className="grid grid-cols-5 gap-4 border-b border-slate-100 pb-4 mb-4">
+
+      <div className="p-4 overflow-x-auto select-none">
+        <div className="min-w-[800px] bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden">
+          {/* Üst Başlık: Günler */}
+          <div className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_1fr] bg-slate-900 text-white border-b border-slate-800">
+            <div className="p-4 border-r border-slate-800 text-[10px] font-black text-center uppercase tracking-widest text-slate-500">Saat</div>
             {DAYS.map(day => (
-              <div key={day} className="text-center">
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
-                  {day}
-                </div>
+              <div key={day} className="p-4 text-center text-[11px] font-black uppercase tracking-widest">
+                {day}
               </div>
             ))}
           </div>
 
-          {/* Haftalık Izgara Bilgisi */}
-          <div className="grid grid-cols-5 gap-4">
-            {DAYS.map(day => (
-              <div key={day} className="space-y-3 min-h-[300px] border-r border-slate-50 last:border-0 pr-2">
-                {courses
-                  .filter(c => c.day === day)
-                  .sort((a, b) => a.start.localeCompare(b.start))
-                  .map(course => {
-                    const palette = colorFor(course.course_name);
-                    return (
-                      <div 
-                        key={course.id} 
-                        className={`p-3 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-1 transition-transform active:scale-95`}
-                      >
-                        <div className={`h-1.5 w-8 rounded-full ${palette.accent} mb-1`} />
-                        <div className="text-[11px] font-extrabold text-slate-900 leading-tight">
-                          {course.course_name}
+          {/* Tablo İçeriği: Saatler ve Hücreler */}
+          <div className="divide-y divide-slate-100">
+            {TIME_SLOTS.map(time => (
+              <div key={time} className="grid grid-cols-[80px_1fr_1fr_1fr_1fr_1fr] min-h-[60px]">
+                {/* Sol Saat Sütunu */}
+                <div className="bg-slate-50 border-r border-slate-100 flex items-center justify-center">
+                  <span className="text-[10px] font-bold text-slate-400">{time}</span>
+                </div>
+
+                {/* Gün Hücreleri */}
+                {DAYS.map(day => {
+                  // Bu saatte ve bu günde ders var mı?
+                  const course = courses.find(c => c.day === day && c.start === time);
+                  
+                  return (
+                    <div key={day + time} className="border-r border-slate-50 p-1 relative min-h-[60px] flex items-stretch">
+                      {course && (
+                        <div 
+                          className={`w-full p-2 rounded-xl flex flex-col justify-center items-center text-center shadow-sm border transition-all hover:scale-[1.02] z-10
+                            ${course.course_name.includes('ENG') ? 'bg-blue-50 border-blue-200 text-blue-700' : 
+                              course.course_name.includes('BA') ? 'bg-orange-50 border-orange-200 text-orange-700' : 
+                              'bg-indigo-50 border-indigo-200 text-indigo-700'}
+                          `}
+                          style={{
+                            // Eğer ders birden fazla bloksa kutuyu o kadar büyütür (Opsiyonel görsel geliştirme)
+                            height: '100%' 
+                          }}
+                        >
+                          <div className="text-[10px] font-black leading-tight uppercase">
+                            {course.course_name}
+                          </div>
+                          <div className="text-[8px] font-bold opacity-60 mt-1">
+                            {course.blocks} Blok
+                          </div>
                         </div>
-                        <div className="text-[10px] text-slate-500 font-medium">
-                          {course.start} – {course.end}
-                        </div>
-                        <div className="text-[9px] text-slate-400 font-semibold italic">
-                          {course.blocks} Blok
-                        </div>
-                      </div>
-                    );
-                  })}
-                
-                {/* Eğer o gün ders yoksa görsel bir boşluk */}
-                {courses.filter(c => c.day === day).length === 0 && (
-                  <div className="h-full flex items-center justify-center opacity-20 grayscale">
-                    <span className="text-2xl">☕</span>
-                  </div>
-                )}
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Alt Bilgi ve Dönüş */}
-      <div className="mt-6 text-center">
-        <p className="text-[10px] text-slate-400 font-medium italic">
-          Ekranı yatay çevirerek daha rahat görebilirsin.
+      <div className="px-6 mt-4 text-center">
+        <p className="text-[10px] font-bold text-slate-400 uppercase italic">
+          * Boşluklar ders aralarını temsil eder.
         </p>
       </div>
+
+      <BottomNav />
     </main>
   );
 }
