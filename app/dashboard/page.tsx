@@ -214,7 +214,7 @@ export default function DashboardPage() {
         <div className="mt-4 space-y-3">
           {todaysCourses.length === 0 ? (
             <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm font-semibold text-slate-900">
-              Bugün ders yok
+              Bugün ders yok 🎉🎉🎉
             </div>
           ) : (
             todaysCourses.map((c) => (
