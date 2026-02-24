@@ -168,7 +168,7 @@ export default function DashboardPage() {
         >
           <div className="flex items-center gap-3">
             <div className="bg-indigo-50 h-10 w-10 rounded-2xl flex items-center justify-center text-lg">
-              📅
+              
             </div>
             <div className="text-left">
               <div className="text-sm font-bold text-slate-900">Weekly Schedule</div>
