@@ -20,13 +20,11 @@ export default function DashboardPage() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [sheetCourse, setSheetCourse] = useState<Course | null>(null);
 
-  // Çıkış İşlemi
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/login");
   };
 
-  // Dersleri Yükle (Sadece giriş yapan kullanıcının dersleri)
   useEffect(() => {
     const loadCourses = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -46,7 +44,6 @@ export default function DashboardPage() {
     loadCourses();
   }, [router]);
 
-  // Yoklamaları Yükle (Sadece seçili gün ve aktif kullanıcı için)
   useEffect(() => {
     const loadAttendance = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -71,6 +68,23 @@ export default function DashboardPage() {
     };
     loadAttendance();
   }, [selectedDate]);
+
+  const handleDeleteCourse = async (courseId: string | number) => {
+    const confirmDelete = confirm("Bu dersi ve bu derse ait tüm yoklama geçmişini silmek istediğinize emin misiniz? Bu işlem geri alınamaz.");
+    
+    if (!confirmDelete) return;
+
+    const { error } = await supabase
+      .from("courses")
+      .delete()
+      .eq("id", courseId);
+
+    if (error) {
+      alert("Ders silinirken bir hata oluştu: " + error.message);
+    } else {
+      setCourses((prev) => prev.filter((c) => c.id !== courseId));
+    }
+  };
 
   const selectedDayName = useMemo(() => dayNameTR(selectedDate), [selectedDate]);
 
@@ -98,7 +112,6 @@ export default function DashboardPage() {
     setSheetCourse(null);
   };
 
-  // Yoklama Kaydet/Güncelle
   const setMissedHours = async (hours: number) => {
     if (!sheetCourse || !sheetCourse.id) return;
 
@@ -124,7 +137,6 @@ export default function DashboardPage() {
     closeMissed();
   };
 
-  // Yoklamayı Sıfırla
   const clearMissed = async (c: Course) => {
     if (!c.id) return;
     const { data: { user } } = await supabase.auth.getUser();
@@ -164,22 +176,38 @@ export default function DashboardPage() {
       <div className="mx-auto max-w-md px-4 pt-4">
         {/* Tarih Seçici */}
         <div className="flex items-center justify-between rounded-3xl bg-white px-4 py-4 shadow-sm border border-slate-200">
-          <button onClick={goPrev} className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-100 font-bold">‹</button>
+          <button 
+            onClick={goPrev} 
+            className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-200 text-slate-900 font-bold hover:bg-slate-300 transition-colors"
+          >
+            ‹
+          </button>
+          
           <div className="flex flex-col items-center">
-            <div className="text-base font-bold text-slate-900">{prettyTR(selectedDate)}</div>
+            <div className="text-base font-extrabold text-slate-900">{prettyTR(selectedDate)}</div>
             <div className="mt-2 flex items-center gap-2">
               <input
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
-                className="rounded-xl border border-slate-300 px-3 py-1.5 text-xs focus:outline-none"
+                className="rounded-xl border border-slate-400 px-3 py-1.5 text-xs font-medium text-slate-900 focus:outline-none"
               />
-              <button onClick={goToday} disabled={isToday} className="rounded-xl bg-slate-900 px-3 py-1.5 text-xs text-white disabled:opacity-40">
-                Bugün
+              <button 
+                onClick={goToday} 
+                className="rounded-xl bg-slate-900 px-3 py-1.5 text-xs font-bold text-white disabled:opacity-30 transition-all"
+                disabled={isToday}
+              >
+                {isToday ? "Bugün" : "Bugüne Dön"}
               </button>
             </div>
           </div>
-          <button onClick={goNext} className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-100 font-bold">›</button>
+          
+          <button 
+            onClick={goNext} 
+            className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-200 text-slate-900 font-bold hover:bg-slate-300 transition-colors"
+          >
+            ›
+          </button>
         </div>
 
         {/* Ders Listesi */}
@@ -196,10 +224,20 @@ export default function DashboardPage() {
                 missed={missedFor(c)}
                 onOpenMissed={() => openMissed(c)}
                 onClearMissed={() => clearMissed(c)}
+                onDelete={() => c.id && handleDeleteCourse(c.id)}
               />
             ))
           )}
         </div>
+
+        {/* ✅ İMZA BURADA (Doğru Yer) */}
+        <div className="mt-12 pb-8 text-center">
+          <p className="text-[10px] font-medium tracking-[0.2em] text-slate-400 uppercase opacity-70">
+            Developed by Dilek Şimal Aydın
+          </p>
+          <div className="mt-2 mx-auto h-[1px] w-6 bg-slate-300" />
+        </div>
+
       </div>
 
       <BottomNav />

@@ -1,23 +1,44 @@
 "use client";
 
 import Link from "next/link";
+import React from "react";
+
+interface AppHeaderProps {
+  title?: string;
+  left?: React.ReactNode;
+  right?: React.ReactNode;
+}
 
 export default function AppHeader({
-  title = "Okul Yoklama",
+  title = "Attendance Tracker",
+  left,
   right,
-}: {
-  title?: string;
-  right?: React.ReactNode;
-}) {
+}: AppHeaderProps) {
   return (
-    <div className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
+    <div className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-md items-center justify-between px-4 py-3">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="grid h-9 w-9 place-items-center rounded-2xl bg-slate-900 text-white">🎓</div>
-          <div className="text-sm font-semibold text-slate-900">{title}</div>
-        </Link>
+        
+        {/* SOL TARAF: Eğer 'left' prop'u varsa onu göster, yoksa varsayılan logoyu göster */}
+        <div className="flex items-center gap-2">
+          {left ? (
+            left
+          ) : (
+            <Link href="/dashboard" className="flex items-center gap-2">
+              <div className="grid h-9 w-9 place-items-center rounded-2xl bg-slate-900 text-white shadow-sm">
+                🎓
+              </div>
+              <div className="text-sm font-extrabold text-slate-900 tracking-tight">
+                {title}
+              </div>
+            </Link>
+          )}
+        </div>
 
-        <div className="flex items-center gap-2">{right}</div>
+        {/* SAĞ TARAF: Butonlar (Ders Ekle, Çıkış vb.) */}
+        <div className="flex items-center gap-2">
+          {right}
+        </div>
+        
       </div>
     </div>
   );
