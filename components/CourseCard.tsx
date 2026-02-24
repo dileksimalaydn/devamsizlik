@@ -18,7 +18,7 @@ export default function CourseCard({
   onOpenMissed: () => void;
   onClearMissed: () => void;
 }) {
-  const palette = colorFor(course.courseName);
+  const palette = colorFor(course.course_name);
   const safeMissed = fixNegZero(missed);
 
   return (
@@ -28,7 +28,7 @@ export default function CourseCard({
           <div className={`mt-1 h-10 w-2 rounded-full ${palette.accent}`} />
           <div>
             <div className="text-base font-bold text-slate-900">
-              {course.courseName} <span className="text-slate-400">•</span>{" "}
+              {course.course_name} <span className="text-slate-400">•</span>{" "}
               {course.blocks} blok
             </div>
 
