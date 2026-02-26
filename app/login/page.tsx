@@ -23,14 +23,14 @@ export default function LoginPage() {
     });
 
     if (error) {
-      setMsg("Google hatası: " + error.message);
+      setMsg("Google error: " + error.message);
       setLoading(false);
     }
   }
 
   async function handleAuth() {
     if (!email || !password) {
-      setMsg("Lütfen mail ve şifre girin.");
+      setMsg("Please enter email and password.");
       return;
     }
 
@@ -45,42 +45,43 @@ export default function LoginPage() {
           emailRedirectTo: window.location.origin,
         }
       });
-      if (error) setMsg("Hata: " + error.message);
-      else setMsg("Kayıt başarılı! Lütfen e-postanı kontrol et ve onayla.");
+      if (error) setMsg("Error: " + error.message);
+      else setMsg("Success! Please check your email for confirmation.");
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) setMsg("Hata: " + error.message);
+      if (error) setMsg("Error: " + error.message);
       else {
-        setMsg("Giriş başarılı, yönlendiriliyorsunuz...");
+        setMsg("Login successful, redirecting...");
         router.replace("/dashboard");
       }
     }
     setLoading(false);
   }
 
-  // Ortak input stili (Koyu tema dostu)
+  // Modern Input Stili (Email ve Password için)
   const inputStyle = {
     padding: "14px",
     borderRadius: "10px",
     border: "1px solid #334155", // Belirgin koyu kenarlık
     outline: "none",
     fontSize: 14,
-    backgroundColor: "#1e293b", // Arka plandan bir tık açık gri
-    color: "#ffffff", // Beyaz yazı
+    backgroundColor: "#1e293b", // Arka plandan bir tık açık, kutuyu belli eden renk
+    color: "#ffffff",
     transition: "all 0.2s"
   };
 
   return (
     <div style={{ maxWidth: 380, margin: "60px auto", padding: "40px 20px", textAlign: "center", fontFamily: "Inter, sans-serif" }}>
       <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 10, letterSpacing: "-0.02em" }}>
-        {isSignUpMode ? "Hesap Oluştur" : "Hoş Geldiniz"}
+        {isSignUpMode ? "Create Account" : "Welcome Back"}
       </h1>
       <p style={{ color: "#64748b", marginBottom: 30, fontSize: 15 }}>
-        {isSignUpMode ? "Yoklama takibine başlamak için kayıt ol." : "Devamsızlıklarını yönetmek için giriş yap."}
+        {isSignUpMode ? "Sign up to start tracking attendance." : "Login to manage your absences."}
       </p>
 
       <div style={{ display: "grid", gap: 15 }}>
         
+        {/* GOOGLE BUTTON */}
         <button
           onClick={handleGoogleLogin}
           disabled={loading}
@@ -99,17 +100,18 @@ export default function LoginPage() {
           }}
         >
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google" />
-          Google ile Devam Et
+          Continue with Google
         </button>
 
         <div style={{ display: "flex", alignItems: "center", margin: "10px 0", color: "#e2e8f0" }}>
           <hr style={{ flex: 1, border: "0.5px solid #334155" }} /> 
-          <span style={{ padding: "0 15px", fontSize: 11, fontWeight: "bold", color: "#94a3b8" }}>VEYA</span> 
+          <span style={{ padding: "0 15px", fontSize: 11, fontWeight: "bold", color: "#94a3b8" }}>OR</span> 
           <hr style={{ flex: 1, border: "0.5px solid #334155" }} />
         </div>
 
+        {/* INPUT FIELDS */}
         <input
-          placeholder="Mail"
+          placeholder="Email address"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -123,6 +125,7 @@ export default function LoginPage() {
           style={inputStyle}
         />
 
+        {/* SUBMIT BUTTON */}
         <button
           onClick={handleAuth}
           disabled={loading}
@@ -140,34 +143,36 @@ export default function LoginPage() {
             gap: "8px"
           }}
         >
-          {loading ? <Loader2 size={18} className="animate-spin" /> : (isSignUpMode ? "Kaydı Tamamla" : "Giriş Yap")}
+          {loading ? <Loader2 size={18} className="animate-spin" /> : (isSignUpMode ? "Complete Sign Up" : "Login")}
         </button>
 
+        {/* TOGGLE MODE */}
         <div style={{ marginTop: 15, fontSize: 14, color: "#64748b" }}>
-          {isSignUpMode ? "Zaten hesabın var mı?" : "Hesabın yok mu?"} 
+          {isSignUpMode ? "Already have an account?" : "Don't have an account?"} 
           <span 
             onClick={() => { setIsSignUpMode(!isSignUpMode); setMsg(""); }}
             style={{ color: "#3b82f6", cursor: "pointer", marginLeft: 5, fontWeight: "600" }}
           >
-            {isSignUpMode ? "Giriş Yap" : "Hemen Kayıt Ol"}
+            {isSignUpMode ? "Login" : "Sign Up Now"}
           </span>
         </div>
 
+        {/* FEEDBACK MESSAGES */}
         {msg && (
           <div style={{ 
             marginTop: 20, 
             padding: "12px", 
             borderRadius: "10px", 
-            backgroundColor: msg.includes("Hata") || msg.includes("Lütfen") ? "#450a0a" : "#064e3b",
-            color: msg.includes("Hata") || msg.includes("Lütfen") ? "#fca5a5" : "#6ee7b7",
+            backgroundColor: msg.includes("Error") || msg.includes("Please") ? "#450a0a" : "#064e3b",
+            color: msg.includes("Error") || msg.includes("Please") ? "#fca5a5" : "#6ee7b7",
             fontSize: "13px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             gap: "8px",
-            border: `1px solid ${msg.includes("Hata") ? "#991b1b" : "#065f46"}`
+            border: `1px solid ${msg.includes("Error") ? "#991b1b" : "#065f46"}`
           }}>
-            {msg.includes("Hata") || msg.includes("Lütfen") ? <AlertCircle size={16} /> : <CheckCircle2 size={16} />}
+            {msg.includes("Error") || msg.includes("Please") ? <AlertCircle size={16} /> : <CheckCircle2 size={16} />}
             {msg}
           </div>
         )}
