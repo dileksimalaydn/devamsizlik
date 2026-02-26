@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
-// İkonları import ediyoruz
-import { AlertCircle, CheckCircle2, Loader2, Mail, Lock } from "lucide-react";
+import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,7 +30,7 @@ export default function LoginPage() {
 
   async function handleAuth() {
     if (!email || !password) {
-      setMsg("Lütfen email ve şifre girin.");
+      setMsg("Lütfen mail ve şifre girin.");
       return;
     }
 
@@ -59,6 +58,18 @@ export default function LoginPage() {
     setLoading(false);
   }
 
+  // Ortak input stili (Koyu tema dostu)
+  const inputStyle = {
+    padding: "14px",
+    borderRadius: "10px",
+    border: "1px solid #334155", // Belirgin koyu kenarlık
+    outline: "none",
+    fontSize: 14,
+    backgroundColor: "#1e293b", // Arka plandan bir tık açık gri
+    color: "#ffffff", // Beyaz yazı
+    transition: "all 0.2s"
+  };
+
   return (
     <div style={{ maxWidth: 380, margin: "60px auto", padding: "40px 20px", textAlign: "center", fontFamily: "Inter, sans-serif" }}>
       <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 10, letterSpacing: "-0.02em" }}>
@@ -70,7 +81,6 @@ export default function LoginPage() {
 
       <div style={{ display: "grid", gap: 15 }}>
         
-        {/* GOOGLE BUTONU */}
         <button
           onClick={handleGoogleLogin}
           disabled={loading}
@@ -85,8 +95,7 @@ export default function LoginPage() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: "12px",
-            transition: "all 0.2s"
+            gap: "12px"
           }}
         >
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google" />
@@ -94,24 +103,24 @@ export default function LoginPage() {
         </button>
 
         <div style={{ display: "flex", alignItems: "center", margin: "10px 0", color: "#e2e8f0" }}>
-          <hr style={{ flex: 1, border: "0.5px solid #e2e8f0" }} /> 
+          <hr style={{ flex: 1, border: "0.5px solid #334155" }} /> 
           <span style={{ padding: "0 15px", fontSize: 11, fontWeight: "bold", color: "#94a3b8" }}>VEYA</span> 
-          <hr style={{ flex: 1, border: "0.5px solid #e2e8f0" }} />
+          <hr style={{ flex: 1, border: "0.5px solid #334155" }} />
         </div>
 
         <input
-          placeholder="E-posta adresi"
+          placeholder="Mail"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          style={{ padding: "14px", borderRadius: "10px", border: "1px solid #e2e8f0", outline: "none", fontSize: 14, backgroundColor: "#f8fafc" }}
+          style={inputStyle}
         />
         <input
-          placeholder="Şifre"
+          placeholder="Password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          style={{ padding: "14px", borderRadius: "10px", border: "1px solid #e2e8f0", outline: "none", fontSize: 14, backgroundColor: "#f8fafc" }}
+          style={inputStyle}
         />
 
         <button
@@ -120,9 +129,9 @@ export default function LoginPage() {
           style={{ 
             padding: "14px", 
             borderRadius: "10px", 
-            backgroundColor: "#0f172a", 
-            color: "#fff", 
-            fontWeight: "600",
+            backgroundColor: "#ffffff", 
+            color: "#0f172a", 
+            fontWeight: "700",
             cursor: loading ? "not-allowed" : "pointer",
             border: "none",
             display: "flex",
@@ -138,7 +147,7 @@ export default function LoginPage() {
           {isSignUpMode ? "Zaten hesabın var mı?" : "Hesabın yok mu?"} 
           <span 
             onClick={() => { setIsSignUpMode(!isSignUpMode); setMsg(""); }}
-            style={{ color: "#2563eb", cursor: "pointer", marginLeft: 5, fontWeight: "600" }}
+            style={{ color: "#3b82f6", cursor: "pointer", marginLeft: 5, fontWeight: "600" }}
           >
             {isSignUpMode ? "Giriş Yap" : "Hemen Kayıt Ol"}
           </span>
@@ -149,14 +158,14 @@ export default function LoginPage() {
             marginTop: 20, 
             padding: "12px", 
             borderRadius: "10px", 
-            backgroundColor: msg.includes("Hata") || msg.includes("Lütfen") ? "#fef2f2" : "#f0fdf4",
-            color: msg.includes("Hata") || msg.includes("Lütfen") ? "#991b1b" : "#166534",
+            backgroundColor: msg.includes("Hata") || msg.includes("Lütfen") ? "#450a0a" : "#064e3b",
+            color: msg.includes("Hata") || msg.includes("Lütfen") ? "#fca5a5" : "#6ee7b7",
             fontSize: "13px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             gap: "8px",
-            border: `1px solid ${msg.includes("Hata") ? "#fee2e2" : "#dcfce7"}`
+            border: `1px solid ${msg.includes("Hata") ? "#991b1b" : "#065f46"}`
           }}>
             {msg.includes("Hata") || msg.includes("Lütfen") ? <AlertCircle size={16} /> : <CheckCircle2 size={16} />}
             {msg}
