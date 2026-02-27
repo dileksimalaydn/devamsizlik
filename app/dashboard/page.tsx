@@ -29,7 +29,9 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const loadCourses = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         router.replace("/login");
         return;
@@ -38,7 +40,7 @@ export default function DashboardPage() {
       const { data, error } = await supabase
         .from("courses")
         .select("*")
-        .eq("user_id", user.id) 
+        .eq("user_id", user.id)
         .order("start", { ascending: true });
 
       if (!error && data) setCourses(data as Course[]);
@@ -49,7 +51,9 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const loadAttendance = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase
@@ -72,9 +76,6 @@ export default function DashboardPage() {
     loadAttendance();
   }, [selectedDate]);
 
-  // NOT: handleDeleteCourse fonksiyonunu sildim çünkü artık Dashboard'da kullanılmıyor.
-  // Bu işlem güvenliği artırır ve kodu temizler.
-
   const selectedDayName = useMemo(() => dayNameTR(selectedDate), [selectedDate]);
 
   const todaysCourses = useMemo(() => {
@@ -86,7 +87,9 @@ export default function DashboardPage() {
 
   const isToday = selectedDate === todayISO();
   const goPrev = () => setSelectedDate((d) => addDays(d, -1));
-  const goNext = () => { if (!isToday) setSelectedDate((d) => addDays(d, +1)); };
+  const goNext = () => {
+    if (!isToday) setSelectedDate((d) => addDays(d, +1));
+  };
   const goToday = () => setSelectedDate(todayISO());
 
   const missedFor = (c: Course) => (c.id ? (attendance[c.id] ?? 0) : 0);
@@ -104,7 +107,9 @@ export default function DashboardPage() {
   const setMissedHours = async (hours: number) => {
     if (!sheetCourse || !sheetCourse.id) return;
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
     const capped = Math.max(0, Math.min(hours, sheetCourse.blocks));
@@ -128,7 +133,9 @@ export default function DashboardPage() {
 
   const clearMissed = async (c: Course) => {
     if (!c.id) return;
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
     const { error } = await supabase.from("attendance").upsert(
@@ -152,10 +159,16 @@ export default function DashboardPage() {
       <AppHeader
         right={
           <div className="flex gap-2">
-            <button onClick={handleLogout} className="rounded-2xl bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-200 transition-colors">
+            <button
+              onClick={handleLogout}
+              className="rounded-2xl bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-200 transition-colors"
+            >
               Çıkış
             </button>
-            <a href="/setup" className="rounded-2xl bg-slate-900 px-3 py-2 text-xs font-semibold text-white shadow-md hover:bg-slate-800 transition-all active:scale-95">
+            <a
+              href="/setup"
+              className="rounded-2xl bg-slate-900 px-3 py-2 text-xs font-semibold text-white shadow-md hover:bg-slate-800 transition-all active:scale-95"
+            >
               Ders Ekle +
             </a>
           </div>
@@ -163,12 +176,16 @@ export default function DashboardPage() {
       />
 
       <div className="mx-auto max-w-md px-4 pt-4">
-
         {/* Info hint */}
         <div className="flex items-start gap-2.5 rounded-2xl bg-indigo-50 border border-indigo-100 px-4 py-3 mb-4">
           <Info size={14} className="text-indigo-400 shrink-0 mt-0.5" />
           <p className="text-xs text-indigo-700 leading-relaxed">
-            Derse gitmedin mi? <strong className="text-indigo-900">İşaretle</strong> butonuna bas, devamsızlığını kaydet. Ok tuşlarıyla geçmiş günlere de gidebilirsin.
+            Derse gitmedin mi?{" "}
+            <strong className="text-indigo-900">İşaretle</strong> butonuna bas,
+            devamsızlığını kaydet. Ok tuşlarıyla geçmiş günlere de gidebilirsin.
+            <br />
+            Devamsızlığı işaretlemeyi unuttuysan, Devamsızlıklar sayfasından
+            sonradan ekleyebilirsin.
           </p>
         </div>
 
@@ -191,9 +208,11 @@ export default function DashboardPage() {
           >
             ‹
           </button>
-          
+
           <div className="flex flex-col items-center">
-            <div className="text-base font-extrabold text-slate-900">{prettyTR(selectedDate)}</div>
+            <div className="text-base font-extrabold text-slate-900">
+              {prettyTR(selectedDate)}
+            </div>
             <div className="mt-2 flex items-center gap-2">
               <input
                 type="date"
@@ -201,8 +220,8 @@ export default function DashboardPage() {
                 onChange={(e) => setSelectedDate(e.target.value)}
                 className="rounded-xl border border-slate-400 px-3 py-1.5 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-200"
               />
-              <button 
-                onClick={goToday} 
+              <button
+                onClick={goToday}
                 className="rounded-xl bg-slate-900 px-3 py-1.5 text-xs font-bold text-white disabled:opacity-30 transition-all"
                 disabled={isToday}
               >
@@ -210,7 +229,7 @@ export default function DashboardPage() {
               </button>
             </div>
           </div>
-          
+
           <button
             onClick={goNext}
             disabled={isToday}
@@ -224,7 +243,10 @@ export default function DashboardPage() {
         <div className="mt-4 space-y-3">
           {loading ? (
             [1, 2, 3].map((i) => (
-              <div key={i} className="rounded-3xl bg-white p-4 shadow-sm border border-slate-100 animate-pulse">
+              <div
+                key={i}
+                className="rounded-3xl bg-white p-4 shadow-sm border border-slate-100 animate-pulse"
+              >
                 <div className="flex items-start gap-3">
                   <div className="h-10 w-2 rounded-full bg-slate-200" />
                   <div className="flex-1 space-y-2 pt-1">
@@ -238,8 +260,12 @@ export default function DashboardPage() {
             ))
           ) : todaysCourses.length === 0 ? (
             <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-8 text-center">
-              <div className="text-sm font-semibold text-slate-700">Bugün ders yok</div>
-              <div className="mt-1 text-xs text-slate-400">Dinlenme günü, tadını çıkar.</div>
+              <div className="text-sm font-semibold text-slate-700">
+                Bugün ders yok
+              </div>
+              <div className="mt-1 text-xs text-slate-400">
+                Dinlenme günü, tadını çıkar.
+              </div>
             </div>
           ) : (
             todaysCourses.map((c) => (
@@ -261,7 +287,6 @@ export default function DashboardPage() {
           </p>
           <div className="mt-2 mx-auto h-[1px] w-6 bg-slate-300" />
         </div>
-
       </div>
 
       <BottomNav />
