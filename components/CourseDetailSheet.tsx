@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Course, AttendanceRecord } from "@/lib/types";
 import { dayNameTR, prettyTR, todayISO } from "@/lib/date";
 import { supabase } from "@/lib/supabaseClient";
+import { X, Calendar, Clock, Trash2, Plus } from "lucide-react";
 
 type Props = {
   open: boolean;
@@ -30,13 +31,13 @@ function HourButtons({
         <button
           key={n}
           onClick={() => onPick(n)}
-          className={`rounded-xl py-3 text-xs font-bold border transition-all active:scale-95 ${
+          className={`rounded-xl py-3 text-sm font-semibold border transition-all active:scale-95 ${
             current === n
-              ? "bg-slate-900 text-white border-slate-900 shadow-md"
-              : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+              ? "bg-indigo-600 text-white border-indigo-600 shadow-sm"
+              : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
           }`}
         >
-          {n === blocks && n !== 1 && n !== 2 ? "TAMAMI" : `${n} SAAT`}
+          {n === blocks && n !== 1 && n !== 2 ? "Tamamı" : `${n} saat`}
         </button>
       ))}
     </div>
@@ -86,35 +87,38 @@ export default function CourseDetailSheet({
   const newSession = newDate ? findSession(newDate) : undefined;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-sm p-0 sm:p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-slate-900/40 backdrop-blur-sm p-0 sm:p-4" onClick={onClose}>
       <div 
         className="w-full max-w-md rounded-t-[32px] sm:rounded-[32px] bg-white shadow-2xl flex flex-col overflow-hidden transition-all"
-        style={{ maxHeight: "90vh" }}
+        style={{ maxHeight: "88vh" }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Görsel Sürükleme Çubuğu */}
+        {/* Mobil Sürükleme Tutamacı */}
         <div className="flex justify-center pt-3 pb-1 sm:hidden">
-          <div className="h-1 w-10 rounded-full bg-slate-200" />
+          <div className="h-1.5 w-12 rounded-full bg-slate-200" />
         </div>
 
-        {/* Header */}
-        <div className="px-6 py-5 border-b border-slate-50 flex items-center justify-between">
+        {/* Header - SetupPage'deki AppHeader havasında */}
+        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-white">
           <div>
-            <h2 className="text-xl font-black text-slate-900 tracking-tight uppercase">{displayName}</h2>
-            <p className="text-[11px] font-bold text-slate-400 mt-0.5 tracking-wider uppercase">
-              {records.length} KAYIT BULUNDU
+            <h2 className="text-lg font-bold text-slate-900 leading-tight">{displayName}</h2>
+            <p className="text-xs font-medium text-slate-500 mt-0.5">
+              Toplam {records.length} devamsızlık kaydı
             </p>
           </div>
-          <button onClick={onClose} className="h-10 w-10 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 font-bold hover:bg-slate-100 transition">
-            ✕
+          <button onClick={onClose} className="h-9 w-9 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition">
+            <X size={18} />
           </button>
         </div>
 
-        {/* Records List */}
-        <div className="overflow-y-auto flex-1 px-5 py-4 space-y-3">
+        {/* İçerik Alanı */}
+        <div className="overflow-y-auto flex-1 px-5 py-4 space-y-4 bg-slate-50/30">
           {sorted.length === 0 && !addMode && (
-            <div className="text-center py-16">
-              <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">Henüz veri girişi yapılmadı</p>
+            <div className="text-center py-16 px-10">
+              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 mb-4">
+                <Calendar size={24} />
+              </div>
+              <p className="text-sm font-medium text-slate-500">Henüz bir devamsızlık kaydı girmedin.</p>
             </div>
           )}
 
@@ -127,31 +131,40 @@ export default function CourseDetailSheet({
               <div key={key} className="space-y-2">
                 <button
                   onClick={() => setEditingKey(isEditing ? null : key)}
-                  className={`w-full rounded-2xl border px-5 py-4 flex items-center justify-between transition-all ${
-                    isEditing ? "bg-slate-900 border-slate-900 shadow-xl scale-[1.02]" : "bg-white border-slate-100 hover:border-slate-200"
+                  className={`w-full rounded-[24px] border px-5 py-4 flex items-center justify-between transition-all active:scale-[0.98] ${
+                    isEditing 
+                      ? "bg-white border-indigo-200 shadow-md ring-4 ring-indigo-50" 
+                      : "bg-white border-slate-100 shadow-sm hover:border-slate-200"
                   }`}
                 >
                   <div className="text-left">
-                    <div className={`text-sm font-black ${isEditing ? "text-white" : "text-slate-900"}`}>
-                      {prettyTR(rec.date).toUpperCase()}
+                    <div className="text-[14px] font-bold text-slate-900">
+                      {prettyTR(rec.date)}
                     </div>
                     {session && (
-                      <div className={`text-[10px] font-bold mt-1 ${isEditing ? "text-slate-400" : "text-slate-400"}`}>
-                        {session.start} — {session.end}
+                      <div className="text-[11px] font-medium text-slate-500 mt-1 flex items-center gap-1">
+                        <Clock size={10} /> {session.start} — {session.end}
                       </div>
                     )}
                   </div>
-                  <div className={`text-sm font-black px-3 py-1 rounded-lg ${isEditing ? "bg-rose-500 text-white" : "bg-rose-50 text-rose-600"}`}>
-                    {rec.missed_blocks}H
+                  <div className="flex items-center gap-3">
+                    <span className={`text-sm font-bold px-3 py-1.5 rounded-xl ${
+                      isEditing ? "bg-indigo-600 text-white" : "bg-rose-50 text-rose-600"
+                    }`}>
+                      {rec.missed_blocks} saat
+                    </span>
                   </div>
                 </button>
 
                 {isEditing && session && (
-                  <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-4 animate-in zoom-in-95 duration-200">
-                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Süreyi Düzenle</div>
+                  <div className="p-4 rounded-[24px] bg-white border border-indigo-100 shadow-sm space-y-4 animate-in zoom-in-95 duration-200">
+                    <label className="text-xs font-semibold text-slate-800 ml-1">Süreyi Değiştir</label>
                     <HourButtons blocks={session.blocks} current={rec.missed_blocks} onPick={(n) => save(rec.course_id, rec.date, n)} />
-                    <button onClick={() => del(rec)} className="w-full py-3 text-[10px] font-black text-rose-500 uppercase tracking-widest border-t border-rose-100 mt-2">
-                      Kaydı Tamamen Sil
+                    <button 
+                      onClick={() => del(rec)} 
+                      className="w-full py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 transition"
+                    >
+                      <Trash2 size={14} /> Kaydı Sil
                     </button>
                   </div>
                 )}
@@ -160,42 +173,56 @@ export default function CourseDetailSheet({
           })}
 
           {addMode && (
-            <div className="p-5 rounded-[24px] bg-slate-50 border-2 border-dashed border-slate-200 space-y-5 animate-in slide-in-from-top-4">
-              <div className="text-xs font-black text-slate-900 uppercase tracking-widest">Yeni Giriş</div>
-              <input
-                type="date"
-                value={newDate}
-                max={todayISO()}
-                onChange={(e) => setNewDate(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 outline-none focus:ring-2 focus:ring-slate-900 transition"
-              />
+            <div className="p-5 rounded-[28px] bg-white border border-slate-200 shadow-sm space-y-4 animate-in slide-in-from-top-4 duration-300">
+              <div className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-indigo-500" />
+                Yeni Kayıt Ekle
+              </div>
+              
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-semibold text-slate-500 ml-1">Tarih Seçin</label>
+                <input
+                  type="date"
+                  value={newDate}
+                  max={todayISO()}
+                  onChange={(e) => setNewDate(e.target.value)}
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 outline-none focus:bg-white focus:border-indigo-400 transition"
+                />
+              </div>
+
               {newDate && (
                 newSession ? (
-                  <div className="space-y-3">
-                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">
-                      Mevcut Blok: {newSession.blocks}
+                  <div className="space-y-3 pt-2">
+                    <div className="text-[11px] font-semibold text-slate-500 ml-1">
+                      Blok seçerek kaydı tamamla:
                     </div>
                     <HourButtons blocks={newSession.blocks} onPick={(n) => save(newSession.id, newDate, n)} />
                   </div>
                 ) : (
-                  <div className="py-4 text-center border border-rose-100 bg-rose-50 rounded-xl">
-                    <p className="text-[10px] font-black text-rose-600 uppercase tracking-tighter">Bu tarihte ders tanımlı değil</p>
+                  <div className="py-4 px-3 text-center border border-rose-100 bg-rose-50 rounded-2xl">
+                    <p className="text-xs font-semibold text-rose-600">Bu tarihte {displayName} dersi bulunmuyor.</p>
                   </div>
                 )
               )}
-              <button onClick={() => setAddMode(false)} className="w-full text-[10px] font-black text-slate-400 uppercase tracking-widest">İptal</button>
+              
+              <button 
+                onClick={() => setAddMode(false)} 
+                className="w-full text-xs font-semibold text-slate-400 py-1 hover:text-slate-600 transition"
+              >
+                İptal Et
+              </button>
             </div>
           )}
         </div>
 
-        {/* Footer */}
+        {/* Footer - SetupPage'deki Kaydet butonu stili */}
         {!addMode && (
-          <div className="p-6 bg-white border-t border-slate-50">
+          <div className="p-6 bg-white border-t border-slate-100">
             <button
               onClick={() => { setAddMode(true); setEditingKey(null); setNewDate(todayISO()); }}
-              className="w-full rounded-2xl bg-slate-900 py-4 text-sm font-black text-white shadow-xl shadow-slate-200 active:scale-95 transition-all uppercase tracking-widest"
+              className="w-full rounded-2xl bg-slate-900 py-4 text-sm font-bold text-white shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2"
             >
-              Yeni Ekle
+              <Plus size={18} /> Devamsızlık Ekle
             </button>
           </div>
         )}
