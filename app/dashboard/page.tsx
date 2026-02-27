@@ -180,13 +180,14 @@ export default function DashboardPage() {
         <div className="flex items-start gap-2.5 rounded-2xl bg-indigo-50 border border-indigo-100 px-4 py-3 mb-4">
           <Info size={14} className="text-indigo-400 shrink-0 mt-0.5" />
           <p className="text-xs text-indigo-700 leading-relaxed">
-            Derse gitmedin mi?{" "}
-            <strong className="text-indigo-900">İşaretle</strong> butonuna bas,
-            devamsızlığını kaydet. Ok tuşlarıyla geçmiş günlere de gidebilirsin.
-            <br />
-            Devamsızlığı işaretlemeyi unuttuysan, Devamsızlıklar sayfasından
-            sonradan ekleyebilirsin.
-          </p>
+  Derse gitmedin mi? <strong className="text-indigo-900">İşaretle</strong> butonuna bas,
+  devamsızlığını kaydet. Ok tuşlarıyla geçmiş günlere de gidebilirsin.
+  <br />
+  Devamsızlığı işaretlemeyi <strong className="text-indigo-900">unuttuysan</strong>,
+  <strong className="text-indigo-900">Devamsızlıklar</strong> sayfasından sonradan ekleyebilirsin.
+  <br />
+  Derslerin görünmüyorsa, önce <strong className="text-indigo-900">Ders Ekle</strong> bölümünden programını oluştur.
+</p>
         </div>
 
         {/* Haftalık program — kompakt link */}
