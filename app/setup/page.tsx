@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Info } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import { supabase } from "@/lib/supabaseClient";
@@ -140,7 +141,16 @@ export default function SetupPage() {
         }
       />
 
-      <div className="mx-auto max-w-md px-4 pt-4 space-y-6">
+      <div className="mx-auto max-w-md px-4 pt-4 space-y-4">
+
+        {/* Info hint */}
+        <div className="flex items-start gap-2.5 rounded-2xl bg-indigo-50 border border-indigo-100 px-4 py-3">
+          <Info size={14} className="text-indigo-400 shrink-0 mt-0.5" />
+          <p className="text-xs text-indigo-700 leading-relaxed">
+            Derslerini bir kez ekle. Devamsızlık limitlerin otomatik hesaplanır — <strong className="text-indigo-900">teorik %30</strong>, <strong className="text-indigo-900">lab %20</strong>.
+          </p>
+        </div>
+
         <div className="rounded-3xl bg-white p-4 shadow-sm border border-slate-100">
           <div className="text-sm font-bold text-slate-900">Yeni Ders Tanımla</div>
           <div className="mt-1 text-xs text-slate-500">
@@ -168,7 +178,7 @@ export default function SetupPage() {
                   onClick={() => setCourseType("teorik")}
                   className={`rounded-2xl border py-3 text-sm font-semibold transition-all ${
                     courseType === "teorik"
-                      ? "bg-slate-900 text-white border-slate-900"
+                      ? "bg-indigo-600 text-white border-indigo-600"
                       : "bg-slate-50 text-slate-500 border-slate-300"
                   }`}
                 >
@@ -180,7 +190,7 @@ export default function SetupPage() {
                   onClick={() => setCourseType("lab")}
                   className={`rounded-2xl border py-3 text-sm font-semibold transition-all ${
                     courseType === "lab"
-                      ? "bg-slate-900 text-white border-slate-900"
+                      ? "bg-indigo-600 text-white border-indigo-600"
                       : "bg-slate-50 text-slate-500 border-slate-300"
                   }`}
                 >

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { CalendarDays, Info } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import CourseCard from "@/components/CourseCard";
@@ -162,29 +163,31 @@ export default function DashboardPage() {
       />
 
       <div className="mx-auto max-w-md px-4 pt-4">
-        
-        {/* Haftalık Program Butonu */}
-        <button 
-          onClick={() => router.push('/weekly')}
-          className="w-full mb-6 p-4 bg-white border border-slate-200 rounded-[2rem] shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all"
-        >
-          <div className="flex items-center gap-3">
-            <div className="bg-indigo-50 h-10 w-10 rounded-2xl flex items-center justify-center text-lg">
-              
-            </div>
-            <div className="text-left">
-              <div className="text-sm font-bold text-slate-900">Haftalık Program</div>
-              <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Tüm Programı Gör</div>
-            </div>
-          </div>
-          <span className="text-slate-300 group-hover:text-slate-900 transition-colors pr-2">›</span>
-        </button>
+
+        {/* Info hint */}
+        <div className="flex items-start gap-2.5 rounded-2xl bg-indigo-50 border border-indigo-100 px-4 py-3 mb-4">
+          <Info size={14} className="text-indigo-400 shrink-0 mt-0.5" />
+          <p className="text-xs text-indigo-700 leading-relaxed">
+            Derse gitmedin mi? <strong className="text-indigo-900">İşaretle</strong> butonuna bas, devamsızlığını kaydet. Ok tuşlarıyla geçmiş günlere de gidebilirsin.
+          </p>
+        </div>
+
+        {/* Haftalık program — kompakt link */}
+        <div className="flex justify-end mb-3">
+          <button
+            onClick={() => router.push("/weekly")}
+            className="flex items-center gap-1.5 rounded-xl bg-white border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:border-slate-300 transition-all shadow-sm"
+          >
+            <CalendarDays size={13} />
+            Haftalık Program
+          </button>
+        </div>
 
         {/* Tarih Seçici */}
         <div className="flex items-center justify-between rounded-3xl bg-white px-4 py-4 shadow-sm border border-slate-200">
-          <button 
-            onClick={goPrev} 
-            className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-200 text-slate-900 font-bold hover:bg-slate-300 transition-colors"
+          <button
+            onClick={goPrev}
+            className="grid h-10 w-10 place-items-center rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-700 font-bold hover:bg-indigo-100 transition-colors"
           >
             ‹
           </button>
@@ -211,7 +214,7 @@ export default function DashboardPage() {
           <button
             onClick={goNext}
             disabled={isToday}
-            className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-200 text-slate-900 font-bold hover:bg-slate-300 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            className="grid h-10 w-10 place-items-center rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-700 font-bold hover:bg-indigo-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
             ›
           </button>
@@ -234,8 +237,9 @@ export default function DashboardPage() {
               </div>
             ))
           ) : todaysCourses.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm font-semibold text-slate-900">
-              Bugün ders yok
+            <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-8 text-center">
+              <div className="text-sm font-semibold text-slate-700">Bugün ders yok</div>
+              <div className="mt-1 text-xs text-slate-400">Dinlenme günü, tadını çıkar.</div>
             </div>
           ) : (
             todaysCourses.map((c) => (

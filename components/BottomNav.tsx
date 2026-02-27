@@ -47,8 +47,8 @@ export default function BottomNav() {
               href={tab.href}
               className={`flex flex-col items-center gap-1 rounded-2xl px-3 py-2 text-[10px] font-semibold transition-all ${
                 active
-                  ? "bg-slate-900 text-white"
-                  : "text-slate-400 hover:text-slate-600"
+                  ? "bg-indigo-600 text-white"
+                  : "text-slate-400 hover:text-slate-700"
               }`}
             >
               {tab.icon}

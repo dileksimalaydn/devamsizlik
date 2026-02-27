@@ -53,8 +53,8 @@ export default function LoginPage() {
     <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center px-4 py-12">
       {/* Logo */}
       <div className="mb-8 flex flex-col items-center gap-3">
-        <div className="grid h-16 w-16 place-items-center rounded-3xl bg-white shadow-lg">
-          <GraduationCap size={32} className="text-slate-900" />
+        <div className="grid h-16 w-16 place-items-center rounded-3xl bg-indigo-600 shadow-lg shadow-indigo-900/30">
+          <GraduationCap size={32} className="text-white" />
         </div>
         <div className="text-center">
           <h1 className="text-2xl font-extrabold tracking-tight text-white">

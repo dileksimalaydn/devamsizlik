@@ -11,7 +11,7 @@ interface AppHeaderProps {
 }
 
 export default function AppHeader({
-  title = "Attendance Tracker",
+  title = "yoklama",
   left,
   right,
 }: AppHeaderProps) {
@@ -25,7 +25,7 @@ export default function AppHeader({
             left
           ) : (
             <Link href="/dashboard" className="flex items-center gap-2">
-              <div className="grid h-9 w-9 place-items-center rounded-2xl bg-slate-900 text-white shadow-sm">
+              <div className="grid h-9 w-9 place-items-center rounded-2xl bg-indigo-600 text-white shadow-sm">
                 <GraduationCap size={18} />
               </div>
               <div className="text-sm font-extrabold text-slate-900 tracking-tight">
