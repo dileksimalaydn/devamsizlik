@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import React from "react";
+import { GraduationCap } from "lucide-react";
 
 interface AppHeaderProps {
   title?: string;
@@ -25,7 +26,7 @@ export default function AppHeader({
           ) : (
             <Link href="/dashboard" className="flex items-center gap-2">
               <div className="grid h-9 w-9 place-items-center rounded-2xl bg-slate-900 text-white shadow-sm">
-                🎓
+                <GraduationCap size={18} />
               </div>
               <div className="text-sm font-extrabold text-slate-900 tracking-tight">
                 {title}

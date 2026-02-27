@@ -16,6 +16,7 @@ export default function DashboardPage() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [attendance, setAttendance] = useState<Record<string, number>>({});
   const [selectedDate, setSelectedDate] = useState<string>(todayISO());
+  const [loading, setLoading] = useState(true);
 
   const [sheetOpen, setSheetOpen] = useState(false);
   const [sheetCourse, setSheetCourse] = useState<Course | null>(null);
@@ -40,6 +41,7 @@ export default function DashboardPage() {
         .order("start", { ascending: true });
 
       if (!error && data) setCourses(data as Course[]);
+      setLoading(false);
     };
     loadCourses();
   }, [router]);
@@ -83,7 +85,7 @@ export default function DashboardPage() {
 
   const isToday = selectedDate === todayISO();
   const goPrev = () => setSelectedDate((d) => addDays(d, -1));
-  const goNext = () => setSelectedDate((d) => addDays(d, +1));
+  const goNext = () => { if (!isToday) setSelectedDate((d) => addDays(d, +1)); };
   const goToday = () => setSelectedDate(todayISO());
 
   const missedFor = (c: Course) => (c.id ? (attendance[c.id] ?? 0) : 0);
@@ -171,8 +173,8 @@ export default function DashboardPage() {
               
             </div>
             <div className="text-left">
-              <div className="text-sm font-bold text-slate-900">Weekly Schedule</div>
-              <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">View Full Grid</div>
+              <div className="text-sm font-bold text-slate-900">Haftalık Program</div>
+              <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Tüm Programı Gör</div>
             </div>
           </div>
           <span className="text-slate-300 group-hover:text-slate-900 transition-colors pr-2">›</span>
@@ -206,9 +208,10 @@ export default function DashboardPage() {
             </div>
           </div>
           
-          <button 
-            onClick={goNext} 
-            className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-200 text-slate-900 font-bold hover:bg-slate-300 transition-colors"
+          <button
+            onClick={goNext}
+            disabled={isToday}
+            className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-200 text-slate-900 font-bold hover:bg-slate-300 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
             ›
           </button>
@@ -216,9 +219,23 @@ export default function DashboardPage() {
 
         {/* Ders Listesi */}
         <div className="mt-4 space-y-3">
-          {todaysCourses.length === 0 ? (
+          {loading ? (
+            [1, 2, 3].map((i) => (
+              <div key={i} className="rounded-3xl bg-white p-4 shadow-sm border border-slate-100 animate-pulse">
+                <div className="flex items-start gap-3">
+                  <div className="h-10 w-2 rounded-full bg-slate-200" />
+                  <div className="flex-1 space-y-2 pt-1">
+                    <div className="h-4 w-2/3 rounded-full bg-slate-200" />
+                    <div className="h-3 w-1/3 rounded-full bg-slate-100" />
+                    <div className="h-3 w-1/4 rounded-full bg-slate-100" />
+                  </div>
+                  <div className="h-9 w-16 rounded-2xl bg-slate-200" />
+                </div>
+              </div>
+            ))
+          ) : todaysCourses.length === 0 ? (
             <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm font-semibold text-slate-900">
-              Bugün ders yok 🥳✨
+              Bugün ders yok
             </div>
           ) : (
             todaysCourses.map((c) => (
@@ -228,7 +245,6 @@ export default function DashboardPage() {
                 missed={missedFor(c)}
                 onOpenMissed={() => openMissed(c)}
                 onClearMissed={() => clearMissed(c)}
-                // ✅ onDelete PROP'UNU SİLDİK, ÇÖP KUTUSU GİTTİ!
               />
             ))
           )}

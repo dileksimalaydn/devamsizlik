@@ -7,6 +7,15 @@ function fixNegZero(n: number) {
   return Object.is(n, -0) ? 0 : n;
 }
 
+function formatDuration(blocks: number): string {
+  const totalMin = blocks * 45 + Math.max(0, blocks - 1) * 10;
+  const h = Math.floor(totalMin / 60);
+  const m = totalMin % 60;
+  if (h === 0) return `${m} dk`;
+  if (m === 0) return `${h} saat`;
+  return `${h}s ${m}dk`;
+}
+
 // Props tipini dışarıda tanımlayalım ki daha temiz olsun
 interface CourseCardProps {
   course: Course;
@@ -55,7 +64,7 @@ export default function CourseCard({
           <div>
             <div className="text-base font-bold text-slate-900">
               {course.course_name} <span className="text-slate-400">•</span>{" "}
-              {course.blocks} blok
+              {formatDuration(course.blocks)}
             </div>
 
             <div className="mt-1 text-sm text-slate-600">

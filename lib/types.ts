@@ -9,3 +9,9 @@ export type Course = {
 };
 
 export type AttendanceMap = Record<string, number>;
+
+export type AttendanceRecord = {
+  course_id: string;
+  date: string;
+  missed_blocks: number;
+};
