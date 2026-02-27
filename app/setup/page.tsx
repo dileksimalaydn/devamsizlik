@@ -69,13 +69,25 @@ export default function SetupPage() {
       return;
     }
 
-    const newStartIdx = slotTimes.indexOf(start);
+    // Saatleri 08:30 formatına getirmek için yardımcı fonksiyon
+    const normalize = (t: string) => (t ? t.substring(0, 5) : "");
+
+    const newStartStr = normalize(start);
+    const newStartIdx = slotTimes.indexOf(newStartStr);
     const newEndIdx = newStartIdx + blocks;
 
+    // Çakışma Kontrolü (Fixlendi)
     const collision = myCourses.find((existing) => {
       if (existing.day !== day) return false;
-      const existStartIdx = slotTimes.indexOf(existing.start);
-      const existEndIdx = existStartIdx + existing.blocks;
+      
+      const existStartStr = normalize(existing.start);
+      const existStartIdx = slotTimes.indexOf(existStartStr);
+      
+      if (existStartIdx === -1) return false; 
+      
+      const existEndIdx = existStartIdx + Number(existing.blocks);
+      
+      // Matematiksel çakışma kontrolü: Başlangıçlar ve bitişler birbirinin içine giriyor mu?
       return newStartIdx < existEndIdx && newEndIdx > existStartIdx;
     });
 
@@ -128,7 +140,8 @@ export default function SetupPage() {
     "w-full rounded-2xl border border-slate-300 bg-slate-50 px-3 py-3 text-sm font-medium text-slate-900 outline-none placeholder:text-slate-400 focus:bg-white focus:border-slate-500 focus:ring-4 focus:ring-slate-100 transition";
 
   return (
-    <main className="min-h-screen bg-slate-50 pb-24">
+    // pb-32 yaparak alt menünün derslerin üstüne binmesini engelledik
+    <main className="min-h-screen bg-slate-50 pb-32">
       <AppHeader
         title="Ders Ekle"
         right={

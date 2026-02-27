@@ -13,11 +13,11 @@ import { supabase } from "@/lib/supabaseClient";
 const WEEKS = 14;
 
 function calcLimit(sessions: Course[]): number {
-  // Teorik ve lab saatlerini ayrı hesapla, sonra topla
-  const teorikBlocks = sessions.filter(s => s.course_type !== "lab").reduce((sum, s) => sum + s.blocks, 0);
-  const labBlocks = sessions.filter(s => s.course_type === "lab").reduce((sum, s) => sum + s.blocks, 0);
-  const limit = Math.round(teorikBlocks * WEEKS * 0.30) + Math.round(labBlocks * WEEKS * 0.20);
-  return Math.max(1, limit);
+  // Gruptaki tüm sessionlar aynı tipte (teorik veya lab) — ayrı gruplandığı için
+  const type = sessions[0]?.course_type || "teorik";
+  const ratio = type === "lab" ? 0.20 : 0.30;
+  const totalBlocks = sessions.reduce((sum, s) => sum + s.blocks, 0);
+  return Math.max(1, Math.round(totalBlocks * WEEKS * ratio));
 }
 
 function fixNegZero(n: number) {
@@ -38,6 +38,7 @@ function riskMeta(missed: number, limit: number) {
 type GroupData = {
   groupKey: string;
   displayName: string;
+  courseType: "teorik" | "lab";
   missed: number;
   limit: number;
   sessions: Course[];
@@ -70,14 +71,16 @@ export default function SummaryPage() {
   const totals = useMemo<GroupData[]>(() => {
     const groups: Record<
       string,
-      { displayName: string; missed: number; sessions: Course[]; records: AttendanceRecord[] }
+      { displayName: string; courseType: "teorik" | "lab"; missed: number; sessions: Course[]; records: AttendanceRecord[] }
     > = {};
 
     for (const c of courses) {
       const rawName = c.course_name || "Adsız Ders";
-      const g = normalizeCourseName(rawName);
+      const type = c.course_type || "teorik";
+      // Teorik ve lab ayrı gruplar — ikisi birbirinden bağımsız değerlendirilir
+      const g = normalizeCourseName(rawName) + ":" + type;
       if (!groups[g]) {
-        groups[g] = { displayName: rawName.trim(), missed: 0, sessions: [], records: [] };
+        groups[g] = { displayName: rawName.trim(), courseType: type, missed: 0, sessions: [], records: [] };
       }
       groups[g].sessions.push(c);
     }
@@ -85,7 +88,8 @@ export default function SummaryPage() {
     for (const record of attendanceRecords) {
       const relatedCourse = courses.find((c) => String(c.id) === String(record.course_id));
       if (!relatedCourse) continue;
-      const g = normalizeCourseName(relatedCourse.course_name);
+      const type = relatedCourse.course_type || "teorik";
+      const g = normalizeCourseName(relatedCourse.course_name) + ":" + type;
       if (groups[g]) {
         groups[g].missed += Number(record.missed_blocks) || 0;
         groups[g].records.push(record);
@@ -99,7 +103,12 @@ export default function SummaryPage() {
         missed: fixNegZero(val.missed),
         limit: calcLimit(val.sessions),
       }))
-      .sort((a, b) => a.displayName.localeCompare(b.displayName, "tr"));
+      .sort((a, b) => {
+        const nameComp = a.displayName.localeCompare(b.displayName, "tr");
+        if (nameComp !== 0) return nameComp;
+        // Aynı isimde teorik önce, lab sonra
+        return a.courseType === "teorik" ? -1 : 1;
+      });
   }, [courses, attendanceRecords]);
 
   const expandedGroupData = expandedGroup
@@ -188,7 +197,16 @@ export default function SummaryPage() {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <div className="text-sm font-semibold text-slate-900">{g.displayName}</div>
+                      <div className="flex items-center gap-2">
+                        <div className="text-sm font-semibold text-slate-900">{g.displayName}</div>
+                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
+                          g.courseType === "lab"
+                            ? "bg-violet-100 text-violet-700"
+                            : "bg-sky-100 text-sky-700"
+                        }`}>
+                          {g.courseType === "lab" ? "LAB" : "TEORİK"}
+                        </span>
+                      </div>
                       <div className="mt-1">
                         <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${r.badge}`}>
                           {r.label}
