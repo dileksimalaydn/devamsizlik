@@ -9,13 +9,15 @@ import type { Course, AttendanceRecord } from "@/lib/types";
 import { normalizeCourseName } from "@/lib/normalize";
 import { supabase } from "@/lib/supabaseClient";
 
-// Türk üniversitelerinde standart dönem = 14 hafta, limit = toplam saatin %30'u
+// IEU kuralı: teorik %30, lab %20 devamsızlık hakkı (14 haftalık dönem)
 const WEEKS = 14;
-const ABSENCE_RATIO = 0.30;
 
 function calcLimit(sessions: Course[]): number {
-  const totalWeeklyBlocks = sessions.reduce((sum, s) => sum + s.blocks, 0);
-  return Math.max(1, Math.round(totalWeeklyBlocks * WEEKS * ABSENCE_RATIO));
+  // Teorik ve lab saatlerini ayrı hesapla, sonra topla
+  const teorikBlocks = sessions.filter(s => s.course_type !== "lab").reduce((sum, s) => sum + s.blocks, 0);
+  const labBlocks = sessions.filter(s => s.course_type === "lab").reduce((sum, s) => sum + s.blocks, 0);
+  const limit = Math.round(teorikBlocks * WEEKS * 0.30) + Math.round(labBlocks * WEEKS * 0.20);
+  return Math.max(1, limit);
 }
 
 function fixNegZero(n: number) {
@@ -212,7 +214,7 @@ export default function SummaryPage() {
 
             {/* Alt not */}
             <p className="text-center text-[10px] text-slate-400 pb-2">
-              Limitler {WEEKS} haftalık dönem, %{Math.round(ABSENCE_RATIO * 100)} devamsızlık kuralına göre hesaplanır.
+              Teorik %30 · Lab %20 · {WEEKS} haftalık dönem (IEU)
             </p>
           </div>
         )}

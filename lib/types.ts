@@ -1,11 +1,12 @@
 export type Course = {
-  id: string; // Supabase'den her zaman id gelir
-  user_id: string; // Kimin dersi olduğunu bilmemiz lazım
-  course_name: string; // ✅ Alt tireli olmalı (DB ile aynı)
+  id: string;
+  user_id: string;
+  course_name: string;
   day: string;
   start: string;
   end: string;
   blocks: number;
+  course_type: "teorik" | "lab"; // teorik: %30, lab: %20 devamsızlık hakkı
 };
 
 export type AttendanceMap = Record<string, number>;

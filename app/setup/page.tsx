@@ -40,6 +40,7 @@ export default function SetupPage() {
   const [day, setDay] = useState(DAYS[0]);
   const [start, setStart] = useState(slotTimes[0] ?? "08:30");
   const [blocks, setBlocks] = useState(1);
+  const [courseType, setCourseType] = useState<"teorik" | "lab">("teorik");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [myCourses, setMyCourses] = useState<Course[]>([]);
@@ -100,6 +101,7 @@ export default function SetupPage() {
       start,
       end,
       blocks,
+      course_type: courseType,
     });
 
     setSaving(false);
@@ -111,6 +113,7 @@ export default function SetupPage() {
 
     setCourseName("");
     setBlocks(1);
+    setCourseType("teorik");
     loadCourses();
   };
 
@@ -154,6 +157,37 @@ export default function SetupPage() {
                 onChange={(e) => { setCourseName(e.target.value); setSaveError(null); }}
                 className={field}
               />
+            </div>
+
+            {/* Teorik / Lab toggle */}
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-slate-800">Ders Türü</label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCourseType("teorik")}
+                  className={`rounded-2xl border py-3 text-sm font-semibold transition-all ${
+                    courseType === "teorik"
+                      ? "bg-slate-900 text-white border-slate-900"
+                      : "bg-slate-50 text-slate-500 border-slate-300"
+                  }`}
+                >
+                  Teorik
+                  <span className="block text-[10px] font-normal opacity-70">%30 devamsızlık hakkı</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCourseType("lab")}
+                  className={`rounded-2xl border py-3 text-sm font-semibold transition-all ${
+                    courseType === "lab"
+                      ? "bg-slate-900 text-white border-slate-900"
+                      : "bg-slate-50 text-slate-500 border-slate-300"
+                  }`}
+                >
+                  Lab / Uygulama
+                  <span className="block text-[10px] font-normal opacity-70">%20 devamsızlık hakkı</span>
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -230,7 +264,16 @@ export default function SetupPage() {
               >
                 <div className="flex items-center justify-between p-4">
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-sm font-extrabold text-slate-900">{c.course_name}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-extrabold text-slate-900">{c.course_name}</span>
+                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
+                        c.course_type === "lab"
+                          ? "bg-violet-100 text-violet-700"
+                          : "bg-sky-100 text-sky-700"
+                      }`}>
+                        {c.course_type === "lab" ? "LAB" : "TEORİK"}
+                      </span>
+                    </div>
                     <span className="text-[10px] font-medium text-slate-500 uppercase tracking-tighter">
                       {c.day} • {c.start} – {c.end} ({c.blocks} blok)
                     </span>
