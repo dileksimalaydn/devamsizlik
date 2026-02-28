@@ -1,7 +1,29 @@
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
 import { NextResponse } from "next/server";
+import { timingSafeEqual } from "crypto";
 import type { Course } from "@/lib/types";
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;");
+}
+
+function safeAppUrl(raw: string | undefined): string {
+  try {
+    const url = new URL(raw ?? "");
+    if (url.protocol !== "https:" && url.protocol !== "http:") {
+      throw new Error("invalid protocol");
+    }
+    return url.toString();
+  } catch {
+    return "https://yoklama.vercel.app";
+  }
+}
 
 const TURKISH_DAYS = [
   "Pazar",
@@ -20,8 +42,21 @@ function getLimit(course: Course): number {
 
 export async function GET(req: Request) {
   // Vercel cron SECRET doğrulaması
-  const authHeader = req.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const secret = process.env.CRON_SECRET;
+  if (!secret) {
+    console.error("CRON_SECRET env değişkeni tanımlı değil");
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  const authHeader = req.headers.get("authorization") ?? "";
+  const expected = `Bearer ${secret}`;
+
+  // Timing-safe karşılaştırma (brute-force / timing attack önlemi)
+  const equal =
+    authHeader.length === expected.length &&
+    timingSafeEqual(Buffer.from(authHeader), Buffer.from(expected));
+
+  if (!equal) {
     return new Response("Unauthorized", { status: 401 });
   }
 
@@ -103,7 +138,7 @@ export async function GET(req: Request) {
         missedByCourse,
         todayDay,
         todayStr,
-        appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "https://yoklama.vercel.app",
+        appUrl: safeAppUrl(process.env.NEXT_PUBLIC_APP_URL),
       });
 
       await resend.emails.send({
@@ -162,10 +197,11 @@ function buildEmailHtml({
         const missed = missedByCourse[c.id] || 0;
         const remaining = limit - missed;
         const pct = Math.min(100, Math.round((missed / limit) * 100));
+        const name = escapeHtml(c.course_name);
         return `
         <tr>
           <td style="padding:12px 0;border-bottom:1px solid #fed7aa;">
-            <div style="color:#111827;font-size:14px;font-weight:600;">${c.course_name}</div>
+            <div style="color:#111827;font-size:14px;font-weight:600;">${name}</div>
             <div style="color:#9a3412;font-size:13px;margin-top:3px;">
               ${missed} / ${limit} saat kullanıldı — <strong>${remaining} saat kaldı</strong>
             </div>
@@ -187,13 +223,16 @@ function buildEmailHtml({
 
   if (todayCourses.length > 0) {
     const rows = todayCourses
-      .map(
-        (c) => `
+      .map((c) => {
+        const name = escapeHtml(c.course_name);
+        const start = escapeHtml(c.start);
+        const end = escapeHtml(c.end);
+        return `
       <tr style="border-bottom:1px solid #e5e7eb;">
-        <td style="padding:10px 0;color:#111827;font-size:14px;">${c.course_name}</td>
-        <td style="padding:10px 0;color:#6b7280;font-size:13px;text-align:right;">${c.start} – ${c.end}</td>
-      </tr>`
-      )
+        <td style="padding:10px 0;color:#111827;font-size:14px;">${name}</td>
+        <td style="padding:10px 0;color:#6b7280;font-size:13px;text-align:right;">${start} – ${end}</td>
+      </tr>`;
+      })
       .join("");
 
     content += `
