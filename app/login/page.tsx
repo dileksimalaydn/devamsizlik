@@ -17,8 +17,10 @@ export default function LoginPage() {
   const [isReset, setIsReset] = useState(false);
 
   useEffect(() => {
-    const hash = window.location.hash;
-    if (hash.includes("type=recovery")) setIsReset(true);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") setIsReset(true);
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   async function handleResetPassword() {
