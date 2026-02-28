@@ -27,7 +27,7 @@ function calcEnd(startHHMM: string, blocks: number) {
 
 export default function SetupPage() {
   const router = useRouter();
-  const DAYS = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma"];
+  const DAYS = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
 
   const slotTimes = useMemo(() => {
     const first = toMinutes("08:30");
