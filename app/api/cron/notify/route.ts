@@ -165,7 +165,7 @@ function buildSubject(todayCourses: Course[], warningCourses: Course[]): string 
   if (warningCourses.length > 0) {
     return `⚠️ ${warningCourses.length} dersinde devamsızlık sınırına yaklaşıyorsun`;
   }
-  return `📚 Bugün ${todayCourses.length} ders var — devamsızlık kaydettiniz mi?`;
+  return `📚 Bugün ${todayCourses.length} ders var — devamsızlık kaydettin mi?`;
 }
 
 function buildEmailHtml({
@@ -253,7 +253,7 @@ function buildEmailHtml({
   <div style="max-width:560px;margin:32px auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08);">
 
     <div style="background:#111827;padding:28px 24px;text-align:center;">
-      <div style="font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">Yoklama</div>
+      <div style="font-size:22px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;">Devamsızlık</div>
       <div style="font-size:13px;color:#9ca3af;margin-top:4px;">Günlük devamsızlık hatırlatması</div>
     </div>
 
@@ -269,7 +269,7 @@ function buildEmailHtml({
 
     <div style="background:#f9fafb;border-top:1px solid #e5e7eb;padding:16px 24px;text-align:center;">
       <p style="margin:0;color:#9ca3af;font-size:12px;">
-        Bu emaili Yoklama uygulaması gönderdi.
+        Bu emaili Devamsızlık uygulaması gönderdi.
       </p>
     </div>
 
