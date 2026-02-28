@@ -10,8 +10,15 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       const { data } = await supabase.auth.getSession();
-      if (data.session) router.replace("/dashboard");
-      else router.replace("/login");
+      if (data.session) {
+        const res = await fetch("/api/admin/check", {
+          headers: { Authorization: `Bearer ${data.session.access_token}` },
+        });
+        const { isAdmin } = await res.json();
+        router.replace(isAdmin ? "/admin" : "/dashboard");
+      } else {
+        router.replace("/login");
+      }
     })();
   }, [router]);
 
