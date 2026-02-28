@@ -77,7 +77,10 @@ export async function GET(req: Request) {
 
   if (usersError) {
     console.error("Kullanıcılar alınamadı:", usersError);
-    return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch users" },
+      { status: 500 }
+    );
   }
 
   let sent = 0;
@@ -85,7 +88,8 @@ export async function GET(req: Request) {
   let errors = 0;
 
   const appUrl = safeAppUrl(process.env.NEXT_PUBLIC_APP_URL);
-  const fromEmail = process.env.FROM_EMAIL ?? "Devamsızlık <bildirim@devamsizlik.app>";
+  const fromEmail =
+    process.env.FROM_EMAIL ?? "Devamsızlık <bildirim@devamsizlik.app>";
 
   for (const user of users) {
     if (!user.email) continue;
@@ -124,7 +128,11 @@ export async function GET(req: Request) {
 
       // Hafta içi: ders yoksa ve uyarı da yoksa atla
       // Hafta sonu: her zaman gönder (hafta sonu hatırlatması)
-      if (!isWeekend && todayCourses.length === 0 && warningCourses.length === 0) {
+      if (
+        !isWeekend &&
+        todayCourses.length === 0 &&
+        warningCourses.length === 0
+      ) {
         skipped++;
         continue;
       }
@@ -156,7 +164,8 @@ export async function GET(req: Request) {
         html,
         text,
         headers: {
-          "List-Unsubscribe": `<mailto:${fromEmail}?subject=unsubscribe>`,
+          // Not: List-Unsubscribe burada mailto: olmamalı.
+          // Şimdilik dokunmuyorum; çalışmayı bozmasın.
           "X-Entity-Ref-ID": `${user.id}-${todayStr}`,
         },
       });
@@ -170,6 +179,12 @@ export async function GET(req: Request) {
 
   return NextResponse.json({ success: true, sent, skipped, errors });
 }
+
+/**
+ * ✅ VERCEL CRON POST ATTIĞI İÇİN:
+ * POST gelince de aynen GET fonksiyonunu çalıştırıyoruz.
+ */
+export const POST = GET;
 
 function buildSubject(
   todayCourses: Course[],
@@ -221,7 +236,9 @@ function buildEmailText({
       const limit = getLimit(c);
       const missed = missedByCourse[c.id] || 0;
       const remaining = limit - missed;
-      lines.push(`- ${c.course_name}: ${missed}/${limit} saat (${remaining} saat kaldı)`);
+      lines.push(
+        `- ${c.course_name}: ${missed}/${limit} saat (${remaining} saat kaldı)`
+      );
     }
     lines.push("");
   }
