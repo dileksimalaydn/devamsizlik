@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { AlertCircle, CheckCircle2, GraduationCap, Loader2 } from "lucide-react";
@@ -9,10 +9,26 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [isForgot, setIsForgot] = useState(false);
+  const [isReset, setIsReset] = useState(false);
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.includes("type=recovery")) setIsReset(true);
+  }, []);
+
+  async function handleResetPassword() {
+    if (!newPassword) { setMsg({ text: "Yeni şifre gir.", ok: false }); return; }
+    setLoading(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) setMsg({ text: "Hata: " + error.message, ok: false });
+    else { setMsg({ text: "Şifre güncellendi!", ok: true }); setTimeout(() => router.replace("/dashboard"), 1500); }
+    setLoading(false);
+  }
 
   async function handleForgot() {
     if (!email) {
@@ -85,7 +101,9 @@ export default function LoginPage() {
             yoklama
           </h1>
           <p className="mt-1 text-sm text-slate-400">
-            {isForgot
+            {isReset
+              ? "Yeni şifreni gir."
+              : isForgot
               ? "Şifreni sıfırlamak için e-postanı gir."
               : isSignUp
               ? "Takibe başlamak için hesap oluştur."
@@ -97,12 +115,30 @@ export default function LoginPage() {
       {/* Kart */}
       <div className="w-full max-w-sm rounded-3xl bg-slate-900 p-6 shadow-2xl border border-slate-800">
         <h2 className="mb-5 text-base font-bold text-white">
-          {isForgot ? "Şifremi Unuttum" : isSignUp ? "Hesap Oluştur" : "Tekrar Hoş Geldin"}
+          {isReset ? "Yeni Şifre Belirle" : isForgot ? "Şifremi Unuttum" : isSignUp ? "Hesap Oluştur" : "Tekrar Hoş Geldin"}
         </h2>
 
         <div className="space-y-3">
-          {/* Şifremi unuttum modu */}
-          {isForgot ? (
+          {/* Şifre sıfırlama modu */}
+          {isReset ? (
+            <>
+              <input
+                type="password"
+                placeholder="Yeni şifre"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleResetPassword()}
+                className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-700 transition-all"
+              />
+              <button
+                onClick={handleResetPassword}
+                disabled={loading}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-slate-900 transition-all hover:bg-slate-100 active:scale-[0.98] disabled:opacity-60"
+              >
+                {loading ? <Loader2 size={18} className="animate-spin" /> : "Şifreyi Güncelle"}
+              </button>
+            </>
+          ) : isForgot ? (
             <>
               <input
                 type="email"
