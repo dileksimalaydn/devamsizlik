@@ -37,8 +37,7 @@ export default function WeeklyPage() {
 
   return (
     <main className="min-h-screen bg-white pb-24 text-slate-900">
-      <AppHeader 
-        title="Haftalık Program" 
+      <AppHeader
         left={<button onClick={() => router.push('/dashboard')} className="p-2 text-2xl">‹</button>} 
       />
 

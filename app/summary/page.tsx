@@ -121,7 +121,7 @@ export default function SummaryPage() {
 
   return (
     <main className="min-h-screen bg-slate-50 pb-24">
-      <AppHeader title="Devamsızlıklar" />
+      <AppHeader />
 
       <div className="mx-auto max-w-md px-4 pt-4 space-y-3">
 

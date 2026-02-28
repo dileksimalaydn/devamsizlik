@@ -143,7 +143,6 @@ export default function SetupPage() {
     // pb-32 yaparak alt menünün derslerin üstüne binmesini engelledik
     <main className="min-h-screen bg-slate-50 pb-32">
       <AppHeader
-        title="Ders Ekle"
         right={
           <a
             href="/dashboard"
