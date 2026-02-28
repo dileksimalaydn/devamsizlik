@@ -89,7 +89,15 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Admin Panel</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Admin Panel</h1>
+        <button
+          onClick={async () => { await supabase.auth.signOut(); router.replace("/login"); }}
+          className="text-sm text-slate-400 hover:text-white transition-colors"
+        >
+          Çıkış Yap
+        </button>
+      </div>
 
       {/* İstatistik kartları */}
       <div className="grid grid-cols-3 gap-3">
