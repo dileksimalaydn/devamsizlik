@@ -6,7 +6,8 @@ export type Course = {
   start: string;
   end: string;
   blocks: number;
-  course_type: "teorik" | "lab"; // teorik: %30, lab: %20 devamsızlık hakkı
+  course_type: "teorik" | "lab";
+  custom_limit?: number | null;
 };
 
 export type AttendanceMap = Record<string, number>;

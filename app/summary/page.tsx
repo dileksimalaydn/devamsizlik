@@ -13,7 +13,10 @@ import { supabase } from "@/lib/supabaseClient";
 const WEEKS = 14;
 
 function calcLimit(sessions: Course[]): number {
-  // Gruptaki tüm sessionlar aynı tipte (teorik veya lab) — ayrı gruplandığı için
+  // Eğer herhangi bir session'da custom_limit varsa onu kullan
+  const customLimits = sessions.map(s => s.custom_limit).filter(Boolean) as number[];
+  if (customLimits.length > 0) return customLimits[0];
+  // Yoksa otomatik hesapla
   const type = sessions[0]?.course_type || "teorik";
   const ratio = type === "lab" ? 0.20 : 0.30;
   const totalBlocks = sessions.reduce((sum, s) => sum + s.blocks, 0);

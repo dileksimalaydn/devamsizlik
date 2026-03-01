@@ -42,6 +42,7 @@ export default function SetupPage() {
   const [start, setStart] = useState(slotTimes[0] ?? "08:30");
   const [blocks, setBlocks] = useState(1);
   const [courseType, setCourseType] = useState<"teorik" | "lab">("teorik");
+  const [customLimit, setCustomLimit] = useState<string>("");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [myCourses, setMyCourses] = useState<Course[]>([]);
@@ -115,6 +116,7 @@ export default function SetupPage() {
       end,
       blocks,
       course_type: courseType,
+      custom_limit: customLimit ? parseInt(customLimit) : null,
     });
 
     setSaving(false);
@@ -127,6 +129,7 @@ export default function SetupPage() {
     setCourseName("");
     setBlocks(1);
     setCourseType("teorik");
+    setCustomLimit("");
     loadCourses();
   };
 
@@ -238,6 +241,22 @@ export default function SetupPage() {
                   <div className="mt-1 text-[11px] text-slate-500">Otomatik hesaplanır</div>
                 </div>
               </div>
+            </div>
+
+            {/* Özel limit */}
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-slate-800">
+                Devamsızlık Limiti (saat)
+                <span className="ml-1 font-normal text-slate-400">— boş bırakırsan otomatik hesaplanır</span>
+              </label>
+              <input
+                type="number"
+                min={1}
+                placeholder="Örn: 6"
+                value={customLimit}
+                onChange={(e) => { setCustomLimit(e.target.value); setSaveError(null); }}
+                className={field}
+              />
             </div>
 
             {/* Hata mesajı */}
