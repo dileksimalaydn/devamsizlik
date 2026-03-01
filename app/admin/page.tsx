@@ -9,6 +9,8 @@ type UserRow = {
   email?: string;
   created_at: string;
   last_sign_in_at?: string;
+  course_count: number;
+  attendance_count: number;
 };
 
 type OnlineUser = {
@@ -18,79 +20,113 @@ type OnlineUser = {
   online_at: string;
 };
 
+type CourseRow = {
+  course_name: string;
+  day: string;
+  start: string;
+  end: string;
+  blocks: number;
+  course_type: string;
+};
+
 export default function AdminPage() {
   const router = useRouter();
   const [users, setUsers] = useState<UserRow[]>([]);
   const [online, setOnline] = useState<OnlineUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [selectedUser, setSelectedUser] = useState<UserRow | null>(null);
+  const [userCourses, setUserCourses] = useState<CourseRow[]>([]);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [token, setToken] = useState<string>("");
 
-  // Kullanıcı listesini yükle
+  async function loadUsers(t: string) {
+    const res = await fetch("/api/admin/users", {
+      headers: { Authorization: `Bearer ${t}` },
+    });
+    if (res.status === 401) { router.replace("/login"); return; }
+    if (res.status === 403) { router.replace("/"); return; }
+    if (!res.ok) { setError("Sunucu hatası."); setLoading(false); return; }
+    const data = await res.json();
+    setUsers(data.users);
+    setLoading(false);
+  }
+
   useEffect(() => {
-    async function load() {
+    (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) { router.replace("/login"); return; }
-
-      const res = await fetch("/api/admin/users", {
-        headers: { Authorization: `Bearer ${session.access_token}` },
-      });
-
-      if (res.status === 401) { router.replace("/login"); return; }
-      if (res.status === 403) { router.replace("/"); return; }
-      if (!res.ok) { setError("Sunucu hatası."); setLoading(false); return; }
-
-      const data = await res.json();
-      setUsers(data.users);
-      setLoading(false);
-    }
-    load();
+      setToken(session.access_token);
+      await loadUsers(session.access_token);
+    })();
   }, [router]);
 
-  // Realtime presence — kim online
+  // Realtime presence
   useEffect(() => {
     const channel = supabase.channel("app-presence");
-
     channel
       .on("presence", { event: "sync" }, () => {
         const state = channel.presenceState<OnlineUser>();
-        const list = Object.values(state).flat();
-        setOnline(list);
+        setOnline(Object.values(state).flat());
       })
       .subscribe();
-
     return () => { supabase.removeChannel(channel); };
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">
-        Yükleniyor...
-      </div>
-    );
+  async function openDetail(user: UserRow) {
+    setSelectedUser(user);
+    setUserCourses([]);
+    setDetailLoading(true);
+    const res = await fetch(`/api/admin/user-detail?id=${user.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setUserCourses(data.courses);
+    }
+    setDetailLoading(false);
   }
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center text-rose-400">
-        Hata: {error}
-      </div>
-    );
+  async function handleDelete(userId: string) {
+    const res = await fetch(`/api/admin/users?id=${userId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
+      if (selectedUser?.id === userId) setSelectedUser(null);
+    }
+    setDeletingId(null);
   }
 
-  const today = new Date().toDateString();
-  const todayCount = users.filter(
-    (u) => u.last_sign_in_at && new Date(u.last_sign_in_at).toDateString() === today
-  ).length;
+  if (loading) return (
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">Yükleniyor...</div>
+  );
+  if (error) return (
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center text-rose-400">Hata: {error}</div>
+  );
 
-  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-  const weekCount = users.filter(
-    (u) => u.last_sign_in_at && new Date(u.last_sign_in_at) >= weekAgo
-  ).length;
+  const now = new Date();
+  const today = now.toDateString();
+  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+  const todayCount = users.filter((u) => u.last_sign_in_at && new Date(u.last_sign_in_at).toDateString() === today).length;
+  const weekCount = users.filter((u) => u.last_sign_in_at && new Date(u.last_sign_in_at) >= weekAgo).length;
+  const monthCount = users.filter((u) => u.last_sign_in_at && new Date(u.last_sign_in_at) >= monthAgo).length;
+
+  const filtered = users.filter((u) =>
+    !search || (u.email ?? "").toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-6 space-y-6">
+    <div className="min-h-screen bg-slate-950 text-white p-4 md:p-6 space-y-5">
+
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Admin Panel</h1>
+        <h1 className="text-xl font-bold">Admin Panel</h1>
         <button
           onClick={async () => { await supabase.auth.signOut(); router.replace("/"); }}
           className="text-sm text-slate-400 hover:text-white transition-colors"
@@ -99,23 +135,22 @@ export default function AdminPage() {
         </button>
       </div>
 
-      {/* İstatistik kartları */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-2xl bg-slate-900 border border-slate-800 p-4">
-          <p className="text-xs text-slate-400 mb-1">Toplam Kullanıcı</p>
-          <p className="text-3xl font-bold">{users.length}</p>
-        </div>
-        <div className="rounded-2xl bg-slate-900 border border-slate-800 p-4">
-          <p className="text-xs text-slate-400 mb-1">Bugün Aktif</p>
-          <p className="text-3xl font-bold text-indigo-400">{todayCount}</p>
-        </div>
-        <div className="rounded-2xl bg-slate-900 border border-slate-800 p-4">
-          <p className="text-xs text-slate-400 mb-1">Son 7 Gün</p>
-          <p className="text-3xl font-bold text-emerald-400">{weekCount}</p>
-        </div>
+      {/* İstatistikler */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { label: "Toplam", value: users.length, color: "text-white" },
+          { label: "Bugün Aktif", value: todayCount, color: "text-indigo-400" },
+          { label: "Son 7 Gün", value: weekCount, color: "text-emerald-400" },
+          { label: "Son 30 Gün", value: monthCount, color: "text-amber-400" },
+        ].map(({ label, value, color }) => (
+          <div key={label} className="rounded-2xl bg-slate-900 border border-slate-800 p-4">
+            <p className="text-xs text-slate-400 mb-1">{label}</p>
+            <p className={`text-3xl font-bold ${color}`}>{value}</p>
+          </div>
+        ))}
       </div>
 
-      {/* Şu an online */}
+      {/* Online */}
       <div className="rounded-2xl border border-slate-800 overflow-hidden">
         <div className="bg-slate-900 px-4 py-3 flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -131,47 +166,100 @@ export default function AdminPage() {
                   <p className="text-sm font-medium">{u.email}</p>
                   <p className="text-xs text-slate-400">{u.page}</p>
                 </div>
-                <span className="text-xs text-slate-500">
-                  {new Date(u.online_at).toLocaleTimeString("tr-TR")}
-                </span>
+                <span className="text-xs text-slate-500">{new Date(u.online_at).toLocaleTimeString("tr-TR")}</span>
               </div>
             ))}
           </div>
         )}
       </div>
 
+      {/* Arama */}
+      <input
+        type="text"
+        placeholder="E-posta ile ara..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="w-full rounded-2xl bg-slate-900 border border-slate-800 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-slate-600 transition"
+      />
+
       {/* Kullanıcı tablosu */}
       <div className="rounded-2xl border border-slate-800 overflow-hidden">
-        <div className="bg-slate-900 px-4 py-3">
-          <span className="text-sm font-semibold">Tüm Kullanıcılar</span>
+        <div className="bg-slate-900 px-4 py-3 flex items-center justify-between">
+          <span className="text-sm font-semibold">Kullanıcılar</span>
+          <span className="text-xs text-slate-400">{filtered.length} sonuç</span>
         </div>
-        <table className="w-full text-sm">
-          <thead className="bg-slate-900/50 text-slate-400 text-left">
-            <tr>
-              <th className="px-4 py-3 font-medium">E-posta</th>
-              <th className="px-4 py-3 font-medium">Kayıt</th>
-              <th className="px-4 py-3 font-medium">Son Giriş</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((u, i) => (
-              <tr
-                key={u.id}
-                className={i % 2 === 0 ? "bg-slate-950" : "bg-slate-900/30"}
-              >
-                <td className="px-4 py-3">{u.email ?? "—"}</td>
-                <td className="px-4 py-3 text-slate-400">
-                  {new Date(u.created_at).toLocaleDateString("tr-TR")}
-                </td>
-                <td className="px-4 py-3 text-slate-400">
-                  {u.last_sign_in_at
-                    ? new Date(u.last_sign_in_at).toLocaleDateString("tr-TR")
-                    : "—"}
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-slate-900/50 text-slate-400 text-left">
+              <tr>
+                <th className="px-4 py-3 font-medium">E-posta</th>
+                <th className="px-4 py-3 font-medium">Ders</th>
+                <th className="px-4 py-3 font-medium">Devamsızlık</th>
+                <th className="px-4 py-3 font-medium">Kayıt</th>
+                <th className="px-4 py-3 font-medium">Son Giriş</th>
+                <th className="px-4 py-3 font-medium"></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.map((u, i) => (
+                <>
+                  <tr
+                    key={u.id}
+                    className={`cursor-pointer hover:bg-slate-800/50 transition-colors ${i % 2 === 0 ? "bg-slate-950" : "bg-slate-900/30"}`}
+                    onClick={() => openDetail(u)}
+                  >
+                    <td className="px-4 py-3 font-medium">{u.email ?? "—"}</td>
+                    <td className="px-4 py-3 text-indigo-400">{u.course_count}</td>
+                    <td className="px-4 py-3 text-amber-400">{u.attendance_count}</td>
+                    <td className="px-4 py-3 text-slate-400">{new Date(u.created_at).toLocaleDateString("tr-TR")}</td>
+                    <td className="px-4 py-3 text-slate-400">
+                      {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString("tr-TR") : "—"}
+                    </td>
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                      {deletingId === u.id ? (
+                        <div className="flex gap-2">
+                          <button onClick={() => handleDelete(u.id)} className="text-xs text-rose-400 hover:text-rose-300 font-semibold">Sil</button>
+                          <button onClick={() => setDeletingId(null)} className="text-xs text-slate-400 hover:text-white">İptal</button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setDeletingId(u.id)}
+                          className="text-xs text-slate-500 hover:text-rose-400 transition-colors"
+                        >
+                          Sil
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                  {/* Detay satırı */}
+                  {selectedUser?.id === u.id && (
+                    <tr key={`${u.id}-detail`} className="bg-slate-900/60">
+                      <td colSpan={6} className="px-4 py-4">
+                        {detailLoading ? (
+                          <p className="text-xs text-slate-400">Yükleniyor...</p>
+                        ) : userCourses.length === 0 ? (
+                          <p className="text-xs text-slate-500">Kayıtlı ders yok.</p>
+                        ) : (
+                          <div className="flex flex-wrap gap-2">
+                            {userCourses.map((c, idx) => (
+                              <span key={idx} className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-1.5 text-xs">
+                                <span className="font-bold text-white">{c.course_name}</span>
+                                <span className="text-slate-400 ml-1">{c.day} {c.start}–{c.end}</span>
+                                <span className={`ml-1 font-semibold ${c.course_type === "lab" ? "text-violet-400" : "text-sky-400"}`}>
+                                  {c.course_type === "lab" ? "LAB" : "TEORİK"}
+                                </span>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                </>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
