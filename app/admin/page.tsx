@@ -92,7 +92,7 @@ export default function AdminPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Admin Panel</h1>
         <button
-          onClick={async () => { await supabase.auth.signOut(); router.replace("/login"); }}
+          onClick={async () => { await supabase.auth.signOut(); router.replace("/"); }}
           className="text-sm text-slate-400 hover:text-white transition-colors"
         >
           Çıkış Yap

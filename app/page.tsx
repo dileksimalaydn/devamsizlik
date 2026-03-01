@@ -207,7 +207,7 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="border-t border-slate-100 py-6 text-center text-xs text-slate-400">
-          Developed by Dilek Şimal Aydın · devamsızlık.com
+          Developed by Dilek Şimal Aydın · devamsizlik.com
         </footer>
       </section>
     </div>
