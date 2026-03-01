@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const tabs = [
   {
@@ -44,6 +43,7 @@ const tabs = [
 
 export default function BottomNav() {
   const path = usePathname();
+  const router = useRouter();
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white/90 backdrop-blur-md">
@@ -51,9 +51,9 @@ export default function BottomNav() {
         {tabs.map((tab) => {
           const active = path === tab.href;
           return (
-            <Link
+            <button
               key={tab.href}
-              href={tab.href}
+              onClick={() => router.push(tab.href)}
               className={`flex flex-col items-center gap-1 rounded-2xl px-3 py-2 text-[10px] font-semibold transition-all ${
                 active
                   ? "bg-indigo-600 text-white"
@@ -62,7 +62,7 @@ export default function BottomNav() {
             >
               {tab.icon}
               {tab.label}
-            </Link>
+            </button>
           );
         })}
       </div>

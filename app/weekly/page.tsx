@@ -6,8 +6,9 @@ import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import { supabase } from "@/lib/supabaseClient";
 import type { Course } from "@/lib/types";
+import { colorFor } from "@/lib/colors";
 
-const DAYS = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma"];
+const DAYS = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
 const TIME_SLOTS = ["08:30", "09:25", "10:20", "11:15", "12:10", "13:05", "14:00", "14:55", "15:50", "16:45", "17:40", "18:35", "19:30", "20:25", "21:20"];
 
 export default function WeeklyPage() {
@@ -63,11 +64,7 @@ export default function WeeklyPage() {
                   return (
                     <td key={day + time} className="border border-slate-100 p-1 min-w-[120px]">
                       {course ? (
-                        <div className={`h-full w-full rounded p-1 flex items-center justify-center text-center text-[10px] font-black uppercase tracking-tighter
-                          ${course.course_name.includes('ENG') ? 'bg-blue-100 text-blue-800' : 
-                            course.course_name.includes('MATH') ? 'bg-indigo-100 text-indigo-800' : 
-                            'bg-slate-100 text-slate-700'}
-                        `}>
+                        <div className={`h-full w-full rounded p-1 flex items-center justify-center text-center text-[10px] font-black uppercase tracking-tighter ${colorFor(course.course_name).soft} ${colorFor(course.course_name).text}`}>
                           {course.course_name}
                         </div>
                       ) : null}
