@@ -85,7 +85,7 @@ export default function Home() {
           </Link>
         </div>
 
-        <p className="mt-6 text-xs font-medium text-white/40 tracking-wide">
+        <p className="mt-6 text-xs font-medium text-white/60 tracking-wide">
           Developed by Dilek Şimal Aydın
         </p>
       </section>
