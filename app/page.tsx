@@ -84,6 +84,10 @@ export default function Home() {
             Ücretsiz Başla
           </Link>
         </div>
+
+        <p className="mt-6 text-xs font-medium text-white/40 tracking-wide">
+          Developed by Dilek Şimal Aydın
+        </p>
       </section>
 
       {/* Mockup */}
