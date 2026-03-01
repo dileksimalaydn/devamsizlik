@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarDays, Info } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import CourseCard from "@/components/CourseCard";
@@ -176,19 +176,6 @@ export default function DashboardPage() {
       />
 
       <div className="mx-auto max-w-md px-4 pt-4">
-        {/* Info hint */}
-        <div className="flex items-start gap-2.5 rounded-2xl bg-indigo-50 border border-indigo-100 px-4 py-3 mb-4">
-          <Info size={14} className="text-indigo-400 shrink-0 mt-0.5" />
-          <p className="text-xs text-indigo-700 leading-relaxed">
-  Derse gitmedin mi? <strong className="text-indigo-900">İşaretle</strong> butonuna bas,
-  devamsızlığını kaydet. Ok tuşlarıyla geçmiş günlere de gidebilirsin.
-  <br />
-  Devamsızlığı işaretlemeyi <strong className="text-indigo-900">unuttuysan</strong>,
-  <strong className="text-indigo-900">Devamsızlıklar</strong> sayfasından sonradan ekleyebilirsin.
-  <br />
-  Derslerin görünmüyorsa, önce <strong className="text-indigo-900">Ders Ekle</strong> bölümünden programını oluştur.
-</p>
-        </div>
 
         {/* Haftalık program — kompakt link */}
         <div className="flex justify-end mb-3">

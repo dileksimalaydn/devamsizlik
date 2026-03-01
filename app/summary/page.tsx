@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { AlertTriangle, AlertOctagon, Info } from "lucide-react";
+import { AlertTriangle, AlertOctagon } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import CourseDetailSheet from "@/components/CourseDetailSheet";
@@ -128,13 +128,6 @@ export default function SummaryPage() {
 
       <div className="mx-auto max-w-md px-4 pt-4 space-y-3">
 
-        {/* Info hint */}
-        <div className="flex items-start gap-2.5 rounded-2xl bg-indigo-50 border border-indigo-100 px-4 py-3">
-          <Info size={14} className="text-indigo-400 shrink-0 mt-0.5" />
-          <p className="text-xs text-indigo-700 leading-relaxed">
-            <strong className="text-indigo-900">Herhangi bir derse dokun</strong> — geçmiş devamsızlıklarını görüntüle, düzenle veya yeni tarih ekle.
-          </p>
-        </div>
 
         {/* Risk uyarı banner */}
         {!loading && (criticalCount > 0 || warnCount > 0) && (
