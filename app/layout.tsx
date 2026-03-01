@@ -12,6 +12,7 @@ export const metadata = {
     siteName: "devamsızlık",
     locale: "tr_TR",
     type: "website",
+    images: [{ url: "https://devamsizlik.com/og.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary",
