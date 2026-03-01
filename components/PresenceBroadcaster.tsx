@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
 const PAGE_NAMES: Record<string, string> = {
@@ -14,14 +14,6 @@ const PAGE_NAMES: Record<string, string> = {
 
 export default function PresenceBroadcaster() {
   const pathname = usePathname();
-  const router = useRouter();
-
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") router.replace("/reset-password");
-    });
-    return () => subscription.unsubscribe();
-  }, [router]);
 
   useEffect(() => {
     // Login sayfasında yayın yapma
