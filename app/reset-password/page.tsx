@@ -10,14 +10,14 @@ export default function ResetPasswordPage() {
   const [newPassword, setNewPassword] = useState("");
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const [loading, setLoading] = useState(false);
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(() =>
+    typeof window !== "undefined" && window.location.hash.includes("type=recovery")
+  );
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY") setReady(true);
     });
-    // hash'i de kontrol et (event kaçırılırsa diye)
-    if (window.location.hash.includes("type=recovery")) setReady(true);
     return () => subscription.unsubscribe();
   }, []);
 
