@@ -68,13 +68,24 @@ export default function LoginPage() {
     setMsg(null);
 
     if (isSignUp) {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: { emailRedirectTo: window.location.origin },
       });
-      if (error) setMsg({ text: "Hata: " + error.message, ok: false });
-      else setMsg({ text: "Başarılı! E-postanı kontrol et.", ok: true });
+      if (error) {
+        setMsg({ text: "Hata: " + error.message, ok: false });
+      } else if (data.session) {
+        const token = data.session.access_token;
+        const res = await fetch("/api/admin/check", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const { isAdmin } = await res.json();
+        router.replace(isAdmin ? "/admin" : "/dashboard");
+        return;
+      } else {
+        setMsg({ text: "Başarılı! E-postanı kontrol et.", ok: true });
+      }
     } else {
       const { error, data } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
