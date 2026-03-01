@@ -48,9 +48,10 @@ export default function Home() {
             </div>
             <span className="font-extrabold text-white tracking-tight text-lg">devamsızlık</span>
           </div>
-          <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
-            <span className="h-1.5 w-1.5 rounded-full bg-indigo-300" />
-            Dilek Şimal Aydın
+          <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/10 px-3 py-1.5 backdrop-blur-sm">
+            <span className="h-1.5 w-1.5 rounded-full bg-indigo-300 shrink-0" />
+            <span className="text-white/60 text-[11px] font-medium">developed by</span>
+            <span className="text-white text-[11px] font-bold">Dilek Şimal Aydın</span>
           </span>
           <Link
             href="/login"
