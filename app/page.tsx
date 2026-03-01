@@ -48,6 +48,7 @@ export default function Home() {
             </div>
             <span className="font-extrabold text-white tracking-tight text-lg">devamsızlık</span>
           </div>
+          <span className="text-xs font-medium text-white/60">by Dilek Şimal Aydın</span>
           <Link
             href="/login"
             className="rounded-2xl bg-white px-5 py-2 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-colors shadow-lg shadow-indigo-900/30"
@@ -85,9 +86,6 @@ export default function Home() {
           </Link>
         </div>
 
-        <p className="mt-6 text-xs font-medium text-white/60 tracking-wide">
-          Developed by Dilek Şimal Aydın
-        </p>
       </section>
 
       {/* Mockup */}
