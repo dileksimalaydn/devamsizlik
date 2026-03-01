@@ -49,12 +49,6 @@ export default async function Image() {
             Kaç saatin kaldı? Artık biliyorsun.
           </div>
 
-          {/* Etiketler */}
-          <div style={{ display: "flex", gap: "10px", marginTop: "30px" }}>
-            <div style={{ background: "#f1f5f9", color: "#475569", borderRadius: "100px", padding: "6px 16px", fontSize: "15px", fontWeight: 600, display: "flex" }}>Ücretsiz</div>
-            <div style={{ background: "#f1f5f9", color: "#475569", borderRadius: "100px", padding: "6px 16px", fontSize: "15px", fontWeight: 600, display: "flex" }}>Mobil Uyumlu</div>
-            <div style={{ background: "#f1f5f9", color: "#475569", borderRadius: "100px", padding: "6px 16px", fontSize: "15px", fontWeight: 600, display: "flex" }}>IEU</div>
-          </div>
         </div>
 
         {/* Sağ taraf */}
