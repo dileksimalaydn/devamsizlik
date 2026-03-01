@@ -48,7 +48,10 @@ export default function Home() {
             </div>
             <span className="font-extrabold text-white tracking-tight text-lg">devamsızlık</span>
           </div>
-          <span className="text-xs font-medium text-white/60">by Dilek Şimal Aydın</span>
+          <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur-sm">
+            <span className="h-1.5 w-1.5 rounded-full bg-indigo-300" />
+            Dilek Şimal Aydın
+          </span>
           <Link
             href="/login"
             className="rounded-2xl bg-white px-5 py-2 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-colors shadow-lg shadow-indigo-900/30"
