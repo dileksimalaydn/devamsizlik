@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Bell, CalendarCheck, BarChart3 } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
@@ -22,29 +22,35 @@ export default function Home() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-white text-slate-900">
+    <div className="min-h-screen text-slate-900">
 
-      {/* Fixed gradient arka plan — sadece hero bölgesinde */}
+      {/* Fixed arka plan — canlı indigo → violet gradient */}
       <div
         className="fixed inset-0 -z-10"
         style={{
-          background: "linear-gradient(135deg, #1e1b4b 0%, #312e81 30%, #4338ca 60%, #0f172a 100%)",
-          backgroundAttachment: "fixed",
+          background: "linear-gradient(135deg, #312e81 0%, #4f46e5 35%, #7c3aed 65%, #1e1b4b 100%)",
+        }}
+      />
+      {/* Işık efekti */}
+      <div
+        className="fixed inset-0 -z-10 opacity-30"
+        style={{
+          background: "radial-gradient(ellipse at 30% 20%, #818cf8 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, #a78bfa 0%, transparent 50%)",
         }}
       />
 
-      {/* Nav — cam efekti */}
+      {/* Nav */}
       <nav className="sticky top-0 z-50 backdrop-blur-md bg-white/10 border-b border-white/10">
-        <div className="flex items-center justify-between px-6 py-4 max-w-4xl mx-auto">
+        <div className="flex items-center justify-between px-6 py-4 max-w-5xl mx-auto">
           <div className="flex items-center gap-2">
-            <div className="grid h-8 w-8 place-items-center rounded-xl bg-white/20 backdrop-blur-sm">
+            <div className="grid h-8 w-8 place-items-center rounded-xl bg-white/20">
               <GraduationCap size={16} className="text-white" />
             </div>
-            <span className="font-extrabold text-white tracking-tight">devamsızlık</span>
+            <span className="font-extrabold text-white tracking-tight text-lg">devamsızlık</span>
           </div>
           <Link
             href="/login"
-            className="rounded-2xl bg-white px-4 py-2 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-colors"
+            className="rounded-2xl bg-white px-5 py-2 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-colors shadow-lg shadow-indigo-900/30"
           >
             Giriş Yap
           </Link>
@@ -52,38 +58,46 @@ export default function Home() {
       </nav>
 
       {/* Hero */}
-      <section className="mx-auto max-w-4xl px-6 pt-20 pb-24 text-center">
-        <div className="inline-block rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-xs font-semibold text-indigo-200 mb-6 backdrop-blur-sm">
-          Ücretsiz · Kayıt gerektirmez
+      <section className="mx-auto max-w-4xl px-6 pt-16 pb-12 text-center">
+        {/* Hook badge */}
+        <div className="inline-flex items-center gap-2 rounded-full bg-white/15 border border-white/25 px-4 py-2 text-sm font-semibold text-white mb-8 backdrop-blur-sm">
+          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+          "Kaç saatim kaldı?" sorusunu bir daha sormayacaksın.
         </div>
-        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+
+        <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight">
           Üniversite hayatını<br />
-          <span className="text-indigo-300">devamsızlık hesaplayarak</span><br />
+          <span className="text-indigo-200">devamsızlık hesaplayarak</span><br />
           harcama.
         </h1>
-        <p className="mt-6 text-lg text-indigo-200 max-w-xl mx-auto leading-relaxed">
-          Derslerini bir kez ekle. Devamsızlık hakkın otomatik hesaplansın. Sınıra yaklaştığında seni uyaralım.
+
+        <p className="mt-6 text-lg sm:text-xl text-indigo-200 max-w-2xl mx-auto leading-relaxed">
+          Derslerini bir kez ekle. Limitini öğren. Sınıra yaklaştığında seni uyaralım —
+          sen dersin tadını çıkar.
         </p>
-        <div className="mt-8">
+
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="/login"
-            className="inline-block rounded-2xl bg-white px-8 py-4 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-colors shadow-2xl shadow-indigo-900/50"
+            className="rounded-2xl bg-white px-8 py-4 text-base font-bold text-indigo-700 hover:bg-indigo-50 transition-all shadow-2xl shadow-indigo-900/40 active:scale-95"
           >
-            Hemen Ücretsiz Başla
+            Ücretsiz Başla
           </Link>
+          <span className="text-indigo-300 text-sm">Kayıt 30 saniye · Kredi kartı yok</span>
         </div>
       </section>
 
       {/* Mockup */}
-      <section className="mx-auto max-w-sm px-6 pb-0">
-        <div className="relative mx-auto w-64">
-          <div className="rounded-[2.5rem] border-4 border-white/20 bg-slate-950/80 backdrop-blur-sm p-4 shadow-2xl shadow-indigo-900/50">
+      <section className="mx-auto max-w-sm px-6 pb-4">
+        <div className="relative mx-auto w-64 drop-shadow-2xl">
+          <div className="rounded-[2.5rem] border-2 border-white/20 bg-slate-950/70 backdrop-blur-sm p-4">
             <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-slate-700" />
-            <div className="rounded-2xl bg-white p-3 mb-2 shadow-sm">
+
+            <div className="rounded-2xl bg-white p-3 mb-2">
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <div className="text-[11px] font-extrabold text-slate-900">SE116</div>
-                  <div className="text-[9px] font-semibold text-rose-600 bg-rose-50 rounded-full px-1.5 py-0.5 inline-block mt-0.5">Riskli</div>
+                  <div className="text-[9px] font-bold text-rose-600 bg-rose-50 rounded-full px-1.5 py-0.5 inline-block mt-0.5">Riskli</div>
                 </div>
                 <div className="text-right">
                   <div className="text-[11px] font-bold text-slate-900">6 / 8 saat</div>
@@ -94,11 +108,12 @@ export default function Home() {
                 <div className="h-1.5 rounded-full bg-rose-500" style={{ width: "75%" }} />
               </div>
             </div>
-            <div className="rounded-2xl bg-white p-3 mb-2 shadow-sm">
+
+            <div className="rounded-2xl bg-white p-3 mb-2">
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <div className="text-[11px] font-extrabold text-slate-900">MAT201</div>
-                  <div className="text-[9px] font-semibold text-amber-700 bg-amber-50 rounded-full px-1.5 py-0.5 inline-block mt-0.5">Dikkat</div>
+                  <div className="text-[9px] font-bold text-amber-700 bg-amber-50 rounded-full px-1.5 py-0.5 inline-block mt-0.5">Dikkat</div>
                 </div>
                 <div className="text-right">
                   <div className="text-[11px] font-bold text-slate-900">4 / 8 saat</div>
@@ -109,11 +124,12 @@ export default function Home() {
                 <div className="h-1.5 rounded-full bg-amber-400" style={{ width: "50%" }} />
               </div>
             </div>
-            <div className="rounded-2xl bg-white p-3 shadow-sm">
+
+            <div className="rounded-2xl bg-white p-3">
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <div className="text-[11px] font-extrabold text-slate-900">FİZ101</div>
-                  <div className="text-[9px] font-semibold text-emerald-700 bg-emerald-50 rounded-full px-1.5 py-0.5 inline-block mt-0.5">Güvende</div>
+                  <div className="text-[9px] font-bold text-emerald-700 bg-emerald-50 rounded-full px-1.5 py-0.5 inline-block mt-0.5">Güvende</div>
                 </div>
                 <div className="text-right">
                   <div className="text-[11px] font-bold text-slate-900">1 / 8 saat</div>
@@ -124,24 +140,45 @@ export default function Home() {
                 <div className="h-1.5 rounded-full bg-emerald-400" style={{ width: "12%" }} />
               </div>
             </div>
+
             <div className="mt-3 mx-auto h-1 w-20 rounded-full bg-slate-700" />
           </div>
         </div>
       </section>
 
-      {/* Nasıl Çalışır — beyaz bölge, gradient üzerinde yükselir */}
-      <section className="relative mt-16 bg-white rounded-t-[3rem] shadow-2xl">
-        <div className="mx-auto max-w-4xl px-6 py-16">
-          <h2 className="text-2xl font-extrabold text-center text-slate-900 mb-10">Nasıl Çalışır?</h2>
+      {/* Beyaz bölge — yukarı çıkar */}
+      <section className="relative mt-12 bg-white rounded-t-[3rem] shadow-2xl">
+        {/* Özellikler */}
+        <div className="mx-auto max-w-4xl px-6 pt-14 pb-10">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-center text-slate-900 mb-2">Nasıl Çalışır?</h2>
+          <p className="text-center text-slate-400 text-sm mb-10">3 adımda devamsızlığını kontrol altına al.</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {[
-              { step: "1", title: "Derslerini Ekle", desc: "Ders adı, gün ve saatini bir kez gir. Devamsızlık limitin otomatik hesaplanır ya da kendin belirlersin." },
-              { step: "2", title: "Devamsızlığı İşle", desc: "Derse girmedin mi? Tek dokunuşla kaydet. Geçmişe de ekleyebilirsin." },
-              { step: "3", title: "Sınırı Takip Et", desc: "Kaç saatlik hakkın kaldığını anlık gör. Sınıra yaklaştığında uyarı al." },
-            ].map(({ step, title, desc }) => (
-              <div key={step} className="rounded-3xl bg-slate-50 border border-slate-100 p-6">
-                <div className="grid h-10 w-10 place-items-center rounded-2xl bg-indigo-600 text-white font-extrabold text-sm mb-4">
-                  {step}
+              {
+                icon: <CalendarCheck size={20} className="text-indigo-600" />,
+                step: "1",
+                title: "Derslerini Ekle",
+                desc: "Ders adı, gün ve saatini bir kez gir. Limitin otomatik hesaplanır — ya da kendin belirlersin.",
+              },
+              {
+                icon: <BarChart3 size={20} className="text-indigo-600" />,
+                step: "2",
+                title: "Devamsızlığı İşle",
+                desc: "Tek dokunuşla kaydet. Geçmişe de ekleyebilirsin — kaçırdığın günleri sonradan gir.",
+              },
+              {
+                icon: <Bell size={20} className="text-indigo-600" />,
+                step: "3",
+                title: "Sınırı Takip Et",
+                desc: "Kaç saatin kaldığını anlık gör. Sınıra yaklaştığında otomatik uyarı al.",
+              },
+            ].map(({ icon, step, title, desc }) => (
+              <div key={step} className="rounded-3xl bg-slate-50 border border-slate-100 p-6 hover:border-indigo-100 hover:bg-indigo-50/30 transition-colors">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="grid h-10 w-10 place-items-center rounded-2xl bg-indigo-100">
+                    {icon}
+                  </div>
+                  <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest">Adım {step}</span>
                 </div>
                 <div className="font-bold text-slate-900 mb-1">{title}</div>
                 <div className="text-sm text-slate-500 leading-relaxed">{desc}</div>
@@ -151,15 +188,22 @@ export default function Home() {
         </div>
 
         {/* CTA */}
-        <div className="pb-16 text-center px-6">
-          <h2 className="text-2xl font-extrabold text-slate-900 mb-3">Hep merak ettin, değil mi?</h2>
-          <p className="text-slate-500 mb-6 text-sm">"Kaç saatim kaldı?" sorusunu bir daha sormayacaksın.</p>
-          <Link
-            href="/login"
-            className="inline-block rounded-2xl bg-indigo-600 px-8 py-4 text-sm font-bold text-white hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
-          >
-            Ücretsiz Başla
-          </Link>
+        <div className="mx-auto max-w-2xl px-6 py-14 text-center">
+          <div className="rounded-3xl bg-gradient-to-br from-indigo-600 to-violet-600 p-10 shadow-xl shadow-indigo-200">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-3">
+              Hep merak ettin, değil mi?
+            </h2>
+            <p className="text-indigo-200 mb-8 text-sm leading-relaxed">
+              Binlerce öğrenci her gün "acaba kaç saatim kaldı?" diye merak eder.<br />
+              Sen merak etme — biz hesaplayalım.
+            </p>
+            <Link
+              href="/login"
+              className="inline-block rounded-2xl bg-white px-8 py-4 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-colors shadow-lg"
+            >
+              Hemen Ücretsiz Başla
+            </Link>
+          </div>
         </div>
 
         {/* Footer */}
