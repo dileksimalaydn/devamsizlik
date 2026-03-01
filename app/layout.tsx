@@ -2,8 +2,25 @@ import "./globals.css";
 import PresenceBroadcaster from "@/components/PresenceBroadcaster";
 
 export const metadata = {
-  title: "Yoklama",
-  description: "Basit yoklama web app",
+  title: "devamsızlık – Devamsızlık Takip",
+  description: "Ders devamsızlıklarını takip et, sınıra ne kadar yaklaştığını gör. Ücretsiz, hızlı, mobil uyumlu.",
+  metadataBase: new URL("https://devamsizlik.com"),
+  openGraph: {
+    title: "devamsızlık – Devamsızlık Takip",
+    description: "Ders devamsızlıklarını takip et, sınıra ne kadar yaklaştığını gör. Ücretsiz, hızlı, mobil uyumlu.",
+    url: "https://devamsizlik.com",
+    siteName: "devamsızlık",
+    locale: "tr_TR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "devamsızlık – Devamsızlık Takip",
+    description: "Ders devamsızlıklarını takip et, sınıra ne kadar yaklaştığını gör.",
+  },
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
