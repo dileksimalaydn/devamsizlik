@@ -240,10 +240,6 @@ export default function SummaryPage() {
               );
             })}
 
-            {/* Alt not */}
-            <p className="text-center text-[10px] text-slate-400 pb-2">
-              Teorik %30 · Lab %20 · {WEEKS} haftalık dönem (IEU)
-            </p>
           </div>
         )}
       </div>
