@@ -212,8 +212,11 @@ export default function Home() {
         </div>
 
         {/* Footer */}
-        <footer className="border-t border-slate-100 py-6 text-center text-xs text-slate-400">
-          Developed by Dilek Şimal Aydın · devamsizlik.com
+        <footer className="border-t border-slate-100 py-6 text-center space-y-1.5">
+          <p className="text-xs text-slate-400">Developed by Dilek Şimal Aydın · devamsizlik.com</p>
+          <p className="text-[10px] text-slate-300 max-w-sm mx-auto leading-relaxed">
+            Bu uygulama bağımsız bir takip aracıdır. Herhangi bir üniversite veya kurum ile resmi bağlantısı yoktur. Gösterilen veriler kullanıcı tarafından girilir, resmi devamsızlık kayıtlarını temsil etmez.
+          </p>
         </footer>
       </section>
     </div>
