@@ -66,7 +66,7 @@ export default function Home() {
         </div>
 
         <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight">
-          Üniversite hayatını<br />
+          Üniversite zamanını<br />
           <span className="text-indigo-200">devamsızlık hesaplayarak</span><br />
           harcama.
         </h1>
@@ -83,7 +83,6 @@ export default function Home() {
           >
             Ücretsiz Başla
           </Link>
-          <span className="text-indigo-300 text-sm">Kayıt 30 saniye · Kredi kartı yok</span>
         </div>
       </section>
 
@@ -208,7 +207,7 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="border-t border-slate-100 py-6 text-center text-xs text-slate-400">
-          Öğrenciler tarafından, öğrenciler için yapıldı. · devamsızlık.com
+          Developed by Dilek Şimal Aydın · devamsızlık.com
         </footer>
       </section>
     </div>
