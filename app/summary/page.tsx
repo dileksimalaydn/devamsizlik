@@ -238,7 +238,7 @@ export default function SummaryPage() {
                     <span className="text-[10px] text-slate-400">
                       {g.records.length > 0 ? `${g.records.length} kayıt` : "Henüz kayıt yok"}
                     </span>
-                    <span className="text-[10px] font-semibold text-indigo-600">Yönet →</span>
+                    <span className="text-[10px] font-semibold bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-full">+ Devamsızlık Ekle</span>
                   </div>
                 </button>
               );
