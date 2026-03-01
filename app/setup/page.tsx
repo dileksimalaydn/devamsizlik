@@ -165,9 +165,6 @@ export default function SetupPage() {
 
         <div className="rounded-3xl bg-white p-4 shadow-sm border border-slate-100">
           <div className="text-sm font-bold text-slate-900">Yeni Ders Tanımla</div>
-          <div className="mt-1 text-xs text-slate-500">
-            İsimler otomatik olarak büyük harfe çevrilir.
-          </div>
 
           <div className="mt-4 space-y-3">
             <div>
@@ -176,7 +173,7 @@ export default function SetupPage() {
                 type="text"
                 placeholder="Örn: se116"
                 value={courseName}
-                onChange={(e) => { setCourseName(e.target.value); setSaveError(null); }}
+                onChange={(e) => { setCourseName(e.target.value.toUpperCase()); setSaveError(null); }}
                 className={field}
               />
             </div>
