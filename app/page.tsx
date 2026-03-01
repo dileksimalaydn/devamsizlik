@@ -12,7 +12,7 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       const { data } = await supabase.auth.getSession();
-      if (!data.session) return; // landing page'i göster
+      if (!data.session) return;
       const res = await fetch("/api/admin/check", {
         headers: { Authorization: `Bearer ${data.session.access_token}` },
       });
@@ -24,39 +24,50 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white text-slate-900">
 
-      {/* Nav */}
-      <nav className="flex items-center justify-between px-6 py-4 max-w-4xl mx-auto">
-        <div className="flex items-center gap-2">
-          <div className="grid h-8 w-8 place-items-center rounded-xl bg-indigo-600">
-            <GraduationCap size={16} className="text-white" />
+      {/* Fixed gradient arka plan — sadece hero bölgesinde */}
+      <div
+        className="fixed inset-0 -z-10"
+        style={{
+          background: "linear-gradient(135deg, #1e1b4b 0%, #312e81 30%, #4338ca 60%, #0f172a 100%)",
+          backgroundAttachment: "fixed",
+        }}
+      />
+
+      {/* Nav — cam efekti */}
+      <nav className="sticky top-0 z-50 backdrop-blur-md bg-white/10 border-b border-white/10">
+        <div className="flex items-center justify-between px-6 py-4 max-w-4xl mx-auto">
+          <div className="flex items-center gap-2">
+            <div className="grid h-8 w-8 place-items-center rounded-xl bg-white/20 backdrop-blur-sm">
+              <GraduationCap size={16} className="text-white" />
+            </div>
+            <span className="font-extrabold text-white tracking-tight">devamsızlık</span>
           </div>
-          <span className="font-extrabold text-slate-900 tracking-tight">devamsızlık</span>
+          <Link
+            href="/login"
+            className="rounded-2xl bg-white px-4 py-2 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-colors"
+          >
+            Giriş Yap
+          </Link>
         </div>
-        <Link
-          href="/login"
-          className="rounded-2xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white hover:bg-indigo-700 transition-colors"
-        >
-          Giriş Yap
-        </Link>
       </nav>
 
       {/* Hero */}
-      <section className="mx-auto max-w-4xl px-6 pt-16 pb-20 text-center">
-        <div className="inline-block rounded-full bg-indigo-50 border border-indigo-100 px-4 py-1.5 text-xs font-semibold text-indigo-700 mb-6">
+      <section className="mx-auto max-w-4xl px-6 pt-20 pb-24 text-center">
+        <div className="inline-block rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-xs font-semibold text-indigo-200 mb-6 backdrop-blur-sm">
           Ücretsiz · Kayıt gerektirmez
         </div>
-        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
+        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
           Üniversite hayatını<br />
-          <span className="text-indigo-600">devamsızlık hesaplayarak</span><br />
+          <span className="text-indigo-300">devamsızlık hesaplayarak</span><br />
           harcama.
         </h1>
-        <p className="mt-6 text-lg text-slate-500 max-w-xl mx-auto leading-relaxed">
+        <p className="mt-6 text-lg text-indigo-200 max-w-xl mx-auto leading-relaxed">
           Derslerini bir kez ekle. Devamsızlık hakkın otomatik hesaplansın. Sınıra yaklaştığında seni uyaralım.
         </p>
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+        <div className="mt-8">
           <Link
             href="/login"
-            className="rounded-2xl bg-indigo-600 px-8 py-4 text-sm font-bold text-white hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
+            className="inline-block rounded-2xl bg-white px-8 py-4 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-colors shadow-2xl shadow-indigo-900/50"
           >
             Hemen Ücretsiz Başla
           </Link>
@@ -64,13 +75,10 @@ export default function Home() {
       </section>
 
       {/* Mockup */}
-      <section className="mx-auto max-w-sm px-6 pb-20">
+      <section className="mx-auto max-w-sm px-6 pb-0">
         <div className="relative mx-auto w-64">
-          {/* Telefon çerçevesi */}
-          <div className="rounded-[2.5rem] border-4 border-slate-200 bg-slate-950 p-4 shadow-2xl shadow-slate-300">
-            {/* Kamera */}
+          <div className="rounded-[2.5rem] border-4 border-white/20 bg-slate-950/80 backdrop-blur-sm p-4 shadow-2xl shadow-indigo-900/50">
             <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-slate-700" />
-            {/* Sahte kart 1 */}
             <div className="rounded-2xl bg-white p-3 mb-2 shadow-sm">
               <div className="flex items-center justify-between mb-2">
                 <div>
@@ -86,7 +94,6 @@ export default function Home() {
                 <div className="h-1.5 rounded-full bg-rose-500" style={{ width: "75%" }} />
               </div>
             </div>
-            {/* Sahte kart 2 */}
             <div className="rounded-2xl bg-white p-3 mb-2 shadow-sm">
               <div className="flex items-center justify-between mb-2">
                 <div>
@@ -102,7 +109,6 @@ export default function Home() {
                 <div className="h-1.5 rounded-full bg-amber-400" style={{ width: "50%" }} />
               </div>
             </div>
-            {/* Sahte kart 3 */}
             <div className="rounded-2xl bg-white p-3 shadow-sm">
               <div className="flex items-center justify-between mb-2">
                 <div>
@@ -118,23 +124,22 @@ export default function Home() {
                 <div className="h-1.5 rounded-full bg-emerald-400" style={{ width: "12%" }} />
               </div>
             </div>
-            {/* Alt çubuk */}
             <div className="mt-3 mx-auto h-1 w-20 rounded-full bg-slate-700" />
           </div>
         </div>
       </section>
 
-      {/* Nasıl Çalışır */}
-      <section className="bg-slate-50 py-16">
-        <div className="mx-auto max-w-4xl px-6">
+      {/* Nasıl Çalışır — beyaz bölge, gradient üzerinde yükselir */}
+      <section className="relative mt-16 bg-white rounded-t-[3rem] shadow-2xl">
+        <div className="mx-auto max-w-4xl px-6 py-16">
           <h2 className="text-2xl font-extrabold text-center text-slate-900 mb-10">Nasıl Çalışır?</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {[
-              { step: "1", title: "Derslerini Ekle", desc: "Ders adı, gün ve saatini bir kez gir. Blok sayısına göre limit otomatik hesaplanır." },
+              { step: "1", title: "Derslerini Ekle", desc: "Ders adı, gün ve saatini bir kez gir. Devamsızlık limitin otomatik hesaplanır ya da kendin belirlersin." },
               { step: "2", title: "Devamsızlığı İşle", desc: "Derse girmedin mi? Tek dokunuşla kaydet. Geçmişe de ekleyebilirsin." },
-              { step: "3", title: "Sınırı Takip Et", desc: "Teorik %30, Lab %20 kuralına göre ne kadar hakkın kaldığını anlık gör." },
+              { step: "3", title: "Sınırı Takip Et", desc: "Kaç saatlik hakkın kaldığını anlık gör. Sınıra yaklaştığında uyarı al." },
             ].map(({ step, title, desc }) => (
-              <div key={step} className="rounded-3xl bg-white border border-slate-100 shadow-sm p-6">
+              <div key={step} className="rounded-3xl bg-slate-50 border border-slate-100 p-6">
                 <div className="grid h-10 w-10 place-items-center rounded-2xl bg-indigo-600 text-white font-extrabold text-sm mb-4">
                   {step}
                 </div>
@@ -144,24 +149,24 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
 
-      {/* CTA */}
-      <section className="py-16 text-center px-6">
-        <h2 className="text-2xl font-extrabold text-slate-900 mb-3">Hep merak ettin, değil mi?</h2>
-        <p className="text-slate-500 mb-6 text-sm">"Kaç saatim kaldı?" sorusunu bir daha sormayacaksın.</p>
-        <Link
-          href="/login"
-          className="inline-block rounded-2xl bg-indigo-600 px-8 py-4 text-sm font-bold text-white hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
-        >
-          Ücretsiz Başla
-        </Link>
-      </section>
+        {/* CTA */}
+        <div className="pb-16 text-center px-6">
+          <h2 className="text-2xl font-extrabold text-slate-900 mb-3">Hep merak ettin, değil mi?</h2>
+          <p className="text-slate-500 mb-6 text-sm">"Kaç saatim kaldı?" sorusunu bir daha sormayacaksın.</p>
+          <Link
+            href="/login"
+            className="inline-block rounded-2xl bg-indigo-600 px-8 py-4 text-sm font-bold text-white hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
+          >
+            Ücretsiz Başla
+          </Link>
+        </div>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-100 py-6 text-center text-xs text-slate-400">
-        Öğrenciler tarafından, öğrenciler için yapıldı. · devamsızlık.com
-      </footer>
+        {/* Footer */}
+        <footer className="border-t border-slate-100 py-6 text-center text-xs text-slate-400">
+          Öğrenciler tarafından, öğrenciler için yapıldı. · devamsızlık.com
+        </footer>
+      </section>
     </div>
   );
 }
