@@ -40,7 +40,7 @@ export default function LoginPage() {
     setLoading(true);
     setMsg(null);
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/login`,
+      redirectTo: `${window.location.origin}/reset-password`,
     });
     if (error) setMsg({ text: "Hata: " + error.message, ok: false });
     else setMsg({ text: "Şifre sıfırlama maili gönderildi!", ok: true });
