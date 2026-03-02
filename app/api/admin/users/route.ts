@@ -27,14 +27,20 @@ export async function GET(req: NextRequest) {
 
   const admin = createSupabaseAdmin();
 
-  const [{ data: authData, error: listError }, { data: coursesData }, { data: attendanceData }] =
-    await Promise.all([
-      admin.auth.admin.listUsers(),
-      admin.from("courses").select("user_id"),
-      admin.from("attendance").select("user_id"),
-    ]);
+  const [{ data: coursesData }, { data: attendanceData }] = await Promise.all([
+    admin.from("courses").select("user_id"),
+    admin.from("attendance").select("user_id"),
+  ]);
 
-  if (listError) return NextResponse.json({ error: listError.message }, { status: 500 });
+  const allUsers = [];
+  let page = 1;
+  while (true) {
+    const { data, error: listError } = await admin.auth.admin.listUsers({ page, perPage: 1000 });
+    if (listError) return NextResponse.json({ error: listError.message }, { status: 500 });
+    allUsers.push(...data.users);
+    if (data.users.length < 1000) break;
+    page++;
+  }
 
   // Ders ve devamsızlık sayılarını hesapla
   const courseCount: Record<string, number> = {};
@@ -46,7 +52,7 @@ export async function GET(req: NextRequest) {
     attendanceCount[a.user_id] = (attendanceCount[a.user_id] ?? 0) + 1;
   }
 
-  const users = authData.users.map((u) => ({
+  const users = allUsers.map((u) => ({
     id: u.id,
     email: u.email,
     created_at: u.created_at,
