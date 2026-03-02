@@ -217,6 +217,15 @@ export default function Home() {
           <p className="text-[10px] text-slate-300 max-w-sm mx-auto leading-relaxed">
             Bu uygulama bağımsız bir takip aracıdır. Herhangi bir üniversite veya kurum ile resmi bağlantısı yoktur. Gösterilen veriler kullanıcı tarafından girilir, resmi devamsızlık kayıtlarını temsil etmez.
           </p>
+          <div className="flex items-center justify-center gap-4 pt-1">
+            <Link href="/privacy" className="text-[10px] text-slate-400 hover:text-slate-600 transition-colors">
+              Gizlilik Politikası
+            </Link>
+            <span className="text-slate-300 text-[10px]">·</span>
+            <Link href="/terms" className="text-[10px] text-slate-400 hover:text-slate-600 transition-colors">
+              Kullanım Şartları
+            </Link>
+          </div>
         </footer>
       </section>
     </div>
