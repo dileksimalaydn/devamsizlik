@@ -34,8 +34,8 @@ export default function PrivacyPage() {
           </p>
           <p>
             İletişim:{" "}
-            <a href="mailto:bildirim@devamsizlik.com" className="text-indigo-400 hover:underline">
-              bildirim@devamsizlik.com
+            <a href="mailto:devamsizlik.iletisim@gmail.com" className="text-indigo-400 hover:underline">
+              devamsizlik.iletisim@gmail.com
             </a>
           </p>
         </section>
@@ -105,8 +105,8 @@ export default function PrivacyPage() {
           </ul>
           <p>
             Bu haklarınızı kullanmak için{" "}
-            <a href="mailto:bildirim@devamsizlik.com" className="text-indigo-400 hover:underline">
-              bildirim@devamsizlik.com
+            <a href="mailto:devamsizlik.iletisim@gmail.com" className="text-indigo-400 hover:underline">
+              devamsizlik.iletisim@gmail.com
             </a>{" "}
             adresine e-posta gönderebilirsiniz.
           </p>

@@ -81,8 +81,8 @@ export default function TermsPage() {
           <h2 className="text-lg font-bold text-white">6. Hesap Silme</h2>
           <p>
             Hesabınızı ve tüm verilerinizi silmek için{" "}
-            <a href="mailto:bildirim@devamsizlik.com" className="text-indigo-400 hover:underline">
-              bildirim@devamsizlik.com
+            <a href="mailto:devamsizlik.iletisim@gmail.com" className="text-indigo-400 hover:underline">
+              devamsizlik.iletisim@gmail.com
             </a>{" "}
             adresine e-posta gönderebilirsiniz. Talebiniz en geç 30 gün içinde yerine getirilir.
           </p>
@@ -100,8 +100,8 @@ export default function TermsPage() {
           <h2 className="text-lg font-bold text-white">8. İletişim</h2>
           <p>
             Sorularınız için:{" "}
-            <a href="mailto:bildirim@devamsizlik.com" className="text-indigo-400 hover:underline">
-              bildirim@devamsizlik.com
+            <a href="mailto:devamsizlik.iletisim@gmail.com" className="text-indigo-400 hover:underline">
+              devamsizlik.iletisim@gmail.com
             </a>
           </p>
         </section>
