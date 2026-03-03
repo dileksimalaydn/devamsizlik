@@ -316,7 +316,35 @@ export default function KvkkPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-xl font-bold text-white border-b border-slate-800 pb-2">13. Politika Güncellemeleri</h2>
+          <h2 className="text-xl font-bold text-white border-b border-slate-800 pb-2">13. Yetkisiz Erişim ve Hukuki Yaptırımlar</h2>
+          <div className="bg-rose-950/40 border border-rose-800/50 rounded-2xl p-5 text-sm space-y-4">
+            <p className="text-rose-300 font-semibold text-base">Yasal Uyarı</p>
+            <p className="text-slate-300 leading-relaxed">
+              Uygulamaya kayıtlı kullanıcılara ait hesaplara, kişisel verilere veya sistem bileşenlerine <strong className="text-white">yetkisiz erişim girişimi; Türk Ceza Kanunu ve ilgili mevzuat kapsamında ağır suç teşkil etmekte olup hukuki ve cezai yaptırımlara tabidir.</strong>
+            </p>
+            <div className="space-y-3">
+              <div className="bg-slate-900/60 rounded-xl p-4 space-y-2">
+                <p className="text-white font-semibold">5237 Sayılı Türk Ceza Kanunu</p>
+                <ul className="space-y-2 text-slate-400">
+                  <li><span className="text-rose-400 font-semibold">Madde 243 – Bilişim Sistemine Girme:</span> Bir bilişim sistemine yetkisiz olarak giren kişi <strong className="text-white">1 yıla kadar hapis</strong> cezasıyla cezalandırılır. Sistem içinde kalma veya sistem içindeki verilerin değiştirilmesi halinde ceza artırılır.</li>
+                  <li><span className="text-rose-400 font-semibold">Madde 244 – Sistemi Engelleme, Bozma, Verileri Yok Etme:</span> Sistemi kasten işlemez hâle getirme, veri bozma veya silme fiilleri <strong className="text-white">1 ila 5 yıl hapis</strong> cezasını gerektirir.</li>
+                  <li><span className="text-rose-400 font-semibold">Madde 135 – Kişisel Verilerin Kaydedilmesi:</span> Hukuka aykırı olarak kişisel verileri kaydeden kişi <strong className="text-white">1 ila 3 yıl hapis</strong> cezasıyla cezalandırılır.</li>
+                  <li><span className="text-rose-400 font-semibold">Madde 136 – Verileri Hukuka Aykırı Olarak Ele Geçirme:</span> Kişisel verileri başkasına veren, yayan veya ele geçiren kişi <strong className="text-white">2 ila 4 yıl hapis</strong> cezasıyla cezalandırılır.</li>
+                </ul>
+              </div>
+              <div className="bg-slate-900/60 rounded-xl p-4 space-y-2">
+                <p className="text-white font-semibold">6698 Sayılı KVKK Kapsamında İdari Yaptırımlar</p>
+                <p className="text-slate-400">Kişisel verilere hukuka aykırı erişim; KVKK'nın 17. maddesi ve TCK'ya yapılan atıflar çerçevesinde cezai sorumluluk doğurmaktadır. Ek olarak Kişisel Verileri Koruma Kurulu tarafından idari para cezası uygulanabilir.</p>
+              </div>
+            </div>
+            <p className="text-slate-400 leading-relaxed text-xs">
+              Uygulama üzerinde gerçekleştirilen tüm erişim, işlem ve oturum bilgileri teknik altyapı tarafından kayıt altına alınmaktadır. Yetkisiz erişim tespiti hâlinde ilgili log kayıtları yetkili makamlarla paylaşılacak ve suç duyurusunda bulunulacaktır.
+            </p>
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-xl font-bold text-white border-b border-slate-800 pb-2">14. Politika Güncellemeleri</h2>
           <p className="text-sm leading-relaxed text-slate-400">
             İşbu Aydınlatma Metni, yasal düzenlemeler veya hizmet kapsamındaki değişiklikler doğrultusunda güncellenebilir. Önemli değişiklikler, kayıtlı e-posta adresinize bildirilir ve güncel metin daima bu sayfada yayımlanır. Uygulamayı kullanmaya devam etmeniz, güncel metni kabul ettiğiniz anlamına gelir.
           </p>
