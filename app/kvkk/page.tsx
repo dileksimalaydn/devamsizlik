@@ -37,7 +37,7 @@ export default function KvkkPage() {
             <p><span className="text-slate-400 font-semibold">Veri Sorumlusu:</span> <span className="text-white">Dilek Şimal Aydın</span></p>
             <p><span className="text-slate-400 font-semibold">Uygulama Adı:</span> <span className="text-white">devamsızlık (devamsizlik.com)</span></p>
             <p><span className="text-slate-400 font-semibold">İletişim E-postası:</span>{" "}
-              <a href="mailto:bildirim@devamsizlik.com" className="text-indigo-400 hover:underline">bildirim@devamsizlik.com</a>
+              <a href="mailto:devamsizlik.iletisim@gmail.com" className="text-indigo-400 hover:underline">devamsizlik.iletisim@gmail.com</a>
             </p>
             <p className="text-slate-400 text-xs mt-2">
               KVKK kapsamındaki başvurularınızı yukarıdaki e-posta adresine "KVKK Başvurusu" ibaresiyle iletebilirsiniz. Başvurularınız, kanunun öngördüğü 30 günlük süre içinde yanıtlanacaktır.
@@ -235,7 +235,7 @@ export default function KvkkPage() {
             </p>
             <div className="space-y-2">
               <p><span className="text-slate-400 font-semibold">E-posta ile başvuru:</span>{" "}
-                <a href="mailto:bildirim@devamsizlik.com" className="text-indigo-400 hover:underline font-medium">bildirim@devamsizlik.com</a>
+                <a href="mailto:devamsizlik.iletisim@gmail.com" className="text-indigo-400 hover:underline font-medium">devamsizlik.iletisim@gmail.com</a>
               </p>
               <p className="text-slate-500 text-xs">E-posta konusuna <strong className="text-slate-300">"KVKK Veri Sahibi Başvurusu"</strong> yazınız. Başvurunuzda; adınız-soyadınız, e-posta adresiniz, kullandığınız hak ve talebinizin açık ifadesi yer almalıdır.</p>
             </div>
