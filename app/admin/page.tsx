@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, notFound } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 
 type UserRow = {
@@ -48,8 +48,8 @@ export default function AdminPage() {
     const res = await fetch("/api/admin/users", {
       headers: { Authorization: `Bearer ${t}` },
     });
-    if (res.status === 401) { router.replace("/login"); return; }
-    if (res.status === 403) { router.replace("/"); return; }
+    // 401 veya 403 → 404 göster, admin panelinin varlığını sızdırma
+    if (res.status === 401 || res.status === 403) { notFound(); return; }
     if (!res.ok) { setError("Sunucu hatası."); setLoading(false); return; }
     const data = await res.json();
     setUsers(data.users);
@@ -59,7 +59,8 @@ export default function AdminPage() {
   useEffect(() => {
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { router.replace("/login"); return; }
+      // Giriş yoksa da 404 — /login'e yönlendirmek "burası var" sinyali verir
+      if (!session) { notFound(); return; }
       setToken(session.access_token);
       await loadUsers(session.access_token);
     })();
