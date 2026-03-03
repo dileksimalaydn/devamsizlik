@@ -157,19 +157,24 @@ export async function GET(req: Request) {
         isWeekend,
       });
 
-      await resend.emails.send({
+      const { data: emailData, error: emailError } = await resend.emails.send({
         from: fromEmail,
         to: user.email,
         subject,
         html,
         text,
         headers: {
-          // Not: List-Unsubscribe burada mailto: olmamalı.
-          // Şimdilik dokunmuyorum; çalışmayı bozmasın.
           "X-Entity-Ref-ID": `${user.id}-${todayStr}`,
         },
       });
 
+      if (emailError) {
+        console.error(`Mail gönderilemedi [${user.email}]:`, emailError);
+        errors++;
+        continue;
+      }
+
+      console.log(`Mail gönderildi [${user.email}]: ${emailData?.id}`);
       sent++;
     } catch (err) {
       console.error(`Kullanıcı ${user.id} için hata:`, err);

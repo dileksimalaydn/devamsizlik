@@ -9,15 +9,17 @@ const PAGE_NAMES: Record<string, string> = {
   "/summary": "Özet",
   "/setup": "Dersler",
   "/weekly": "Haftalık",
-  "/admin": "Admin Panel",
 };
+
+// Yayın yapılacak izin verilen sayfalar — başka hiçbir path broadcast etmez
+const ALLOWED_PATHS = new Set(Object.keys(PAGE_NAMES));
 
 export default function PresenceBroadcaster() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Login sayfasında yayın yapma
-    if (pathname === "/login" || pathname === "/") return;
+    // Sadece izin verilen 4 sayfada yayın yap
+    if (!ALLOWED_PATHS.has(pathname)) return;
 
     let channel: ReturnType<typeof supabase.channel> | null = null;
 
@@ -32,8 +34,8 @@ export default function PresenceBroadcaster() {
         if (status === "SUBSCRIBED") {
           await channel!.track({
             user_id: session.user.id,
-            email: session.user.email ?? "—",
-            page: PAGE_NAMES[pathname] ?? pathname,
+            // Email yok — başka kullanıcılar presence kanalını okuyabilir
+            page: PAGE_NAMES[pathname],
             online_at: new Date().toISOString(),
           });
         }

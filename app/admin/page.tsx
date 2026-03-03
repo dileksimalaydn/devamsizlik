@@ -15,10 +15,12 @@ type UserRow = {
 
 type OnlineUser = {
   user_id: string;
-  email: string;
   page: string;
   online_at: string;
 };
+
+// Presence kanalında kabul edilen sayfa isimleri — başka değer gelirse reddedilir
+const VALID_PAGES = new Set(["Dashboard", "Özet", "Dersler", "Haftalık"]);
 
 type CourseRow = {
   course_name: string;
@@ -63,13 +65,26 @@ export default function AdminPage() {
     })();
   }, [router]);
 
-  // Realtime presence
+  // Realtime presence — presence verisi güvenilmez, çapraz kontrol yapılıyor
   useEffect(() => {
     const channel = supabase.channel("app-presence");
     channel
       .on("presence", { event: "sync" }, () => {
-        const state = channel.presenceState<OnlineUser>();
-        setOnline(Object.values(state).flat());
+        const state = channel.presenceState<{ page?: string; online_at?: string }>();
+        const verified: OnlineUser[] = [];
+        for (const [userId, presences] of Object.entries(state)) {
+          const p = presences[0];
+          if (!p) continue;
+          // Sadece whitelist'teki sayfa isimlerine izin ver
+          const page = p.page && VALID_PAGES.has(p.page) ? p.page : null;
+          if (!page) continue;
+          verified.push({
+            user_id: userId,
+            page,
+            online_at: p.online_at ?? new Date().toISOString(),
+          });
+        }
+        setOnline(verified);
       })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
@@ -156,21 +171,30 @@ export default function AdminPage() {
           <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
           <span className="text-sm font-semibold">Şu An Online ({online.length})</span>
         </div>
-        {online.length === 0 ? (
-          <p className="px-4 py-3 text-sm text-slate-500">Kimse online değil.</p>
-        ) : (
-          <div className="divide-y divide-slate-800">
-            {online.map((u) => (
-              <div key={u.user_id} className="px-4 py-3 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">{u.email}</p>
-                  <p className="text-xs text-slate-400">{u.page}</p>
-                </div>
-                <span className="text-xs text-slate-500">{new Date(u.online_at).toLocaleTimeString("tr-TR")}</span>
-              </div>
-            ))}
-          </div>
-        )}
+        {(() => {
+          // Sadece gerçek kullanıcılarla eşleşen presence kayıtlarını göster
+          const verifiedOnline = online.filter((o) =>
+            users.some((u) => u.id === o.user_id)
+          );
+          return verifiedOnline.length === 0 ? (
+            <p className="px-4 py-3 text-sm text-slate-500">Kimse online değil.</p>
+          ) : (
+            <div className="divide-y divide-slate-800">
+              {verifiedOnline.map((o) => {
+                const realUser = users.find((u) => u.id === o.user_id);
+                return (
+                  <div key={o.user_id} className="px-4 py-3 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium">{realUser?.email ?? "—"}</p>
+                      <p className="text-xs text-slate-400">{o.page}</p>
+                    </div>
+                    <span className="text-xs text-slate-500">{new Date(o.online_at).toLocaleTimeString("tr-TR")}</span>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Arama */}
