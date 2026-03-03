@@ -22,6 +22,7 @@ export default function LoginPage() {
   const [isMfa, setIsMfa] = useState(false);
   const [mfaCode, setMfaCode] = useState("");
   const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
+  const [kvkkAccepted, setKvkkAccepted] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
@@ -100,6 +101,10 @@ export default function LoginPage() {
   async function handleAuth() {
     if (!email || !password) {
       setMsg({ text: "E-posta ve şifre girilmeli.", ok: false });
+      return;
+    }
+    if (isSignUp && !kvkkAccepted) {
+      setMsg({ text: "Devam etmek için KVKK Aydınlatma Metni'ni onaylamalısın.", ok: false });
       return;
     }
     if (!captchaToken) {
@@ -306,6 +311,21 @@ export default function LoginPage() {
                 onKeyDown={(e) => e.key === "Enter" && handleAuth()}
                 className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-700 transition-all"
               />
+
+              {/* KVKK onayı — sadece kayıt modunda */}
+              {isSignUp && (
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={kvkkAccepted}
+                    onChange={(e) => setKvkkAccepted(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 rounded border-slate-600 bg-slate-800 text-indigo-500 accent-indigo-500 shrink-0 cursor-pointer"
+                  />
+                  <span className="text-xs text-slate-400 leading-relaxed">
+                    <a href="/kvkk" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline font-medium">KVKK Aydınlatma Metni</a>'ni okudum; kişisel verilerimin burada belirtilen amaçlar doğrultusunda işlenmesini ve aktarılmasını <span className="text-white font-medium">açık rızamla onaylıyorum</span>.
+                  </span>
+                </label>
+              )}
 
               {/* Turnstile */}
               <Turnstile
