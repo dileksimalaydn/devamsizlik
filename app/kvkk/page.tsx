@@ -34,7 +34,7 @@ export default function KvkkPage() {
         <section className="space-y-4">
           <h2 className="text-xl font-bold text-white border-b border-slate-800 pb-2">1. Veri Sorumlusunun Kimliği ve İletişim Bilgileri</h2>
           <div className="space-y-2 text-sm leading-relaxed">
-            <p><span className="text-slate-400 font-semibold">Veri Sorumlusu:</span> <span className="text-white">Dilek Şimal Aydın</span></p>
+            <p><span className="text-slate-400 font-semibold">Veri Sorumlusu:</span> <span className="text-white">devamsızlık platformu</span></p>
             <p><span className="text-slate-400 font-semibold">Uygulama Adı:</span> <span className="text-white">devamsızlık (devamsizlik.com)</span></p>
             <p><span className="text-slate-400 font-semibold">İletişim E-postası:</span>{" "}
               <a href="mailto:devamsizlik.iletisim@gmail.com" className="text-indigo-400 hover:underline">devamsizlik.iletisim@gmail.com</a>
@@ -108,6 +108,9 @@ export default function KvkkPage() {
                 <li>Devamsızlık sınırına yaklaşıldığında uyarı e-postası iletilmesi</li>
               </ul>
               <p className="text-slate-500 text-xs mt-1">Açık rızaya dayalı işlemler için rızanızı her zaman geri alma hakkınız saklıdır.</p>
+              <p className="text-amber-600/80 text-xs mt-2 border-l-2 border-amber-700/50 pl-3">
+                E-posta bildirimleri yardımcı hatırlatma niteliğindedir. Teknik aksaklıklar, spam filtreleri veya servis kesintileri nedeniyle kullanıcıya ulaşmayabilir. Nihai takip sorumluluğu kullanıcıya aittir.
+              </p>
             </div>
           </div>
         </section>
@@ -181,15 +184,15 @@ export default function KvkkPage() {
                 <tbody className="divide-y divide-slate-800">
                   <tr className="bg-slate-950">
                     <td className="px-4 py-3 text-white">Hesap ve kimlik doğrulama verileri</td>
-                    <td className="px-4 py-3 text-slate-400">Hesap aktif olduğu sürece; hesap silinmesinden itibaren 30 gün</td>
+                    <td className="px-4 py-3 text-slate-400">Hesap aktif olduğu sürece; hesap silinme talebi üzerine işlenme amacı ortadan kalktığında makul süre içinde silinir. Yedekleme sistemleri nedeniyle kalıcı silme belirli bir süre alabilir.</td>
                   </tr>
                   <tr className="bg-slate-900/40">
                     <td className="px-4 py-3 text-white">Ders ve devamsızlık verileri</td>
-                    <td className="px-4 py-3 text-slate-400">Hesap aktif olduğu sürece; silme talebinden itibaren derhal</td>
+                    <td className="px-4 py-3 text-slate-400">Hesap aktif olduğu sürece; silme talebi halinde işlenme amacı ortadan kalktığında makul süre içinde silinir.</td>
                   </tr>
                   <tr className="bg-slate-950">
                     <td className="px-4 py-3 text-white">E-posta bildirim logları</td>
-                    <td className="px-4 py-3 text-slate-400">90 gün (teknik zorunluluk)</td>
+                    <td className="px-4 py-3 text-slate-400">Hizmet sağlayıcının (Resend) teknik gereklilikleri kapsamında sınırlı süre; işlenme amacının ortadan kalkmasıyla silinir.</td>
                   </tr>
                   <tr className="bg-slate-900/40">
                     <td className="px-4 py-3 text-white">Erişim ve işlem logları</td>

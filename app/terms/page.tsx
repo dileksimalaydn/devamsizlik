@@ -84,7 +84,7 @@ export default function TermsPage() {
             <a href="mailto:devamsizlik.iletisim@gmail.com" className="text-indigo-400 hover:underline">
               devamsizlik.iletisim@gmail.com
             </a>{" "}
-            adresine e-posta gönderebilirsiniz. Talebiniz en geç 30 gün içinde yerine getirilir.
+            adresine e-posta gönderebilirsiniz. Talebiniz, işlenme amacının ortadan kalkmasıyla makul süre içinde yerine getirilir.
           </p>
         </section>
 

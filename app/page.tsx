@@ -89,6 +89,9 @@ export default function Home() {
             Ücretsiz Başla
           </Link>
         </div>
+        <p className="mt-4 text-xs text-indigo-300/60 text-center">
+          Herhangi bir üniversite ile resmi bağlantısı bulunmayan bağımsız bir takip uygulamasıdır.
+        </p>
 
       </section>
 

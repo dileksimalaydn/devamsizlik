@@ -30,7 +30,7 @@ export default function PrivacyPage() {
           <p>
             Bu gizlilik politikası, <strong className="text-white">devamsizlik.com</strong> adresinde
             hizmet veren devamsızlık takip uygulamasına aittir. Veri sorumlusu:{" "}
-            <strong className="text-white">Dilek Şimal Aydın</strong>.
+            <strong className="text-white">devamsızlık platformu</strong>.
           </p>
           <p>
             İletişim:{" "}
@@ -62,6 +62,9 @@ export default function PrivacyPage() {
           <p>
             Verileriniz üçüncü taraflarla pazarlama amacıyla paylaşılmaz, satılmaz.
           </p>
+          <p className="text-sm text-slate-500 border-l-2 border-slate-700 pl-3">
+            E-posta bildirimleri yardımcı hatırlatma niteliğindedir. Teknik aksaklıklar, spam filtreleri veya servis kesintileri nedeniyle kullanıcıya ulaşmayabilir. Nihai takip sorumluluğu kullanıcıya aittir.
+          </p>
         </section>
 
         <section className="space-y-3">
@@ -87,8 +90,9 @@ export default function PrivacyPage() {
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-white">6. Veri Saklama Süresi</h2>
           <p>
-            Verileriniz hesabınız aktif olduğu sürece saklanır. Hesabınızı sildiğinizde tüm verileriniz
-            kalıcı olarak silinir.
+            Verileriniz hesabınız aktif olduğu sürece saklanır. Hesabınızı sildiğinizde veriler
+            sistemden kaldırılır. Yedekleme sistemleri nedeniyle kalıcı silme işlemi belirli bir süre
+            alabilir; silme talebi halinde işlenme amacı ortadan kalktığında veriler makul süre içinde silinir.
           </p>
         </section>
 
