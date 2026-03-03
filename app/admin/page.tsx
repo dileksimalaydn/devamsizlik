@@ -49,7 +49,7 @@ export default function AdminPage() {
       headers: { Authorization: `Bearer ${t}` },
     });
     // 401 veya 403 → 404 göster, admin panelinin varlığını sızdırma
-    if (res.status === 401 || res.status === 403) { notFound(); return; }
+    if (res.status === 401 || res.status === 403) return notFound();
     if (!res.ok) { setError("Sunucu hatası."); setLoading(false); return; }
     const data = await res.json();
     setUsers(data.users);
@@ -60,7 +60,7 @@ export default function AdminPage() {
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
       // Giriş yoksa da 404 — /login'e yönlendirmek "burası var" sinyali verir
-      if (!session) { notFound(); return; }
+      if (!session) return notFound();
       setToken(session.access_token);
       await loadUsers(session.access_token);
     })();
