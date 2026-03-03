@@ -1,5 +1,6 @@
 import "./globals.css";
 import PresenceBroadcaster from "@/components/PresenceBroadcaster";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata = {
   title: "devamsızlık – Devamsızlık Takip",
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="tr">
       <body className="min-h-screen bg-slate-50 text-slate-900">
         <PresenceBroadcaster />
+        <Analytics />
         {children}
       </body>
     </html>
