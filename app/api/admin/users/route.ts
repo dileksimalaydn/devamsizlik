@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
+import { adminRatelimit } from "@/lib/ratelimit";
 
 function isAdminEmail(email?: string | null) {
   const raw = process.env.ADMIN_EMAILS ?? "";
@@ -22,6 +23,10 @@ async function verifyAdmin(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for") ?? "unknown";
+  const { success } = await adminRatelimit.limit(ip);
+  if (!success) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+
   const user = await verifyAdmin(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
@@ -65,6 +70,10 @@ export async function GET(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for") ?? "unknown";
+  const { success } = await adminRatelimit.limit(ip);
+  if (!success) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+
   const user = await verifyAdmin(req);
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

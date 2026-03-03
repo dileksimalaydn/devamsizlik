@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { createSupabaseAdmin } from "@/lib/supabase/admin";
+import { adminRatelimit } from "@/lib/ratelimit";
 
 function isAdminEmail(email?: string | null) {
   const raw = process.env.ADMIN_EMAILS ?? "";
@@ -9,6 +10,10 @@ function isAdminEmail(email?: string | null) {
 }
 
 export async function GET(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for") ?? "unknown";
+  const { success } = await adminRatelimit.limit(ip);
+  if (!success) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+
   const authHeader = req.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
