@@ -28,7 +28,7 @@ export default function KvkkPage() {
         </div>
 
         <div className="bg-slate-900 border border-slate-700 rounded-2xl p-5 text-sm leading-relaxed text-slate-300">
-          Bu Aydınlatma Metni; 6698 sayılı Kişisel Verilerin Korunması Kanunu'nun ("KVKK") 10. maddesi ile Aydınlatma Yükümlülüğünün Yerine Getirilmesinde Uyulacak Usul ve Esaslar Hakkında Tebliğ kapsamında, veri sorumlusu sıfatıyla <strong className="text-white">Dilek Şimal Aydın</strong> tarafından hazırlanmıştır.
+          Bu Aydınlatma Metni; 6698 sayılı Kişisel Verilerin Korunması Kanunu'nun ("KVKK") 10. maddesi ile Aydınlatma Yükümlülüğünün Yerine Getirilmesinde Uyulacak Usul ve Esaslar Hakkında Tebliğ kapsamında hazırlanmıştır.
         </div>
 
         <section className="space-y-4">
