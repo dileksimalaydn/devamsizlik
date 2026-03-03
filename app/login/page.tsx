@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { AlertCircle, CheckCircle2, GraduationCap, Loader2 } from "lucide-react";
+import { Turnstile } from "@marsidev/react-turnstile";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,6 +17,8 @@ export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [isForgot, setIsForgot] = useState(false);
   const [isReset, setIsReset] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
@@ -64,6 +68,10 @@ export default function LoginPage() {
       setMsg({ text: "E-posta ve şifre girilmeli.", ok: false });
       return;
     }
+    if (!captchaToken) {
+      setMsg({ text: "Güvenlik doğrulaması bekleniyor, lütfen bekle.", ok: false });
+      return;
+    }
     setLoading(true);
     setMsg(null);
 
@@ -71,7 +79,7 @@ export default function LoginPage() {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: window.location.origin },
+        options: { emailRedirectTo: window.location.origin, captchaToken: captchaToken },
       });
       if (error) {
         setMsg({ text: "Hata: " + error.message, ok: false });
@@ -87,9 +95,11 @@ export default function LoginPage() {
         setMsg({ text: "Başarılı! E-postanı kontrol et.", ok: true });
       }
     } else {
-      const { error, data } = await supabase.auth.signInWithPassword({ email, password });
+      const { error, data } = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken: captchaToken } });
       if (error) {
         setMsg({ text: "E-posta veya şifre hatalı.", ok: false });
+        turnstileRef.current?.reset();
+        setCaptchaToken(null);
       } else {
         const token = data.session?.access_token;
         const res = await fetch("/api/admin/check", {
@@ -222,10 +232,19 @@ export default function LoginPage() {
                 className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-700 transition-all"
               />
 
+              {/* Turnstile */}
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                onSuccess={(token) => setCaptchaToken(token)}
+                onExpire={() => setCaptchaToken(null)}
+                options={{ theme: "dark" }}
+              />
+
               {/* Submit */}
               <button
                 onClick={handleAuth}
-                disabled={loading}
+                disabled={loading || !captchaToken}
                 className="flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-slate-900 transition-all hover:bg-slate-100 active:scale-[0.98] disabled:opacity-60"
               >
                 {loading ? (
