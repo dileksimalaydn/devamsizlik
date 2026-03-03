@@ -256,7 +256,67 @@ export default function KvkkPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-xl font-bold text-white border-b border-slate-800 pb-2">10. Politika Güncellemeleri</h2>
+          <h2 className="text-xl font-bold text-white border-b border-slate-800 pb-2">10. Uygulamanın Bağımsızlığı ve Hizmet Niteliği</h2>
+          <div className="bg-amber-950/40 border border-amber-800/50 rounded-2xl p-5 text-sm space-y-3">
+            <p className="text-amber-300 font-semibold">Önemli Açıklama</p>
+            <p className="text-slate-300 leading-relaxed">
+              <strong className="text-white">devamsızlık (devamsizlik.com)</strong>; herhangi bir üniversite, yükseköğretim kurumu, Yükseköğretim Kurulu (YÖK), Millî Eğitim Bakanlığı veya başka bir kamu ya da özel kuruluşla <strong className="text-amber-300">hiçbir organik, hukuki veya ticari bağlantısı bulunmayan bağımsız bir kişisel takip uygulamasıdır</strong>.
+            </p>
+            <ul className="list-disc pl-5 space-y-2 text-slate-400">
+              <li>Uygulama; resmi yoklama sistemi, devlet kaydı veya herhangi bir kurumun veri tabanıyla entegre değildir ve bu sistemlere erişim sağlamaz.</li>
+              <li>Uygulama üzerinden girilen veriler yalnızca kişisel takip amacıyla kullanılmak üzere tasarlanmıştır; resmi kayıt, belge veya hukuki kanıt niteliği taşımaz.</li>
+              <li>Uygulamanın sunduğu devamsızlık hesaplamaları (limit, yüzde vb.) <strong className="text-white">tahmini ve bilgilendirici nitelikte</strong> olup bağlı olduğunuz kurumun resmi mevzuatı esas alınmalıdır.</li>
+              <li>Kullanıcılar; devamsızlık takibinde uygulamayı tek ve kesin kaynak olarak kullanamaz, bağlı oldukları kurumun resmi kanallarını takip etmekle sorumludur.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-xl font-bold text-white border-b border-slate-800 pb-2">11. Kullanıcı Sorumluluğu</h2>
+          <p className="text-sm text-slate-400 leading-relaxed">
+            Kullanıcı, uygulamayı kullanmaya başladığı andan itibaren aşağıdaki hususlarda tam ve münhasır sorumluluğu kabul etmiş sayılır:
+          </p>
+          <div className="space-y-3 text-sm">
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+              <p className="text-white font-semibold">11.1. Veri Doğruluğu</p>
+              <p className="text-slate-400 leading-relaxed">Uygulamaya girilen tüm veriler (ders adları, saatler, devamsızlık kayıtları vb.) yalnızca kullanıcı tarafından girilmektedir. Bu verilerin doğruluğu, eksiksizliği ve güncelliğinden münhasıran kullanıcı sorumludur. Veri sorumlusu, kullanıcının yanlış veya eksik girdiği bilgilerden doğabilecek herhangi bir sonuçtan sorumlu tutulamaz.</p>
+            </div>
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+              <p className="text-white font-semibold">11.2. Hesap Güvenliği</p>
+              <p className="text-slate-400 leading-relaxed">Kullanıcı; hesap şifresinin gizliliğini korumak, güçlü ve benzersiz bir şifre seçmek, oturumunu üçüncü şahıslarla paylaşmamak ve hesabına yetkisiz erişim fark ettiğinde derhal şifresini değiştirmekle yükümlüdür. Kullanıcının şifresini paylaşması, zayıf şifre kullanması veya kendi cihazından kaynaklanan güvenlik açıkları nedeniyle oluşacak zararlardan veri sorumlusu sorumlu değildir.</p>
+            </div>
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+              <p className="text-white font-semibold">11.3. Kullanım Amacı ve Yasal Uyum</p>
+              <p className="text-slate-400 leading-relaxed">Kullanıcı, uygulamayı yalnızca kişisel devamsızlık takibi amacıyla, yasalara ve bu Aydınlatma Metni'ne uygun şekilde kullanacağını kabul eder. Uygulamanın kötüye kullanımından, başkalarının verilerine izinsiz erişim girişimlerinden ve üçüncü kişilere zarar verebilecek her türlü eylemden münhasıren kullanıcı sorumludur.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-xl font-bold text-white border-b border-slate-800 pb-2">12. Sorumluluğun Sınırlandırılması</h2>
+          <div className="space-y-3 text-sm">
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+              <p className="text-white font-semibold">12.1. Hizmetin "Olduğu Gibi" Sunulması</p>
+              <p className="text-slate-400 leading-relaxed">Uygulama, ticari bir ürün değil bireysel bir geliştirici tarafından sunulan bağımsız bir hizmet olarak <strong className="text-white">"olduğu gibi" (as-is)</strong> sunulmaktadır. Hizmet kesintileri, teknik arızalar, veri kaybı veya sistemdeki hatalardan kaynaklanan doğrudan ya da dolaylı zararlardan veri sorumlusunun sorumluluğu, yürürlükteki mevzuatın izin verdiği azami ölçüde sınırlandırılmıştır.</p>
+            </div>
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+              <p className="text-white font-semibold">12.2. Güvenlik İhlali Riski ve Kabul</p>
+              <p className="text-slate-400 leading-relaxed">
+                Veri sorumlusu, kişisel verilerin güvenliğini sağlamak için KVKK'nın 12. maddesi kapsamında makul teknik ve idari tedbirler almaktadır. Bununla birlikte, hiçbir teknik sistem %100 güvenlik garantisi sunamamaktadır. Kullanıcı; uygulamaya kaydolarak ve bu Aydınlatma Metni'ni onaylayarak, <strong className="text-white">olası bir güvenlik ihlali durumunda sistemde kayıtlı e-posta adresinin üçüncü kişilerin eline geçebileceği riskini bilerek ve açık rızasıyla</strong> kabul etmektedir.
+              </p>
+              <p className="text-slate-400 leading-relaxed">
+                Güvenlik ihlali tespit edilmesi halinde, veri sorumlusu KVKK'nın 12/5. maddesi uyarınca ilgili kişileri ve Kişisel Verileri Koruma Kurulu'nu en kısa sürede bilgilendirmekle yükümlüdür.
+              </p>
+            </div>
+            <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+              <p className="text-white font-semibold">12.3. Üçüncü Taraf Altyapısından Kaynaklanan Riskler</p>
+              <p className="text-slate-400 leading-relaxed">Uygulama; Supabase, Vercel, Resend ve Cloudflare gibi üçüncü taraf altyapı sağlayıcılarını kullanmaktadır. Bu sağlayıcıların kendi sistemlerinde yaşanabilecek güvenlik açıkları, veri ihlalleri veya hizmet kesintilerinden doğan zararlardan veri sorumlusu sorumlu tutulamaz. Kullanıcı, bu riski bilerek hizmeti kullandığını kabul eder.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-xl font-bold text-white border-b border-slate-800 pb-2">13. Politika Güncellemeleri</h2>
           <p className="text-sm leading-relaxed text-slate-400">
             İşbu Aydınlatma Metni, yasal düzenlemeler veya hizmet kapsamındaki değişiklikler doğrultusunda güncellenebilir. Önemli değişiklikler, kayıtlı e-posta adresinize bildirilir ve güncel metin daima bu sayfada yayımlanır. Uygulamayı kullanmaya devam etmeniz, güncel metni kabul ettiğiniz anlamına gelir.
           </p>
