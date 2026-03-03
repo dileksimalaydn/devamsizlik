@@ -354,9 +354,8 @@ export default function KvkkPage() {
           Bu belge; 6698 sayılı Kişisel Verilerin Korunması Kanunu, Aydınlatma Yükümlülüğünün Yerine Getirilmesinde Uyulacak Usul ve Esaslar Hakkında Tebliğ ile Kişisel Verilerin Silinmesi, Yok Edilmesi veya Anonim Hale Getirilmesi Hakkında Yönetmelik hükümleri çerçevesinde hazırlanmıştır.
         </div>
 
-        <div className="border-t border-slate-800 pt-6 flex items-center justify-between text-sm">
+        <div className="border-t border-slate-800 pt-6 text-sm">
           <Link href="/" className="text-indigo-400 hover:underline">Ana Sayfaya Dön</Link>
-          <Link href="/privacy" className="text-slate-500 hover:text-slate-300">Gizlilik Politikası</Link>
         </div>
 
       </main>
