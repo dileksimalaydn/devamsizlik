@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, notFound } from "next/navigation";
-import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 
 type UserRow = {
@@ -45,6 +44,15 @@ export default function AdminPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [token, setToken] = useState<string>("");
 
+  // 2FA state
+  const [mfaEnrolled, setMfaEnrolled] = useState(false);
+  const [mfaStep, setMfaStep] = useState<"idle" | "qr">("idle");
+  const [qrCode, setQrCode] = useState("");
+  const [enrollFactorId, setEnrollFactorId] = useState<string | null>(null);
+  const [totpCode, setTotpCode] = useState("");
+  const [mfaLoading, setMfaLoading] = useState(false);
+  const [mfaMsg, setMfaMsg] = useState<{ text: string; ok: boolean } | null>(null);
+
   async function loadUsers(t: string) {
     const res = await fetch("/api/admin/users", {
       headers: { Authorization: `Bearer ${t}` },
@@ -60,12 +68,45 @@ export default function AdminPage() {
   useEffect(() => {
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      // Giriş yoksa da 404 — /login'e yönlendirmek "burası var" sinyali verir
       if (!session) return notFound();
       setToken(session.access_token);
       await loadUsers(session.access_token);
+      const { data: factors } = await supabase.auth.mfa.listFactors();
+      const verified = factors?.totp?.find((f) => f.status === "verified");
+      setMfaEnrolled(!!verified);
     })();
   }, [router]);
+
+  async function handleMfaEnroll() {
+    setMfaLoading(true);
+    setMfaMsg(null);
+    const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp", friendlyName: "yoklama-admin" });
+    if (error || !data) {
+      setMfaMsg({ text: "Hata: " + (error?.message ?? "bilinmiyor"), ok: false });
+    } else {
+      setQrCode(data.totp.qr_code);
+      setEnrollFactorId(data.id);
+      setMfaStep("qr");
+    }
+    setMfaLoading(false);
+  }
+
+  async function handleMfaVerify() {
+    if (!enrollFactorId || totpCode.length !== 6) return;
+    setMfaLoading(true);
+    setMfaMsg(null);
+    const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: enrollFactorId, code: totpCode });
+    if (error) {
+      setMfaMsg({ text: "Kod hatalı, tekrar dene.", ok: false });
+      setTotpCode("");
+    } else {
+      setMfaEnrolled(true);
+      setMfaStep("idle");
+      setTotpCode("");
+      setMfaMsg({ text: "2FA kuruldu! Bir sonraki girişten itibaren aktif.", ok: true });
+    }
+    setMfaLoading(false);
+  }
 
   // Realtime presence — presence verisi güvenilmez, çapraz kontrol yapılıyor
   useEffect(() => {
@@ -144,17 +185,12 @@ export default function AdminPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">Admin Panel</h1>
-        <div className="flex items-center gap-4">
-          <Link href="/settings" className="text-sm text-slate-400 hover:text-white transition-colors">
-            Ayarlar
-          </Link>
-          <button
-            onClick={async () => { await supabase.auth.signOut(); router.replace("/"); }}
-            className="text-sm text-slate-400 hover:text-white transition-colors"
-          >
-            Çıkış Yap
-          </button>
-        </div>
+        <button
+          onClick={async () => { await supabase.auth.signOut(); router.replace("/"); }}
+          className="text-sm text-slate-400 hover:text-white transition-colors"
+        >
+          Çıkış Yap
+        </button>
       </div>
 
       {/* İstatistikler */}
@@ -292,6 +328,58 @@ export default function AdminPage() {
           </table>
         </div>
       </div>
+
+      {/* 2FA */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 space-y-3">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-semibold">İki Faktörlü Doğrulama (2FA)</p>
+          {mfaEnrolled && (
+            <span className="text-xs font-bold text-emerald-400 bg-emerald-900/40 border border-emerald-800 px-2 py-0.5 rounded-full">Aktif</span>
+          )}
+        </div>
+
+        {mfaEnrolled ? (
+          <p className="text-xs text-slate-400">2FA aktif. Giriş yaparken telefon kodu gerekiyor.</p>
+        ) : mfaStep === "idle" ? (
+          <button
+            onClick={handleMfaEnroll}
+            disabled={mfaLoading}
+            className="flex items-center justify-center gap-2 rounded-xl bg-slate-800 border border-slate-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700 transition disabled:opacity-60"
+          >
+            {mfaLoading ? "Yükleniyor..." : "2FA Kur"}
+          </button>
+        ) : (
+          <div className="space-y-3">
+            <p className="text-xs text-slate-400">Google Authenticator ile QR kodu okut, ardından 6 haneli kodu gir.</p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={qrCode} alt="2FA QR" className="w-36 h-36 rounded-xl bg-white p-1" />
+            <input
+              type="text"
+              inputMode="numeric"
+              placeholder="6 haneli kod"
+              value={totpCode}
+              onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              onKeyDown={(e) => e.key === "Enter" && handleMfaVerify()}
+              maxLength={6}
+              className="w-48 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-white placeholder:text-slate-500 outline-none focus:border-slate-500 tracking-widest text-center"
+            />
+            <button
+              onClick={handleMfaVerify}
+              disabled={totpCode.length !== 6 || mfaLoading}
+              className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 transition disabled:opacity-60"
+            >
+              {mfaLoading ? "Doğrulanıyor..." : "Doğrula ve Aktifleştir"}
+            </button>
+          </div>
+        )}
+
+        {mfaMsg && (
+          <p className={`text-xs font-medium ${mfaMsg.ok ? "text-emerald-400" : "text-rose-400"}`}>
+            {mfaMsg.text}
+          </p>
+        )}
+      </div>
+
     </div>
   );
 }
