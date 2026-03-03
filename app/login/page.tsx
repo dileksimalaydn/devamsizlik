@@ -41,13 +41,23 @@ export default function LoginPage() {
       setMsg({ text: "E-posta adresini gir.", ok: false });
       return;
     }
+    if (!captchaToken) {
+      setMsg({ text: "Güvenlik doğrulaması bekleniyor, lütfen bekle.", ok: false });
+      return;
+    }
     setLoading(true);
     setMsg(null);
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/login`,
+      captchaToken: captchaToken,
     });
-    if (error) setMsg({ text: "Hata: " + error.message, ok: false });
-    else setMsg({ text: "Şifre sıfırlama maili gönderildi!", ok: true });
+    if (error) {
+      setMsg({ text: "Hata: " + error.message, ok: false });
+      turnstileRef.current?.reset();
+      setCaptchaToken(null);
+    } else {
+      setMsg({ text: "Şifre sıfırlama maili gönderildi!", ok: true });
+    }
     setLoading(false);
   }
 
@@ -171,16 +181,23 @@ export default function LoginPage() {
                 onKeyDown={(e) => e.key === "Enter" && handleForgot()}
                 className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-700 transition-all"
               />
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                onSuccess={(token) => setCaptchaToken(token)}
+                onExpire={() => setCaptchaToken(null)}
+                options={{ theme: "dark" }}
+              />
               <button
                 onClick={handleForgot}
-                disabled={loading}
+                disabled={loading || !captchaToken}
                 className="flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-slate-900 transition-all hover:bg-slate-100 active:scale-[0.98] disabled:opacity-60"
               >
                 {loading ? <Loader2 size={18} className="animate-spin" /> : "Sıfırlama Maili Gönder"}
               </button>
               <p className="pt-1 text-center text-sm text-slate-400">
                 <button
-                  onClick={() => { setIsForgot(false); setMsg(null); }}
+                  onClick={() => { setIsForgot(false); setMsg(null); setCaptchaToken(null); turnstileRef.current?.reset(); }}
                   className="font-semibold text-white hover:underline"
                 >
                   Geri Dön
