@@ -1,6 +1,7 @@
 import "./globals.css";
 import PresenceBroadcaster from "@/components/PresenceBroadcaster";
 import { Analytics } from "@vercel/analytics/react";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 export const metadata = {
   title: "devamsızlık – Devamsızlık Takip",
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Analytics />
         {children}
       </body>
+      <GoogleAnalytics gaId="G-SD3M7D622R" />
     </html>
   );
 }
