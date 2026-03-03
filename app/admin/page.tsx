@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, notFound } from "next/navigation";
+import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 
 type UserRow = {
@@ -143,12 +144,17 @@ export default function AdminPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">Admin Panel</h1>
-        <button
-          onClick={async () => { await supabase.auth.signOut(); router.replace("/"); }}
-          className="text-sm text-slate-400 hover:text-white transition-colors"
-        >
-          Çıkış Yap
-        </button>
+        <div className="flex items-center gap-4">
+          <Link href="/settings" className="text-sm text-slate-400 hover:text-white transition-colors">
+            Ayarlar
+          </Link>
+          <button
+            onClick={async () => { await supabase.auth.signOut(); router.replace("/"); }}
+            className="text-sm text-slate-400 hover:text-white transition-colors"
+          >
+            Çıkış Yap
+          </button>
+        </div>
       </div>
 
       {/* İstatistikler */}

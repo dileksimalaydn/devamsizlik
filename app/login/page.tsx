@@ -19,6 +19,9 @@ export default function LoginPage() {
   const [isReset, setIsReset] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const turnstileRef = useRef<TurnstileInstance>(null);
+  const [isMfa, setIsMfa] = useState(false);
+  const [mfaCode, setMfaCode] = useState("");
+  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
@@ -34,6 +37,26 @@ export default function LoginPage() {
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) setMsg({ text: "Hata: " + error.message, ok: false });
     else { setMsg({ text: "Şifre güncellendi!", ok: true }); setTimeout(() => router.replace("/dashboard"), 1500); }
+    setLoading(false);
+  }
+
+  async function handleMfaChallenge() {
+    if (!mfaFactorId || mfaCode.length !== 6) return;
+    setLoading(true);
+    setMsg(null);
+    const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: mfaFactorId, code: mfaCode });
+    if (error) {
+      setMsg({ text: "Kod hatalı, tekrar dene.", ok: false });
+      setMfaCode("");
+    } else {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      const res = await fetch("/api/admin/check", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      const { isAdmin } = await res.json();
+      router.replace(isAdmin ? "/admin" : "/dashboard");
+    }
     setLoading(false);
   }
 
@@ -112,6 +135,18 @@ export default function LoginPage() {
         turnstileRef.current?.reset();
         setCaptchaToken(null);
       } else {
+        // 2FA kontrolü
+        const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+        if (aalData?.nextLevel === "aal2" && aalData?.currentLevel !== "aal2") {
+          const { data: factors } = await supabase.auth.mfa.listFactors();
+          const factor = factors?.totp?.find((f) => f.status === "verified");
+          if (factor) {
+            setMfaFactorId(factor.id);
+            setIsMfa(true);
+            setLoading(false);
+            return;
+          }
+        }
         const token = data.session?.access_token;
         const res = await fetch("/api/admin/check", {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -149,12 +184,34 @@ export default function LoginPage() {
       {/* Kart */}
       <div className="w-full max-w-sm rounded-3xl bg-slate-900 p-6 shadow-2xl border border-slate-800">
         <h2 className="mb-5 text-base font-bold text-white">
-          {isReset ? "Yeni Şifre Belirle" : isForgot ? "Şifremi Unuttum" : isSignUp ? "Hesap Oluştur" : "Tekrar Hoş Geldin"}
+          {isMfa ? "İki Faktörlü Doğrulama" : isReset ? "Yeni Şifre Belirle" : isForgot ? "Şifremi Unuttum" : isSignUp ? "Hesap Oluştur" : "Tekrar Hoş Geldin"}
         </h2>
 
         <div className="space-y-3">
           {/* Şifre sıfırlama modu */}
-          {isReset ? (
+          {isMfa ? (
+            <>
+              <p className="text-sm text-slate-400 -mt-2">Authenticator uygulamanızdaki 6 haneli kodu gir.</p>
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="6 haneli kod"
+                value={mfaCode}
+                onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                onKeyDown={(e) => e.key === "Enter" && handleMfaChallenge()}
+                className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-700 transition-all tracking-widest text-center text-lg"
+                maxLength={6}
+                autoFocus
+              />
+              <button
+                onClick={handleMfaChallenge}
+                disabled={loading || mfaCode.length !== 6}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-slate-900 transition-all hover:bg-slate-100 active:scale-[0.98] disabled:opacity-60"
+              >
+                {loading ? <Loader2 size={18} className="animate-spin" /> : "Doğrula"}
+              </button>
+            </>
+          ) : isReset ? (
             <>
               <input
                 type="password"
