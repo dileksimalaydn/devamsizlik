@@ -182,7 +182,7 @@ export default function SummaryPage() {
             {totals.map((g) => {
               const { missed, limit } = g;
               const remaining = fixNegZero(Math.max(0, limit - missed));
-              const pct = Math.min(100, Math.round((missed / limit) * 100));
+              const pct = limit <= 0 ? 0 : Math.min(100, Math.round((missed / limit) * 100));
               const r = riskMeta(missed, limit);
 
               return (

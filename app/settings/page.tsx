@@ -23,7 +23,7 @@ export default function SettingsPage() {
 
   async function handlePasswordChange() {
     if (!newPassword) { setMsg({ text: "Yeni şifre gir.", ok: false }); return; }
-    if (newPassword.length < 6) { setMsg({ text: "Şifre en az 6 karakter olmalı.", ok: false }); return; }
+    if (newPassword.length < 8) { setMsg({ text: "Şifre en az 8 karakter olmalı.", ok: false }); return; }
     setLoading(true);
     setMsg(null);
     const { error } = await supabase.auth.updateUser({ password: newPassword });

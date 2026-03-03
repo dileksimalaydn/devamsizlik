@@ -13,6 +13,7 @@ export default function ResetPasswordPage() {
 
   async function handleReset() {
     if (!newPassword) { setMsg({ text: "Yeni şifre gir.", ok: false }); return; }
+    if (newPassword.length < 8) { setMsg({ text: "Şifre en az 8 karakter olmalı.", ok: false }); return; }
     setLoading(true);
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) {
