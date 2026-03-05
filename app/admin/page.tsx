@@ -11,6 +11,7 @@ type UserRow = {
   last_sign_in_at?: string;
   course_count: number;
   attendance_count: number;
+  school: string | null;
 };
 
 type OnlineUser = {
@@ -260,6 +261,7 @@ export default function AdminPage() {
             <thead className="bg-slate-900/50 text-slate-400 text-left">
               <tr>
                 <th className="px-4 py-3 font-medium">E-posta</th>
+                <th className="px-4 py-3 font-medium">Okul</th>
                 <th className="px-4 py-3 font-medium">Ders</th>
                 <th className="px-4 py-3 font-medium">Devamsızlık</th>
                 <th className="px-4 py-3 font-medium">Kayıt</th>
@@ -276,6 +278,11 @@ export default function AdminPage() {
                     onClick={() => openDetail(u)}
                   >
                     <td className="px-4 py-3 font-medium">{u.email ?? "—"}</td>
+                    <td className="px-4 py-3">
+                      <span className="text-xs font-bold uppercase tracking-wide text-slate-300 bg-slate-800 border border-slate-700 px-2 py-0.5 rounded-full">
+                        {u.school ?? "ieu"}
+                      </span>
+                    </td>
                     <td className="px-4 py-3 text-indigo-400">{u.course_count}</td>
                     <td className="px-4 py-3 text-amber-400">{u.attendance_count}</td>
                     <td className="px-4 py-3 text-slate-400">{new Date(u.created_at).toLocaleDateString("tr-TR")}</td>

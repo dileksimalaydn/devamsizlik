@@ -32,9 +32,10 @@ export async function GET(req: NextRequest) {
 
   const admin = createSupabaseAdmin();
 
-  const [{ data: coursesData }, { data: attendanceData }] = await Promise.all([
+  const [{ data: coursesData }, { data: attendanceData }, { data: profilesData }] = await Promise.all([
     admin.from("courses").select("user_id"),
     admin.from("attendance").select("user_id"),
+    admin.from("profiles").select("user_id, school"),
   ]);
 
   const allUsers = [];
@@ -56,6 +57,10 @@ export async function GET(req: NextRequest) {
   for (const a of attendanceData ?? []) {
     attendanceCount[a.user_id] = (attendanceCount[a.user_id] ?? 0) + 1;
   }
+  const schoolMap: Record<string, string> = {};
+  for (const p of profilesData ?? []) {
+    schoolMap[p.user_id] = p.school ?? "ieu";
+  }
 
   const users = allUsers.map((u) => ({
     id: u.id,
@@ -64,6 +69,7 @@ export async function GET(req: NextRequest) {
     last_sign_in_at: u.last_sign_in_at,
     course_count: courseCount[u.id] ?? 0,
     attendance_count: attendanceCount[u.id] ?? 0,
+    school: schoolMap[u.id] ?? null,
   }));
 
   return NextResponse.json({ users });
