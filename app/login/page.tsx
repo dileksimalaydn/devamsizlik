@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { AlertCircle, CheckCircle2, GraduationCap, Loader2 } from "lucide-react";
 import { Turnstile } from "@marsidev/react-turnstile";
 import type { TurnstileInstance } from "@marsidev/react-turnstile";
+import { SCHOOLS } from "@/lib/schools";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -23,6 +24,7 @@ export default function LoginPage() {
   const [mfaCode, setMfaCode] = useState("");
   const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
   const [kvkkAccepted, setKvkkAccepted] = useState(false);
+  const [school, setSchool] = useState("ieu");
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
@@ -118,19 +120,24 @@ export default function LoginPage() {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: window.location.origin, captchaToken: captchaToken },
+        options: { emailRedirectTo: window.location.origin, captchaToken: captchaToken, data: { school } },
       });
       if (error) {
         setMsg({ text: "Hata: " + error.message, ok: false });
-      } else if (data.session) {
-        const token = data.session.access_token;
-        const res = await fetch("/api/admin/check", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const { isAdmin } = await res.json();
-        router.replace(isAdmin ? "/admin" : "/dashboard");
-        return;
       } else {
+        if (data.user) {
+          await supabase.from("profiles").insert({ user_id: data.user.id, school });
+          localStorage.setItem("school_feature_v1", "1"); // yeni üye, banner gösterme
+        }
+        if (data.session) {
+          const token = data.session.access_token;
+          const res = await fetch("/api/admin/check", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const { isAdmin } = await res.json();
+          router.replace(isAdmin ? "/admin" : "/dashboard");
+          return;
+        }
         setMsg({ text: "Başarılı! E-postanı kontrol et.", ok: true });
       }
     } else {
@@ -282,6 +289,11 @@ export default function LoginPage() {
                 />
                 Google ile devam et
               </button>
+              <p className="text-[11px] text-slate-400 text-center leading-relaxed">
+                Google ile devam ederek{" "}
+                <a href="/kvkk" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline font-medium">KVKK Aydınlatma Metni</a>'ni
+                {" "}okuduğunu ve kişisel verilerinin işlenmesini kabul ettiğini onaylarsın.
+              </p>
 
               {/* Ayırıcı */}
               <div className="flex items-center gap-3 py-1">
@@ -311,6 +323,31 @@ export default function LoginPage() {
                 onKeyDown={(e) => e.key === "Enter" && handleAuth()}
                 className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-700 transition-all"
               />
+
+              {/* Okul seçimi — sadece kayıt modunda */}
+              {isSignUp && (
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-slate-400">
+                    Üniversiten
+                  </label>
+                  <select
+                    value={school}
+                    onChange={(e) => setSchool(e.target.value)}
+                    className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-700 transition-all"
+                  >
+                    {SCHOOLS.map((s) => (
+                      <option key={s.value} value={s.value}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </select>
+                  {school !== "ieu" && (
+                    <p className="mt-1.5 text-[11px] text-slate-500">
+                      Ders saatlerini manuel girebilirsin.
+                    </p>
+                  )}
+                </div>
+              )}
 
               {/* KVKK onayı — sadece kayıt modunda */}
               {isSignUp && (

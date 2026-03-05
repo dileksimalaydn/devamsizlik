@@ -17,7 +17,20 @@ export default function Home() {
         headers: { Authorization: `Bearer ${data.session.access_token}` },
       });
       const { isAdmin } = await res.json();
-      router.replace(isAdmin ? "/admin" : "/dashboard");
+      if (isAdmin) { router.replace("/admin"); return; }
+
+      // Profil yoksa (Google ile ilk giriş) otomatik IEU olarak oluştur
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("school")
+        .eq("user_id", data.session.user.id)
+        .single();
+      if (!profile) {
+        await supabase.from("profiles").upsert({ user_id: data.session.user.id, school: "ieu" });
+        localStorage.setItem("hosgeldin", "1");
+        localStorage.setItem("school_feature_v1", "1"); // ikinci banner çıkmasın
+      }
+      router.replace("/dashboard");
     })();
   }, [router]);
 

@@ -45,6 +45,7 @@ export default function PrivacyPage() {
           <p>Uygulamamız yalnızca aşağıdaki verileri toplar:</p>
           <ul className="list-disc pl-6 space-y-1">
             <li><strong className="text-white">E-posta adresi:</strong> Hesap oluşturma ve bildirim göndermek için.</li>
+            <li><strong className="text-white">Okuduğu okul:</strong> Kullanıcının seçtiği üniversite adı. Ders süresi hesaplamasında kullanılır.</li>
             <li><strong className="text-white">Ders bilgileri:</strong> Ders adı, gün, saat ve devamsızlık kayıtları. Bu veriler tamamen kullanıcı tarafından girilir.</li>
           </ul>
           <p>
@@ -82,7 +83,10 @@ export default function PrivacyPage() {
           <ul className="list-disc pl-6 space-y-1">
             <li><strong className="text-white">Supabase:</strong> Veritabanı ve kimlik doğrulama altyapısı (ABD/AB)</li>
             <li><strong className="text-white">Resend:</strong> E-posta gönderim hizmeti (ABD)</li>
-            <li><strong className="text-white">Vercel:</strong> Uygulama hosting (ABD/AB)</li>
+            <li><strong className="text-white">Vercel:</strong> Uygulama hosting ve anonim sayfa analizi (ABD/AB)</li>
+            <li><strong className="text-white">Google Analytics:</strong> Anonim kullanım istatistikleri (ABD/AB)</li>
+            <li><strong className="text-white">Microsoft Clarity:</strong> Anonim kullanıcı deneyimi analizi; tıklama ve gezinme davranışı kaydı. Şifreler ve kişisel form alanları otomatik maskelenir (ABD/AB)</li>
+            <li><strong className="text-white">Cloudflare Turnstile:</strong> Bot koruması ve CAPTCHA doğrulama (ABD)</li>
           </ul>
           <p>Bu sağlayıcılar uluslararası veri güvenliği standartlarına uymaktadır.</p>
         </section>

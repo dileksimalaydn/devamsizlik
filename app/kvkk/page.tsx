@@ -70,7 +70,7 @@ export default function KvkkPage() {
                 </tr>
                 <tr className="bg-slate-950">
                   <td className="px-4 py-3 text-white font-medium">Kullanıcı İçerik Verisi</td>
-                  <td className="px-4 py-3 text-slate-400">Ders adları, ders günleri ve saatleri, devamsızlık kayıtları</td>
+                  <td className="px-4 py-3 text-slate-400">Ders adları, ders günleri ve saatleri, devamsızlık kayıtları, kullanıcının okuduğu okul</td>
                   <td className="px-4 py-3 text-slate-400">Kullanıcı tarafından girilir</td>
                 </tr>
               </tbody>
@@ -124,7 +124,7 @@ export default function KvkkPage() {
                 name: "Supabase Inc.",
                 purpose: "Veritabanı yönetimi ve kimlik doğrulama altyapısı",
                 location: "Amerika Birleşik Devletleri / Avrupa Birliği",
-                data: "E-posta adresi, şifrelenmiş parola, ders ve devamsızlık verileri",
+                data: "E-posta adresi, şifrelenmiş parola, ders ve devamsızlık verileri, kullanıcının okuduğu okul",
                 basis: "KVKK Madde 9 – Açık rıza ve yeterli koruma",
               },
               {
@@ -146,6 +146,27 @@ export default function KvkkPage() {
                 purpose: "Bot koruması ve CAPTCHA doğrulama (Turnstile)",
                 location: "Amerika Birleşik Devletleri",
                 data: "Tarayıcı parmak izi (anonim, geçici)",
+                basis: "KVKK Madde 9 – Meşru menfaat ve yeterli koruma",
+              },
+              {
+                name: "Google LLC (Google Analytics)",
+                purpose: "Anonim kullanım istatistikleri ve sayfa analizi",
+                location: "Amerika Birleşik Devletleri / Avrupa Birliği",
+                data: "Anonim sayfa görüntüleme verileri, tarayıcı/cihaz bilgisi (kişisel bilgi içermez)",
+                basis: "KVKK Madde 9 – Meşru menfaat ve yeterli koruma",
+              },
+              {
+                name: "Microsoft Corporation (Clarity)",
+                purpose: "Kullanıcı deneyimi analizi; anonim tıklama, kaydırma ve gezinme davranışı kaydı",
+                location: "Amerika Birleşik Devletleri / Avrupa Birliği",
+                data: "Anonim oturum kayıtları (şifreler ve kişisel form alanları otomatik maskelenir)",
+                basis: "KVKK Madde 9 – Meşru menfaat ve yeterli koruma",
+              },
+              {
+                name: "Vercel Inc. (Vercel Analytics)",
+                purpose: "Anonim sayfa görüntüleme ve performans ölçümü",
+                location: "Amerika Birleşik Devletleri / Avrupa Birliği",
+                data: "Anonim sayfa görüntüleme istatistikleri (kişisel bilgi içermez)",
                 basis: "KVKK Madde 9 – Meşru menfaat ve yeterli koruma",
               },
             ].map((p) => (

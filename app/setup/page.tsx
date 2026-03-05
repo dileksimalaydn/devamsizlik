@@ -6,6 +6,7 @@ import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import { supabase } from "@/lib/supabaseClient";
 import type { Course } from "@/lib/types";
+import { isIEU } from "@/lib/schools";
 
 function toMinutes(hhmm: string) {
   const [h, m] = hhmm.split(":").map(Number);
@@ -18,11 +19,6 @@ function toHHMM(totalMinutes: number) {
   return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
-function calcEnd(startHHMM: string, blocks: number) {
-  const startMin = toMinutes(startHHMM);
-  const total = blocks * 45 + Math.max(0, blocks - 1) * 10;
-  return toHHMM(startMin + total);
-}
 
 export default function SetupPage() {
   const router = useRouter();
@@ -36,10 +32,13 @@ export default function SetupPage() {
     return arr;
   }, []);
 
+  const [school, setSchool] = useState<string | null>(null);
   const [courseName, setCourseName] = useState("");
   const [day, setDay] = useState(DAYS[0]);
   const [start, setStart] = useState(slotTimes[0] ?? "08:30");
   const [blocks, setBlocks] = useState(1);
+  const [lessonMin, setLessonMin] = useState(45);
+  const [breakMin, setBreakMin] = useState(10);
   const [courseType, setCourseType] = useState<"teorik" | "lab">("teorik");
   const [customLimit, setCustomLimit] = useState<string>("");
   const [saving, setSaving] = useState(false);
@@ -47,7 +46,17 @@ export default function SetupPage() {
   const [myCourses, setMyCourses] = useState<Course[]>([]);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const end = useMemo(() => calcEnd(start, blocks), [start, blocks]);
+  const ieu = isIEU(school);
+
+  // Her iki mod için de bitiş otomatik hesaplanır
+  const computedEnd = useMemo(() => {
+    const slotLen = ieu ? 45 : lessonMin;
+    const slotBreak = ieu ? 10 : breakMin;
+    const total = blocks * slotLen + Math.max(0, blocks - 1) * slotBreak;
+    return toHHMM(toMinutes(start) + total);
+  }, [start, blocks, ieu, lessonMin, breakMin]);
+
+  const effectiveEnd = computedEnd;
 
   const loadCourses = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -60,7 +69,20 @@ export default function SetupPage() {
     if (!error && data) setMyCourses(data as Course[]);
   };
 
-  useEffect(() => { loadCourses(); }, []);
+  useEffect(() => {
+    const init = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("school")
+        .eq("user_id", user.id)
+        .single();
+      setSchool(profile?.school ?? "ieu");
+      await loadCourses();
+    };
+    init();
+  }, []);
 
   const handleSave = async () => {
     const name = courseName.trim().toUpperCase();
@@ -69,26 +91,19 @@ export default function SetupPage() {
       return;
     }
 
-    // Saatleri 08:30 formatına getirmek için yardımcı fonksiyon
-    const normalize = (t: string) => (t ? t.substring(0, 5) : "");
+    const endStr = effectiveEnd.substring(0, 5);
+    const startStr = start.substring(0, 5);
+    const finalBlocks = blocks;
 
-    const newStartStr = normalize(start);
-    const newStartIdx = slotTimes.indexOf(newStartStr);
-    const newEndIdx = newStartIdx + blocks;
+    // Çakışma kontrolü (dakika bazlı, IEU ve diğer için aynı)
+    const newStartMin = toMinutes(startStr);
+    const newEndMin = toMinutes(endStr);
 
-    // Çakışma Kontrolü (Fixlendi)
     const collision = myCourses.find((existing) => {
       if (existing.day !== day) return false;
-      
-      const existStartStr = normalize(existing.start);
-      const existStartIdx = slotTimes.indexOf(existStartStr);
-      
-      if (existStartIdx === -1) return false; 
-      
-      const existEndIdx = existStartIdx + Number(existing.blocks);
-      
-      // Matematiksel çakışma kontrolü: Başlangıçlar ve bitişler birbirinin içine giriyor mu?
-      return newStartIdx < existEndIdx && newEndIdx > existStartIdx;
+      const existStart = toMinutes(existing.start.substring(0, 5));
+      const existEnd = toMinutes(existing.end.substring(0, 5));
+      return newStartMin < existEnd && newEndMin > existStart;
     });
 
     if (collision) {
@@ -111,9 +126,9 @@ export default function SetupPage() {
       user_id: userData.user.id,
       course_name: name,
       day,
-      start,
-      end,
-      blocks,
+      start: startStr,
+      end: endStr,
+      blocks: finalBlocks,
       course_type: courseType,
       custom_limit: customLimit ? parseInt(customLimit) : null,
     });
@@ -127,6 +142,8 @@ export default function SetupPage() {
 
     setCourseName("");
     setBlocks(1);
+    setLessonMin(45);
+    setBreakMin(10);
     setCourseType("teorik");
     setCustomLimit("");
     loadCourses();
@@ -141,8 +158,15 @@ export default function SetupPage() {
   const field =
     "w-full rounded-2xl border border-slate-300 bg-slate-50 px-3 py-3 text-sm font-medium text-slate-900 outline-none placeholder:text-slate-400 focus:bg-white focus:border-slate-500 focus:ring-4 focus:ring-slate-100 transition";
 
+  if (school === null) {
+    return (
+      <main className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="h-6 w-6 rounded-full border-2 border-slate-300 border-t-slate-800 animate-spin" />
+      </main>
+    );
+  }
+
   return (
-    // pb-32 yaparak alt menünün derslerin üstüne binmesini engelledik
     <main className="min-h-screen bg-slate-50 pb-32">
       <AppHeader
         right={
@@ -156,8 +180,6 @@ export default function SetupPage() {
       />
 
       <div className="mx-auto max-w-md px-4 pt-4 space-y-4">
-
-
         <div className="rounded-3xl bg-white p-4 shadow-sm border border-slate-100">
           <div className="text-sm font-bold text-slate-900">Yeni Ders Tanımla</div>
 
@@ -213,23 +235,57 @@ export default function SetupPage() {
               </div>
               <div>
                 <label className="mb-1 block text-xs font-semibold text-slate-800">Başlangıç</label>
-                <select value={start} onChange={(e) => setStart(e.target.value)} className={field}>
-                  {slotTimes.map((t) => <option key={t}>{t}</option>)}
-                </select>
+                {ieu ? (
+                  <select value={start} onChange={(e) => setStart(e.target.value)} className={field}>
+                    {slotTimes.map((t) => <option key={t}>{t}</option>)}
+                  </select>
+                ) : (
+                  <input
+                    type="time"
+                    value={start}
+                    onChange={(e) => { setStart(e.target.value); setSaveError(null); }}
+                    className={field}
+                  />
+                )}
               </div>
             </div>
+
+            {!ieu && (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-slate-800">Ders süresi (dk)</label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={lessonMin}
+                    onChange={(e) => { setLessonMin(Number(e.target.value)); setSaveError(null); }}
+                    className={field}
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-slate-800">Mola (dk)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={breakMin}
+                    onChange={(e) => { setBreakMin(Number(e.target.value)); setSaveError(null); }}
+                    className={field}
+                  />
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="mb-1 block text-xs font-semibold text-slate-800">Blok</label>
                 <select value={blocks} onChange={(e) => setBlocks(Number(e.target.value))} className={field}>
-                  {[1, 2, 3, 4].map((b) => <option key={b} value={b}>{b} blok</option>)}
+                  {[1, 2, 3, 4, 5, 6].map((b) => <option key={b} value={b}>{b} blok</option>)}
                 </select>
               </div>
               <div>
                 <label className="mb-1 block text-xs font-semibold text-slate-800">Bitiş</label>
                 <div className="rounded-2xl border border-slate-300 bg-slate-50 px-3 py-3 text-sm">
-                  <div className="font-bold text-slate-900">{end}</div>
+                  <div className="font-bold text-slate-900">{computedEnd}</div>
                   <div className="mt-1 text-[11px] text-slate-500">Otomatik hesaplanır</div>
                 </div>
               </div>
@@ -305,7 +361,8 @@ export default function SetupPage() {
                       </span>
                     </div>
                     <span className="text-[10px] font-medium text-slate-500 uppercase tracking-tighter">
-                      {c.day} • {c.start} – {c.end} ({c.blocks} blok)
+                      {c.day} • {c.start} – {c.end}
+                      {ieu && ` (${c.blocks} blok)`}
                     </span>
                   </div>
                   <button

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, X } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import CourseCard from "@/components/CourseCard";
@@ -21,6 +21,17 @@ export default function DashboardPage() {
 
   const [sheetOpen, setSheetOpen] = useState(false);
   const [sheetCourse, setSheetCourse] = useState<Course | null>(null);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [showFeatureNotif, setShowFeatureNotif] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem("hosgeldin")) {
+      setShowWelcome(true);
+      localStorage.removeItem("hosgeldin");
+    } else if (!localStorage.getItem("school_feature_v1")) {
+      setShowFeatureNotif(true);
+    }
+  }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -176,6 +187,31 @@ export default function DashboardPage() {
       />
 
       <div className="mx-auto max-w-md px-4 pt-4">
+
+        {/* Eski kullanıcı — bir kerelik okul özelliği bildirimi */}
+        {showFeatureNotif && (
+          <div className="flex items-start justify-between gap-3 rounded-3xl border border-amber-200 bg-amber-50 px-4 py-3 mb-3">
+            <p className="text-sm text-amber-800">
+              Artık üniversiteni <a href="/settings" className="underline font-semibold">Ayarlar</a>'dan istediğin zaman değiştirebilirsin.
+            </p>
+            <button onClick={() => { setShowFeatureNotif(false); localStorage.setItem("school_feature_v1", "1"); }} className="shrink-0 text-amber-400 hover:text-amber-600">
+              <X size={16} />
+            </button>
+          </div>
+        )}
+
+        {/* Hoş geldin banner — ilk Google girişi */}
+        {showWelcome && (
+          <div className="flex items-start justify-between gap-3 rounded-3xl border border-indigo-200 bg-indigo-50 px-4 py-3 mb-3">
+            <p className="text-sm text-indigo-800">
+              <strong>Hoş geldin!</strong> Üniversiten <strong>IEU</strong> olarak ayarlandı. Farklıysa{" "}
+              <a href="/settings" className="underline font-semibold">Ayarlar</a>'dan değiştirebilirsin.
+            </p>
+            <button onClick={() => setShowWelcome(false)} className="shrink-0 text-indigo-400 hover:text-indigo-600">
+              <X size={16} />
+            </button>
+          </div>
+        )}
 
         {/* Haftalık program — kompakt link */}
         <div className="flex justify-end mb-3">
