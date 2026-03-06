@@ -10,11 +10,12 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    (async () => {
-      const { data } = await supabase.auth.getSession();
-      if (!data.session) return;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event !== "INITIAL_SESSION" && event !== "SIGNED_IN") return;
+      if (!session) return;
+
       const res = await fetch("/api/admin/check", {
-        headers: { Authorization: `Bearer ${data.session.access_token}` },
+        headers: { Authorization: `Bearer ${session.access_token}` },
       });
       const { isAdmin } = await res.json();
       if (isAdmin) { router.replace("/admin"); return; }
@@ -23,15 +24,17 @@ export default function Home() {
       const { data: profile } = await supabase
         .from("profiles")
         .select("school")
-        .eq("user_id", data.session.user.id)
+        .eq("user_id", session.user.id)
         .single();
       if (!profile) {
-        await supabase.from("profiles").upsert({ user_id: data.session.user.id, school: "ieu" });
+        await supabase.from("profiles").upsert({ user_id: session.user.id, school: "ieu" });
         localStorage.setItem("hosgeldin", "1");
         localStorage.setItem("school_feature_v1", "1"); // ikinci banner çıkmasın
       }
       router.replace("/dashboard");
-    })();
+    });
+
+    return () => subscription.unsubscribe();
   }, [router]);
 
   return (
