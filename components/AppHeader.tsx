@@ -11,7 +11,7 @@ interface AppHeaderProps {
 }
 
 export default function AppHeader({
-  title = "Devamsızlık Takibi",
+  title = "Devamsızlık",
   left,
   right,
 }: AppHeaderProps) {
