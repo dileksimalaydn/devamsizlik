@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarDays, X } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, X } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import CourseCard from "@/components/CourseCard";
@@ -225,42 +225,62 @@ export default function DashboardPage() {
         </div>
 
         {/* Tarih Seçici */}
-        <div className="flex items-center justify-between rounded-3xl bg-white px-4 py-4 shadow-sm border border-slate-200">
-          <button
-            onClick={goPrev}
-            className="grid h-10 w-10 place-items-center rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-700 font-bold hover:bg-indigo-100 transition-colors"
-          >
-            ‹
-          </button>
+        <div className="rounded-3xl bg-white px-4 py-4 shadow-sm border border-slate-200">
+          {/* Üst satır: ok + tarih + ok */}
+          <div className="flex items-center justify-between">
+            <button
+              onClick={goPrev}
+              className="flex items-center gap-1 rounded-2xl bg-indigo-50 border border-indigo-100 px-3 py-2 text-xs font-semibold text-indigo-700 hover:bg-indigo-100 transition-colors"
+            >
+              <ChevronLeft size={14} /> Önceki
+            </button>
 
-          <div className="flex flex-col items-center">
-            <div className="text-base font-extrabold text-slate-900">
-              {prettyTR(selectedDate)}
+            <div className="text-center">
+              <div className="text-base font-extrabold text-slate-900">
+                {prettyTR(selectedDate)}
+              </div>
+              {!isToday && (
+                <button
+                  onClick={goToday}
+                  className="mt-1 text-xs font-semibold text-indigo-600 hover:underline"
+                >
+                  Bugüne dön
+                </button>
+              )}
             </div>
-            <div className="mt-2 flex items-center gap-2">
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="rounded-xl border border-slate-400 px-3 py-1.5 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-200"
-              />
-              <button
-                onClick={goToday}
-                className="rounded-xl bg-slate-900 px-3 py-1.5 text-xs font-bold text-white disabled:opacity-30 transition-all"
-                disabled={isToday}
-              >
-                {isToday ? "Bugün" : "Bugüne Dön"}
-              </button>
-            </div>
+
+            <button
+              onClick={goNext}
+              disabled={isToday}
+              className="flex items-center gap-1 rounded-2xl bg-indigo-50 border border-indigo-100 px-3 py-2 text-xs font-semibold text-indigo-700 hover:bg-indigo-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              Sonraki <ChevronRight size={14} />
+            </button>
           </div>
 
-          <button
-            onClick={goNext}
-            disabled={isToday}
-            className="grid h-10 w-10 place-items-center rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-700 font-bold hover:bg-indigo-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            ›
-          </button>
+          {/* Son 7 gün hızlı seçim */}
+          <div className="mt-3 flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+            {Array.from({ length: 7 }, (_, i) => {
+              const d = addDays(todayISO(), -i);
+              const isSelected = d === selectedDate;
+              const label = i === 0 ? "Bugün" : i === 1 ? "Dün" : dayNameTR(d).slice(0, 3);
+              const num = d.slice(8); // gün numarası
+              return (
+                <button
+                  key={d}
+                  onClick={() => setSelectedDate(d)}
+                  className={`flex shrink-0 flex-col items-center rounded-2xl px-3 py-2 transition-all ${
+                    isSelected
+                      ? "bg-slate-900 text-white"
+                      : "bg-slate-50 text-slate-600 hover:bg-slate-100"
+                  }`}
+                >
+                  <span className="text-[10px] font-semibold">{label}</span>
+                  <span className="text-sm font-extrabold">{num}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Ders Listesi */}
