@@ -14,6 +14,9 @@ export default function Home() {
     if (sessionStorage.getItem("oauth_pending")) {
       setIsCallback(true);
       sessionStorage.removeItem("oauth_pending");
+      // OAuth başarısız olursa 10 saniye sonra landing'e dön
+      const t = setTimeout(() => setIsCallback(false), 10000);
+      return () => clearTimeout(t);
     }
   }, []);
 
