@@ -52,13 +52,7 @@ export default function LoginPage() {
       setMsg({ text: "Kod hatalı, tekrar dene.", ok: false });
       setMfaCode("");
     } else {
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token;
-      const res = await fetch("/api/admin/check", {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      const { isAdmin } = await res.json();
-      router.replace(isAdmin ? "/admin" : "/dashboard");
+      router.replace("/dashboard");
     }
     setLoading(false);
   }
@@ -92,7 +86,7 @@ export default function LoginPage() {
     setLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/` },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
     if (error) {
       setMsg({ text: "Google ile giriş başarısız.", ok: false });
@@ -130,18 +124,13 @@ export default function LoginPage() {
           localStorage.setItem("school_feature_v1", "1"); // yeni üye, banner gösterme
         }
         if (data.session) {
-          const token = data.session.access_token;
-          const res = await fetch("/api/admin/check", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          const { isAdmin } = await res.json();
-          router.replace(isAdmin ? "/admin" : "/dashboard");
+          router.replace("/dashboard");
           return;
         }
         setMsg({ text: "Başarılı! E-postanı kontrol et.", ok: true });
       }
     } else {
-      const { error, data } = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken: captchaToken } });
+      const { error } = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken: captchaToken } });
       if (error) {
         setMsg({ text: "E-posta veya şifre hatalı.", ok: false });
         turnstileRef.current?.reset();
@@ -159,12 +148,7 @@ export default function LoginPage() {
             return;
           }
         }
-        const token = data.session?.access_token;
-        const res = await fetch("/api/admin/check", {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        const { isAdmin } = await res.json();
-        router.replace(isAdmin ? "/admin" : "/dashboard");
+        router.replace("/dashboard");
       }
     }
     setLoading(false);
