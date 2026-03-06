@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { Course, AttendanceRecord } from "@/lib/types";
 import { dayNameTR, prettyTR, todayISO } from "@/lib/date";
 import { supabase } from "@/lib/supabaseClient";
-import { X, Calendar, Clock, Trash2, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, Calendar, Clock, Trash2, Plus, ChevronLeft, ChevronRight, Check } from "lucide-react";
 
 const TR_MONTHS = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
 const SHORT_MONTHS = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
@@ -39,14 +39,13 @@ function HourButtons({ blocks, current, onPick }: { blocks: number; current?: nu
   );
 }
 
-function getCourseDatesInMonth(sessions: Course[], year: number, month: number, recordedDates: Set<string>) {
+function getCourseDatesInMonth(sessions: Course[], year: number, month: number) {
   const today = todayISO();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const result: { date: string; session: Course }[] = [];
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
     if (dateStr > today) continue;
-    if (recordedDates.has(dateStr)) continue;
     const session = sessions.find((s) => s.day === dayNameTR(dateStr));
     if (session) result.push({ date: dateStr, session });
   }
@@ -68,7 +67,7 @@ export default function CourseDetailSheet({ open, displayName, sessions, records
   const recordedDates = new Set(records.map((r) => r.date));
 
   const isCurrentMonth = addMonth.year === now.getFullYear() && addMonth.month === now.getMonth();
-  const chipDates = getCourseDatesInMonth(sessions, addMonth.year, addMonth.month, recordedDates);
+  const chipDates = getCourseDatesInMonth(sessions, addMonth.year, addMonth.month);
 
   const prevMonth = () => {
     setSelectedDate(null);
@@ -139,14 +138,14 @@ export default function CourseDetailSheet({ open, displayName, sessions, records
             <div className="px-5 py-4 space-y-4">
               {/* Ay Navigator */}
               <div className="flex items-center justify-between bg-white rounded-2xl border border-slate-100 px-4 py-3 shadow-sm">
-                <button onClick={prevMonth} className="h-8 w-8 flex items-center justify-center rounded-xl bg-slate-50 hover:bg-slate-100 transition">
-                  <ChevronLeft size={16} className="text-slate-600" />
+                <button onClick={prevMonth} className="h-9 w-9 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition border border-slate-200">
+                  <ChevronLeft size={16} className="text-slate-700" />
                 </button>
                 <span className="text-sm font-bold text-slate-900">
                   {TR_MONTHS[addMonth.month]} {addMonth.year}
                 </span>
-                <button onClick={nextMonth} disabled={isCurrentMonth} className="h-8 w-8 flex items-center justify-center rounded-xl bg-slate-50 hover:bg-slate-100 transition disabled:opacity-30">
-                  <ChevronRight size={16} className="text-slate-600" />
+                <button onClick={nextMonth} disabled={isCurrentMonth} className="h-9 w-9 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition border border-slate-200 disabled:opacity-30">
+                  <ChevronRight size={16} className="text-slate-700" />
                 </button>
               </div>
 
@@ -162,19 +161,26 @@ export default function CourseDetailSheet({ open, displayName, sessions, records
                     const dayNum = parseInt(date.slice(8));
                     const monthAbbr = SHORT_MONTHS[parseInt(date.slice(5, 7)) - 1];
                     const isSelected = selectedDate === date;
+                    const isRecorded = recordedDates.has(date);
                     return (
                       <button
                         key={date}
-                        onClick={() => setSelectedDate(isSelected ? null : date)}
+                        onClick={() => !isRecorded && setSelectedDate(isSelected ? null : date)}
+                        disabled={isRecorded}
                         className={`shrink-0 flex flex-col items-center rounded-2xl px-3 py-2.5 border transition-all ${
-                          isSelected
+                          isRecorded
+                            ? "bg-emerald-50 border-emerald-200 text-emerald-600 cursor-default"
+                            : isSelected
                             ? "bg-indigo-600 border-indigo-600 text-white shadow-md"
                             : "bg-white border-slate-200 text-slate-700 hover:border-indigo-300"
                         }`}
                       >
                         <span className="text-[10px] font-semibold">{dayAbbr}</span>
-                        <span className="text-sm font-extrabold">{dayNum}</span>
-                        <span className="text-[10px] font-medium">{monthAbbr}</span>
+                        {isRecorded
+                          ? <Check size={14} className="my-0.5" />
+                          : <span className="text-sm font-extrabold">{dayNum}</span>
+                        }
+                        <span className="text-[10px] font-medium">{isRecorded ? "Eklendi" : monthAbbr}</span>
                       </button>
                     );
                   })}
