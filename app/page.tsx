@@ -14,6 +14,13 @@ export default function Home() {
       if (event !== "INITIAL_SESSION" && event !== "SIGNED_IN") return;
       if (!session) return;
 
+      // Admin kontrolü
+      const res = await fetch("/api/admin/check", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const { isAdmin } = await res.json();
+      if (isAdmin) { router.replace("/admin"); return; }
+
       // Profil yoksa (Google ile ilk giriş) otomatik IEU olarak oluştur
       const { data: profile } = await supabase
         .from("profiles")
