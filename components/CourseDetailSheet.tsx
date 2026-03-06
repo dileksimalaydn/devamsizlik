@@ -165,11 +165,12 @@ export default function CourseDetailSheet({ open, displayName, sessions, records
                     return (
                       <button
                         key={date}
-                        onClick={() => !isRecorded && setSelectedDate(isSelected ? null : date)}
-                        disabled={isRecorded}
+                        onClick={() => setSelectedDate(isSelected ? null : date)}
                         className={`shrink-0 flex flex-col items-center rounded-2xl px-3 py-2.5 border transition-all ${
-                          isRecorded
-                            ? "bg-emerald-50 border-emerald-200 text-emerald-600 cursor-default"
+                          isRecorded && isSelected
+                            ? "bg-indigo-600 border-indigo-600 text-white shadow-md"
+                            : isRecorded
+                            ? "bg-emerald-50 border-emerald-200 text-emerald-600 hover:border-indigo-300"
                             : isSelected
                             ? "bg-indigo-600 border-indigo-600 text-white shadow-md"
                             : "bg-white border-slate-200 text-slate-700 hover:border-indigo-300"
