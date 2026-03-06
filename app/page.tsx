@@ -1,13 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
-import { GraduationCap, Bell, CalendarCheck, BarChart3 } from "lucide-react";
+import { GraduationCap, Bell, CalendarCheck, BarChart3, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
   const router = useRouter();
+  const [isCallback, setIsCallback] = useState(false);
+
+  useEffect(() => {
+    if (window.location.search.includes("code=")) setIsCallback(true);
+  }, []);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -37,6 +42,17 @@ export default function Home() {
 
     return () => subscription.unsubscribe();
   }, [router]);
+
+  if (isCallback) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-4">
+        <div className="grid h-16 w-16 place-items-center rounded-3xl bg-indigo-600 shadow-lg shadow-indigo-900/30">
+          <GraduationCap size={32} className="text-white" />
+        </div>
+        <Loader2 size={24} className="animate-spin text-slate-400" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen text-slate-900">
