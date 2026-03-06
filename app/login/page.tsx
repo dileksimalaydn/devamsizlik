@@ -84,6 +84,7 @@ export default function LoginPage() {
 
   async function handleGoogleLogin() {
     setLoading(true);
+    sessionStorage.setItem("oauth_pending", "1");
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: `${window.location.origin}/` },

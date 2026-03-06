@@ -11,7 +11,10 @@ export default function Home() {
   const [isCallback, setIsCallback] = useState(false);
 
   useEffect(() => {
-    if (window.location.search.includes("code=")) setIsCallback(true);
+    if (sessionStorage.getItem("oauth_pending")) {
+      setIsCallback(true);
+      sessionStorage.removeItem("oauth_pending");
+    }
   }, []);
 
   useEffect(() => {
