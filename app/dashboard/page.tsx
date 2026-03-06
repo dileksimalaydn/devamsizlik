@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarDays, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { CalendarDays, Calendar, ChevronLeft, ChevronRight, X } from "lucide-react";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
 import CourseCard from "@/components/CourseCard";
@@ -226,7 +226,7 @@ export default function DashboardPage() {
 
         {/* Tarih Seçici */}
         <div className="rounded-3xl bg-white px-4 py-4 shadow-sm border border-slate-200">
-          {/* Üst satır: ok + tarih + ok */}
+          {/* Üst satır: ok + tarih + takvim + ok */}
           <div className="flex items-center justify-between">
             <button
               onClick={goPrev}
@@ -235,43 +235,61 @@ export default function DashboardPage() {
               <ChevronLeft size={14} /> Önceki
             </button>
 
-            <div className="text-center">
+            <div className="flex flex-col items-center">
               <div className="text-base font-extrabold text-slate-900">
                 {prettyTR(selectedDate)}
               </div>
               {!isToday && (
                 <button
                   onClick={goToday}
-                  className="mt-1 text-xs font-semibold text-indigo-600 hover:underline"
+                  className="mt-0.5 text-xs font-semibold text-indigo-600 hover:underline"
                 >
                   Bugüne dön
                 </button>
               )}
             </div>
 
-            <button
-              onClick={goNext}
-              disabled={isToday}
-              className="flex items-center gap-1 rounded-2xl bg-indigo-50 border border-indigo-100 px-3 py-2 text-xs font-semibold text-indigo-700 hover:bg-indigo-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              Sonraki <ChevronRight size={14} />
-            </button>
+            <div className="flex items-center gap-1.5">
+              {/* Takvim — uzak tarihler için */}
+              <label className="flex items-center justify-center rounded-2xl bg-indigo-50 border border-indigo-100 p-2 text-indigo-700 hover:bg-indigo-100 transition-colors cursor-pointer">
+                <Calendar size={16} />
+                <input
+                  type="date"
+                  value={selectedDate}
+                  max={todayISO()}
+                  onChange={(e) => e.target.value && setSelectedDate(e.target.value)}
+                  className="sr-only"
+                />
+              </label>
+              <button
+                onClick={goNext}
+                disabled={isToday}
+                className="flex items-center gap-1 rounded-2xl bg-indigo-50 border border-indigo-100 px-3 py-2 text-xs font-semibold text-indigo-700 hover:bg-indigo-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                Sonraki <ChevronRight size={14} />
+              </button>
+            </div>
           </div>
 
-          {/* Son 7 gün hızlı seçim */}
+          {/* Seçili günün etrafındaki 7 gün */}
           <div className="mt-3 flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
             {Array.from({ length: 7 }, (_, i) => {
-              const d = addDays(todayISO(), -i);
+              const d = addDays(selectedDate, i - 6); // seçili gün sağda, 6 gün önce solda
               const isSelected = d === selectedDate;
-              const label = i === 0 ? "Bugün" : i === 1 ? "Dün" : dayNameTR(d).slice(0, 3);
-              const num = d.slice(8); // gün numarası
+              const diffFromToday = Math.round((new Date(d).getTime() - new Date(todayISO()).getTime()) / 86400000);
+              const label = diffFromToday === 0 ? "Bugün" : diffFromToday === -1 ? "Dün" : dayNameTR(d).slice(0, 3);
+              const num = d.slice(8);
+              const isFuture = d > todayISO();
               return (
                 <button
                   key={d}
-                  onClick={() => setSelectedDate(d)}
+                  onClick={() => !isFuture && setSelectedDate(d)}
+                  disabled={isFuture}
                   className={`flex shrink-0 flex-col items-center rounded-2xl px-3 py-2 transition-all ${
                     isSelected
                       ? "bg-slate-900 text-white"
+                      : isFuture
+                      ? "bg-slate-50 text-slate-300 cursor-not-allowed"
                       : "bg-slate-50 text-slate-600 hover:bg-slate-100"
                   }`}
                 >
