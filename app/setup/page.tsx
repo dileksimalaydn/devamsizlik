@@ -279,7 +279,7 @@ export default function SetupPage() {
               <div>
                 <label className="mb-1 block text-xs font-semibold text-slate-800">Ders Saati</label>
                 <select value={blocks} onChange={(e) => setBlocks(Number(e.target.value))} className={field}>
-                  {[1, 2, 3, 4, 5, 6].map((b) => <option key={b} value={b}>{b} saat</option>)}
+                  {[1, 2, 3, 4, 5, 6].map((b) => <option key={b} value={b}>{b}</option>)}
                 </select>
               </div>
               <div>
