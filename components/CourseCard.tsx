@@ -7,8 +7,11 @@ function fixNegZero(n: number) {
   return Object.is(n, -0) ? 0 : n;
 }
 
-function formatDuration(blocks: number): string {
-  const totalMin = blocks * 45 + Math.max(0, blocks - 1) * 10;
+function formatDuration(start: string, end: string): string {
+  const [sh, sm] = start.split(":").map(Number);
+  const [eh, em] = end.split(":").map(Number);
+  const totalMin = (eh * 60 + em) - (sh * 60 + sm);
+  if (totalMin <= 0) return "";
   const h = Math.floor(totalMin / 60);
   const m = totalMin % 60;
   if (h === 0) return `${m} dk`;
@@ -64,7 +67,7 @@ export default function CourseCard({
           <div>
             <div className="text-base font-bold text-slate-900">
               {course.course_name} <span className="text-slate-400">•</span>{" "}
-              {formatDuration(course.blocks)}
+              {formatDuration(course.start, course.end)}
             </div>
 
             <div className="mt-1 text-sm text-slate-600">

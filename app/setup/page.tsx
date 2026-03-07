@@ -277,9 +277,9 @@ export default function SetupPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-800">Blok</label>
+                <label className="mb-1 block text-xs font-semibold text-slate-800">Ders Saati</label>
                 <select value={blocks} onChange={(e) => setBlocks(Number(e.target.value))} className={field}>
-                  {[1, 2, 3, 4, 5, 6].map((b) => <option key={b} value={b}>{b} blok</option>)}
+                  {[1, 2, 3, 4, 5, 6].map((b) => <option key={b} value={b}>{b} saat</option>)}
                 </select>
               </div>
               <div>
@@ -362,7 +362,7 @@ export default function SetupPage() {
                     </div>
                     <span className="text-[10px] font-medium text-slate-500 uppercase tracking-tighter">
                       {c.day} • {c.start} – {c.end}
-                      {ieu && ` (${c.blocks} blok)`}
+                      {ieu && ` (${c.blocks} saat)`}
                     </span>
                   </div>
                   <button
