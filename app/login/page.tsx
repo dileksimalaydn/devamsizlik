@@ -25,6 +25,7 @@ export default function LoginPage() {
   const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
   const [kvkkAccepted, setKvkkAccepted] = useState(false);
   const [school, setSchool] = useState("ieu");
+  const pendingRef = useRef<"auth" | "forgot" | null>(null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
@@ -57,20 +58,22 @@ export default function LoginPage() {
     setLoading(false);
   }
 
-  async function handleForgot() {
+  async function handleForgot(token?: string) {
     if (!email) {
       setMsg({ text: "E-posta adresini gir.", ok: false });
       return;
     }
-    if (!captchaToken) {
-      setMsg({ text: "Güvenlik doğrulaması bekleniyor, lütfen bekle.", ok: false });
+    const tok = token ?? captchaToken;
+    if (!tok) {
+      pendingRef.current = "forgot";
+      turnstileRef.current?.execute();
       return;
     }
     setLoading(true);
     setMsg(null);
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/login`,
-      captchaToken: captchaToken,
+      captchaToken: tok,
     });
     if (error) {
       setMsg({ text: "Hata: " + error.message, ok: false });
@@ -95,7 +98,7 @@ export default function LoginPage() {
     }
   }
 
-  async function handleAuth() {
+  async function handleAuth(token?: string) {
     if (!email || !password) {
       setMsg({ text: "E-posta ve şifre girilmeli.", ok: false });
       return;
@@ -104,8 +107,10 @@ export default function LoginPage() {
       setMsg({ text: "Devam etmek için KVKK Aydınlatma Metni'ni onaylamalısın.", ok: false });
       return;
     }
-    if (!captchaToken) {
-      setMsg({ text: "Güvenlik doğrulaması bekleniyor, lütfen bekle.", ok: false });
+    const tok = token ?? captchaToken;
+    if (!tok) {
+      pendingRef.current = "auth";
+      turnstileRef.current?.execute();
       return;
     }
     setLoading(true);
@@ -115,7 +120,7 @@ export default function LoginPage() {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: window.location.origin, captchaToken: captchaToken, data: { school } },
+        options: { emailRedirectTo: window.location.origin, captchaToken: tok, data: { school } },
       });
       if (error) {
         setMsg({ text: "Hata: " + error.message, ok: false });
@@ -131,7 +136,7 @@ export default function LoginPage() {
         setMsg({ text: "Başarılı! E-postanı kontrol et.", ok: true });
       }
     } else {
-      const { error } = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken: captchaToken } });
+      const { error } = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken: tok } });
       if (error) {
         setMsg({ text: "E-posta veya şifre hatalı.", ok: false });
         turnstileRef.current?.reset();
@@ -239,13 +244,19 @@ export default function LoginPage() {
               <Turnstile
                 ref={turnstileRef}
                 siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-                onSuccess={(token) => setCaptchaToken(token)}
-                onExpire={() => setCaptchaToken(null)}
-                options={{ theme: "dark" }}
+                onSuccess={(token) => {
+                  setCaptchaToken(token);
+                  if (pendingRef.current === "forgot") {
+                    pendingRef.current = null;
+                    handleForgot(token);
+                  }
+                }}
+                onExpire={() => { setCaptchaToken(null); turnstileRef.current?.execute(); }}
+                options={{ theme: "dark", size: "invisible" }}
               />
               <button
-                onClick={handleForgot}
-                disabled={loading || !captchaToken}
+                onClick={() => handleForgot()}
+                disabled={loading}
                 className="flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-slate-900 transition-all hover:bg-slate-100 active:scale-[0.98] disabled:opacity-60"
               >
                 {loading ? <Loader2 size={18} className="animate-spin" /> : "Sıfırlama Maili Gönder"}
@@ -353,15 +364,21 @@ export default function LoginPage() {
               <Turnstile
                 ref={turnstileRef}
                 siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-                onSuccess={(token) => setCaptchaToken(token)}
-                onExpire={() => setCaptchaToken(null)}
-                options={{ theme: "dark" }}
+                onSuccess={(token) => {
+                  setCaptchaToken(token);
+                  if (pendingRef.current === "auth") {
+                    pendingRef.current = null;
+                    handleAuth(token);
+                  }
+                }}
+                onExpire={() => { setCaptchaToken(null); turnstileRef.current?.execute(); }}
+                options={{ theme: "dark", size: "invisible" }}
               />
 
               {/* Submit */}
               <button
-                onClick={handleAuth}
-                disabled={loading || !captchaToken}
+                onClick={() => handleAuth()}
+                disabled={loading}
                 className="flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-slate-900 transition-all hover:bg-slate-100 active:scale-[0.98] disabled:opacity-60"
               >
                 {loading ? (
