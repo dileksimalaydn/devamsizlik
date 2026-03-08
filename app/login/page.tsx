@@ -357,15 +357,9 @@ function LoginContent() {
               <Turnstile
                 ref={turnstileRef}
                 siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-                onSuccess={(token) => {
-                  setCaptchaToken(token);
-                  if (pendingRef.current === "auth") {
-                    pendingRef.current = null;
-                    handleAuth(token);
-                  }
-                }}
-                onExpire={() => { setCaptchaToken(null); turnstileRef.current?.execute(); }}
-                options={{ theme: "dark", size: "invisible", execution: "execute" }}
+                onSuccess={(token) => setCaptchaToken(token)}
+                onExpire={() => setCaptchaToken(null)}
+                options={{ theme: "dark" }}
               />
 
               {/* Submit */}
