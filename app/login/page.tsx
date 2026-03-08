@@ -26,7 +26,6 @@ function LoginContent() {
   const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
   const [kvkkAccepted, setKvkkAccepted] = useState(false);
   const [school, setSchool] = useState("ieu");
-  const pendingRef = useRef<"auth" | "forgot" | null>(null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
@@ -35,11 +34,6 @@ function LoginContent() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Invisible Turnstile'ı sayfa yüklenince önceden çalıştır
-  useEffect(() => {
-    const t = setTimeout(() => turnstileRef.current?.execute(), 500);
-    return () => clearTimeout(t);
-  }, []);
 
   async function handleResetPassword() {
     if (!newPassword) { setMsg({ text: "Yeni şifre gir.", ok: false }); return; }
@@ -72,9 +66,7 @@ function LoginContent() {
     }
     const tok = token ?? captchaToken;
     if (!tok) {
-      pendingRef.current = "forgot";
-      setLoading(true);
-      turnstileRef.current?.execute();
+      setMsg({ text: "Güvenlik doğrulaması yükleniyor, birkaç saniye bekle.", ok: false });
       return;
     }
     setLoading(true);
@@ -117,9 +109,7 @@ function LoginContent() {
     }
     const tok = token ?? captchaToken;
     if (!tok) {
-      pendingRef.current = "auth";
-      setLoading(true);
-      turnstileRef.current?.execute();
+      setMsg({ text: "Güvenlik doğrulaması yükleniyor, birkaç saniye bekle.", ok: false });
       return;
     }
     setLoading(true);
@@ -253,15 +243,9 @@ function LoginContent() {
               <Turnstile
                 ref={turnstileRef}
                 siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-                onSuccess={(token) => {
-                  setCaptchaToken(token);
-                  if (pendingRef.current === "forgot") {
-                    pendingRef.current = null;
-                    handleForgot(token);
-                  }
-                }}
-                onExpire={() => { setCaptchaToken(null); turnstileRef.current?.execute(); }}
-                options={{ theme: "dark", size: "invisible", execution: "execute" }}
+                onSuccess={(token) => setCaptchaToken(token)}
+                onExpire={() => setCaptchaToken(null)}
+                options={{ theme: "dark" }}
               />
               <button
                 onClick={() => handleForgot()}
