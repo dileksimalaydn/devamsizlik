@@ -92,16 +92,16 @@ export default function Home() {
             <span className="text-white/60 text-[11px] font-medium">developed by</span>
             <span className="text-white text-[11px] font-bold">Dilek Şimal Aydın</span>
           </span>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 rounded-2xl bg-white/15 border border-white/20 p-1 backdrop-blur-sm">
             <Link
               href="/login"
-              className="rounded-2xl px-5 py-2 text-sm font-bold text-white/80 hover:text-white transition-colors"
+              className="rounded-xl px-4 py-1.5 text-sm font-bold text-white/80 hover:text-white hover:bg-white/10 transition-colors"
             >
               Giriş Yap
             </Link>
             <Link
               href="/login?signup=1"
-              className="rounded-2xl bg-white px-5 py-2 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-colors shadow-lg shadow-indigo-900/30"
+              className="rounded-xl bg-white px-4 py-1.5 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-colors shadow-sm"
             >
               Kayıt Ol
             </Link>
