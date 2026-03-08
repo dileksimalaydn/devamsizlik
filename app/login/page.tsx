@@ -73,6 +73,7 @@ function LoginContent() {
     const tok = token ?? captchaToken;
     if (!tok) {
       pendingRef.current = "forgot";
+      setLoading(true);
       turnstileRef.current?.execute();
       return;
     }
@@ -117,6 +118,7 @@ function LoginContent() {
     const tok = token ?? captchaToken;
     if (!tok) {
       pendingRef.current = "auth";
+      setLoading(true);
       turnstileRef.current?.execute();
       return;
     }
@@ -259,7 +261,7 @@ function LoginContent() {
                   }
                 }}
                 onExpire={() => { setCaptchaToken(null); turnstileRef.current?.execute(); }}
-                options={{ theme: "dark", size: "invisible" }}
+                options={{ theme: "dark", size: "invisible", execution: "execute" }}
               />
               <button
                 onClick={() => handleForgot()}
@@ -379,7 +381,7 @@ function LoginContent() {
                   }
                 }}
                 onExpire={() => { setCaptchaToken(null); turnstileRef.current?.execute(); }}
-                options={{ theme: "dark", size: "invisible" }}
+                options={{ theme: "dark", size: "invisible", execution: "execute" }}
               />
 
               {/* Submit */}
