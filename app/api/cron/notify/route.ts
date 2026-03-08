@@ -70,17 +70,17 @@ export async function GET(req: Request) {
   const isWeekend = dayIndex === 0 || dayIndex === 6;
   const todayDay = TURKISH_DAYS[dayIndex];
 
-  const {
-    data: { users },
-    error: usersError,
-  } = await supabaseAdmin.auth.admin.listUsers();
-
-  if (usersError) {
-    console.error("Kullanıcılar alınamadı:", usersError);
-    return NextResponse.json(
-      { error: "Failed to fetch users" },
-      { status: 500 }
-    );
+  const users = [];
+  let page = 1;
+  while (true) {
+    const { data, error: usersError } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 1000 });
+    if (usersError) {
+      console.error("Kullanıcılar alınamadı:", usersError);
+      return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
+    }
+    users.push(...data.users);
+    if (data.users.length < 1000) break;
+    page++;
   }
 
   let sent = 0;
