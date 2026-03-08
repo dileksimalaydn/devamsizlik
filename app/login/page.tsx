@@ -59,12 +59,12 @@ function LoginContent() {
     setLoading(false);
   }
 
-  async function handleForgot(token?: string) {
+  async function handleForgot() {
     if (!email) {
       setMsg({ text: "E-posta adresini gir.", ok: false });
       return;
     }
-    const tok = token ?? captchaToken;
+    const tok = captchaToken;
     if (!tok) {
       setMsg({ text: "Güvenlik doğrulaması yükleniyor, birkaç saniye bekle.", ok: false });
       return;
@@ -98,7 +98,7 @@ function LoginContent() {
     }
   }
 
-  async function handleAuth(token?: string) {
+  async function handleAuth() {
     if (!email || !password) {
       setMsg({ text: "E-posta ve şifre girilmeli.", ok: false });
       return;
@@ -107,7 +107,7 @@ function LoginContent() {
       setMsg({ text: "Devam etmek için KVKK Aydınlatma Metni'ni onaylamalısın.", ok: false });
       return;
     }
-    const tok = token ?? captchaToken;
+    const tok = captchaToken;
     if (!tok) {
       setMsg({ text: "Güvenlik doğrulaması yükleniyor, birkaç saniye bekle.", ok: false });
       return;
@@ -123,6 +123,8 @@ function LoginContent() {
       });
       if (error) {
         setMsg({ text: "Hata: " + error.message, ok: false });
+        turnstileRef.current?.reset();
+        setCaptchaToken(null);
       } else {
         if (data.user) {
           await supabase.from("profiles").insert({ user_id: data.user.id, school });
