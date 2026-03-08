@@ -35,6 +35,12 @@ function LoginContent() {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Invisible Turnstile'ı sayfa yüklenince önceden çalıştır
+  useEffect(() => {
+    const t = setTimeout(() => turnstileRef.current?.execute(), 500);
+    return () => clearTimeout(t);
+  }, []);
+
   async function handleResetPassword() {
     if (!newPassword) { setMsg({ text: "Yeni şifre gir.", ok: false }); return; }
     if (newPassword.length < 8) { setMsg({ text: "Şifre en az 8 karakter olmalı.", ok: false }); return; }
