@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { AlertCircle, CheckCircle2, GraduationCap, Loader2 } from "lucide-react";
 import { Turnstile } from "@marsidev/react-turnstile";
@@ -15,7 +15,8 @@ export default function LoginPage() {
   const [newPassword, setNewPassword] = useState("");
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
+  const searchParams = useSearchParams();
+  const [isSignUp, setIsSignUp] = useState(searchParams.get("signup") === "1");
   const [isForgot, setIsForgot] = useState(false);
   const [isReset, setIsReset] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);

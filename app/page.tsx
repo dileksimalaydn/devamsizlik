@@ -92,12 +92,20 @@ export default function Home() {
             <span className="text-white/60 text-[11px] font-medium">developed by</span>
             <span className="text-white text-[11px] font-bold">Dilek Şimal Aydın</span>
           </span>
-          <Link
-            href="/login"
-            className="rounded-2xl bg-white px-5 py-2 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-colors shadow-lg shadow-indigo-900/30"
-          >
-            Giriş Yap
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/login"
+              className="rounded-2xl px-5 py-2 text-sm font-bold text-white/80 hover:text-white transition-colors"
+            >
+              Giriş Yap
+            </Link>
+            <Link
+              href="/login?signup=1"
+              className="rounded-2xl bg-white px-5 py-2 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-colors shadow-lg shadow-indigo-900/30"
+            >
+              Kayıt Ol
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -122,7 +130,7 @@ export default function Home() {
 
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href="/login"
+            href="/login?signup=1"
             className="rounded-2xl bg-white px-8 py-4 text-base font-bold text-indigo-700 hover:bg-indigo-50 transition-all shadow-2xl shadow-indigo-900/40 active:scale-95"
           >
             Ücretsiz Başla
@@ -245,7 +253,7 @@ export default function Home() {
               Sen merak etme — biz hesaplayalım.
             </p>
             <Link
-              href="/login"
+              href="/login?signup=1"
               className="inline-block rounded-2xl bg-white px-8 py-4 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-colors shadow-lg"
             >
               Hemen Ücretsiz Başla
