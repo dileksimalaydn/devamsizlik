@@ -96,10 +96,10 @@ function SettingsContent() {
     setSchoolLoading(false);
   }
 
-  const field = "w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all";
+  const field = "w-full rounded-2xl border border-border bg-muted/30 px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all";
 
   return (
-    <main className="min-h-screen bg-slate-50 pb-32">
+    <main className="min-h-screen bg-background pb-32">
       <AppHeader />
       <div className="mx-auto max-w-md px-4 pt-4 space-y-4">
 
@@ -114,22 +114,22 @@ function SettingsContent() {
         )}
 
         {/* Hesap bilgisi */}
-        <div className="rounded-3xl bg-white border border-slate-100 shadow-sm p-5">
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Hesap</p>
-          <p className="text-sm font-semibold text-slate-900">{email ?? "—"}</p>
+        <div className="rounded-3xl bg-card border border-border shadow-sm p-5">
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">Hesap</p>
+          <p className="text-sm font-semibold text-foreground">{email ?? "—"}</p>
         </div>
 
         {/* Okul */}
-        <div className="rounded-3xl bg-white border border-slate-100 shadow-sm p-5 space-y-3">
+        <div className="rounded-3xl bg-card border border-border shadow-sm p-5 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-0.5">Üniversite</p>
-              <p className="text-sm font-semibold text-slate-900">{schoolLabel(school)}</p>
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-0.5">Üniversite</p>
+              <p className="text-sm font-semibold text-foreground">{schoolLabel(school)}</p>
             </div>
             {!schoolMode && (
               <button
                 onClick={() => { setSchoolMode(true); setPendingSchool(school); setSchoolMsg(null); }}
-                className="rounded-2xl bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition"
+                className="rounded-2xl bg-muted px-3 py-2 text-xs font-semibold text-foreground hover:bg-muted/80 transition"
               >
                 Değiştir
               </button>
@@ -160,15 +160,15 @@ function SettingsContent() {
               <div className="flex gap-2">
                 <button
                   onClick={() => { setSchoolMode(false); setPendingSchool(school); }}
-                  className="flex-1 rounded-2xl border border-slate-200 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
+                  className="flex-1 rounded-2xl border border-border py-2.5 text-sm font-semibold text-foreground hover:bg-muted/50 transition"
                 >
                   İptal
                 </button>
                 <button
                   onClick={handleSchoolChange}
                   disabled={schoolLoading || (pendingSchool === school && !isNewUser)}
-                  className={`flex-1 flex items-center justify-center gap-2 rounded-2xl py-2.5 text-sm font-bold text-white transition disabled:opacity-60 ${
-                    willReset ? "bg-rose-600 hover:bg-rose-700" : "bg-slate-900 hover:bg-slate-800"
+                  className={`flex-1 flex items-center justify-center gap-2 rounded-2xl py-2.5 text-sm font-bold transition disabled:opacity-60 ${
+                    willReset ? "bg-rose-600 text-white hover:bg-rose-700" : "bg-primary text-primary-foreground hover:bg-primary/90"
                   }`}
                 >
                   {schoolLoading ? <Loader2 size={15} className="animate-spin" /> : willReset ? "Sil ve Güncelle" : "Kaydet"}
@@ -188,8 +188,8 @@ function SettingsContent() {
         </div>
 
         {/* Şifre değiştir */}
-        <div className="rounded-3xl bg-white border border-slate-100 shadow-sm p-5 space-y-3">
-          <p className="text-sm font-bold text-slate-900">Şifre Değiştir</p>
+        <div className="rounded-3xl bg-card border border-border shadow-sm p-5 space-y-3">
+          <p className="text-sm font-bold text-foreground">Şifre Değiştir</p>
           <input
             type="password"
             placeholder="Yeni şifre"
@@ -201,7 +201,7 @@ function SettingsContent() {
           <button
             onClick={handlePasswordChange}
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 py-3 text-sm font-bold text-white hover:bg-slate-800 transition active:scale-95 disabled:opacity-60"
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition active:scale-95 disabled:opacity-60"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : "Şifreyi Güncelle"}
           </button>
@@ -218,7 +218,7 @@ function SettingsContent() {
         {/* Çıkış yap */}
         <button
           onClick={async () => { await supabase.auth.signOut(); router.push("/"); }}
-          className="w-full rounded-2xl border border-rose-200 bg-white py-3 text-sm font-bold text-rose-600 hover:bg-rose-50 transition active:scale-95"
+          className="w-full rounded-2xl border border-rose-200 bg-card py-3 text-sm font-bold text-rose-600 hover:bg-rose-50/10 transition active:scale-95"
         >
           Çıkış Yap
         </button>

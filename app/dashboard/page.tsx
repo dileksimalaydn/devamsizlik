@@ -166,19 +166,19 @@ export default function DashboardPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 pb-24">
+    <main className="min-h-screen bg-background pb-24">
       <AppHeader
         right={
           <div className="flex gap-2">
             <button
               onClick={handleLogout}
-              className="rounded-2xl bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-200 transition-colors"
+              className="rounded-2xl bg-muted px-3 py-2 text-xs font-semibold text-foreground hover:bg-muted/80 transition-colors"
             >
               Çıkış
             </button>
             <a
               href="/setup"
-              className="rounded-2xl bg-slate-900 px-3 py-2 text-xs font-semibold text-white shadow-md hover:bg-slate-800 transition-all active:scale-95"
+              className="rounded-2xl bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground shadow-md hover:bg-primary/90 transition-all active:scale-95"
             >
               Ders Ekle +
             </a>
@@ -217,7 +217,7 @@ export default function DashboardPage() {
         <div className="flex justify-end mb-3">
           <button
             onClick={() => router.push("/weekly")}
-            className="flex items-center gap-1.5 rounded-xl bg-white border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:border-slate-300 transition-all shadow-sm"
+            className="flex items-center gap-1.5 rounded-xl bg-card border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:border-border transition-all shadow-sm"
           >
             <CalendarDays size={13} />
             Haftalık Program
@@ -225,18 +225,18 @@ export default function DashboardPage() {
         </div>
 
         {/* Tarih Seçici */}
-        <div className="rounded-3xl bg-white px-4 py-4 shadow-sm border border-slate-200">
+        <div className="rounded-3xl bg-card px-4 py-4 shadow-sm border border-border">
           {/* Üst satır: ok + tarih + takvim + ok */}
           <div className="flex items-center justify-between">
             <button
               onClick={goPrev}
-              className="flex items-center gap-1 rounded-2xl bg-indigo-50 border border-indigo-100 px-3 py-2 text-xs font-semibold text-indigo-700 hover:bg-indigo-100 transition-colors"
+              className="flex items-center gap-1 rounded-2xl bg-primary/10 border border-primary/20 px-3 py-2 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors"
             >
               <ChevronLeft size={14} /> Önceki
             </button>
 
             <div className="flex flex-col items-center">
-              <div className="text-base font-extrabold text-slate-900">
+              <div className="text-base font-extrabold text-foreground">
                 {prettyTR(selectedDate)}
               </div>
               {!isToday && (
@@ -251,7 +251,7 @@ export default function DashboardPage() {
 
             <div className="flex items-center gap-1.5">
               {/* Takvim — uzak tarihler için */}
-              <label className="flex items-center justify-center rounded-2xl bg-indigo-50 border border-indigo-100 p-2 text-indigo-700 hover:bg-indigo-100 transition-colors cursor-pointer">
+              <label className="flex items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 p-2 text-primary hover:bg-primary/20 transition-colors cursor-pointer">
                 <Calendar size={16} />
                 <input
                   type="date"
@@ -264,7 +264,7 @@ export default function DashboardPage() {
               <button
                 onClick={goNext}
                 disabled={isToday}
-                className="flex items-center gap-1 rounded-2xl bg-indigo-50 border border-indigo-100 px-3 py-2 text-xs font-semibold text-indigo-700 hover:bg-indigo-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                className="flex items-center gap-1 rounded-2xl bg-primary/10 border border-primary/20 px-3 py-2 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 Sonraki <ChevronRight size={14} />
               </button>
@@ -287,10 +287,10 @@ export default function DashboardPage() {
                   disabled={isFuture}
                   className={`flex shrink-0 flex-col items-center rounded-2xl px-3 py-2 transition-all ${
                     isSelected
-                      ? "bg-slate-900 text-white"
+                      ? "bg-foreground text-background"
                       : isFuture
-                      ? "bg-slate-50 text-slate-300 cursor-not-allowed"
-                      : "bg-slate-50 text-slate-600 hover:bg-slate-100"
+                      ? "bg-muted/50 text-muted-foreground/30 cursor-not-allowed"
+                      : "bg-muted/50 text-muted-foreground hover:bg-muted"
                   }`}
                 >
                   <span className="text-[10px] font-semibold">{label}</span>
@@ -307,25 +307,25 @@ export default function DashboardPage() {
             [1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="rounded-3xl bg-white p-4 shadow-sm border border-slate-100 animate-pulse"
+                className="rounded-3xl bg-card p-4 shadow-sm border border-border animate-pulse"
               >
                 <div className="flex items-start gap-3">
-                  <div className="h-10 w-2 rounded-full bg-slate-200" />
+                  <div className="h-10 w-2 rounded-full bg-muted" />
                   <div className="flex-1 space-y-2 pt-1">
-                    <div className="h-4 w-2/3 rounded-full bg-slate-200" />
-                    <div className="h-3 w-1/3 rounded-full bg-slate-100" />
-                    <div className="h-3 w-1/4 rounded-full bg-slate-100" />
+                    <div className="h-4 w-2/3 rounded-full bg-muted" />
+                    <div className="h-3 w-1/3 rounded-full bg-muted/60" />
+                    <div className="h-3 w-1/4 rounded-full bg-muted/60" />
                   </div>
-                  <div className="h-9 w-16 rounded-2xl bg-slate-200" />
+                  <div className="h-9 w-16 rounded-2xl bg-muted" />
                 </div>
               </div>
             ))
           ) : todaysCourses.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-8 text-center">
-              <div className="text-sm font-semibold text-slate-700">
+            <div className="rounded-3xl border border-dashed border-border bg-card p-8 text-center">
+              <div className="text-sm font-semibold text-foreground">
                 Bugün ders yok
               </div>
-              <div className="mt-1 text-xs text-slate-400">
+              <div className="mt-1 text-xs text-muted-foreground">
                 Dinlenme günü, tadını çıkar.
               </div>
             </div>
@@ -344,10 +344,10 @@ export default function DashboardPage() {
 
         {/* İmza */}
         <div className="mt-12 pb-8 text-center">
-          <p className="text-[10px] font-medium tracking-[0.2em] text-slate-400 uppercase opacity-70">
+          <p className="text-[10px] font-medium tracking-[0.2em] text-muted-foreground uppercase opacity-70">
             Developed by Dilek Şimal Aydın
           </p>
-          <div className="mt-2 mx-auto h-[1px] w-6 bg-slate-300" />
+          <div className="mt-2 mx-auto h-[1px] w-6 bg-border" />
         </div>
       </div>
 

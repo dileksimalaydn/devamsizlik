@@ -17,10 +17,10 @@ export default function MissedSheet({
 
   return (
     <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/40 p-3">
-      <div className="w-full max-w-md rounded-3xl bg-white p-4 shadow-xl">
+      <div className="w-full max-w-md rounded-3xl bg-card p-4 shadow-xl">
         <div className="text-center">
-          <div className="text-base font-bold text-slate-900">Kaç saat gelmedin?</div>
-          <div className="mt-1 text-xs text-slate-500">
+          <div className="text-base font-bold text-foreground">Kaç saat gelmedin?</div>
+          <div className="mt-1 text-xs text-muted-foreground">
             <span className="font-semibold">{courseName}</span> için seç.
           </div>
         </div>
@@ -28,19 +28,19 @@ export default function MissedSheet({
         <div className="mt-4 grid grid-cols-3 gap-2">
           <button
             onClick={() => onPick(1)}
-            className="rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+            className="rounded-2xl border border-border bg-card px-3 py-3 text-sm font-semibold text-foreground hover:bg-muted/50"
           >
             1 saat
           </button>
           <button
             onClick={() => onPick(2)}
-            className="rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+            className="rounded-2xl border border-border bg-card px-3 py-3 text-sm font-semibold text-foreground hover:bg-muted/50"
           >
             2 saat
           </button>
           <button
             onClick={() => onPick(blocks)}
-            className="rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50"
+            className="rounded-2xl border border-border bg-card px-3 py-3 text-sm font-semibold text-foreground hover:bg-muted/50"
           >
             Tamamı
           </button>
@@ -48,7 +48,7 @@ export default function MissedSheet({
 
         <button
           onClick={onClose}
-          className="mt-3 w-full rounded-2xl bg-slate-100 px-3 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-200"
+          className="mt-3 w-full rounded-2xl bg-muted px-3 py-3 text-sm font-semibold text-foreground hover:bg-muted/80"
         >
           İptal
         </button>

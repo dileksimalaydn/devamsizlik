@@ -123,7 +123,7 @@ export default function SummaryPage() {
   const warnCount = totals.filter((g) => g.missed / g.limit >= 0.5 && g.missed / g.limit < 0.8).length;
 
   return (
-    <main className="min-h-screen bg-slate-50 pb-24">
+    <main className="min-h-screen bg-background pb-24">
       <AppHeader />
 
       <div className="mx-auto max-w-md px-4 pt-4 space-y-3">
@@ -158,22 +158,22 @@ export default function SummaryPage() {
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="rounded-3xl bg-white p-4 shadow-sm border border-slate-100 animate-pulse">
+              <div key={i} className="rounded-3xl bg-card p-4 shadow-sm border border-border animate-pulse">
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-2 flex-1">
-                    <div className="h-4 w-1/2 rounded-full bg-slate-200" />
-                    <div className="h-3 w-1/3 rounded-full bg-slate-100" />
+                    <div className="h-4 w-1/2 rounded-full bg-muted" />
+                    <div className="h-3 w-1/3 rounded-full bg-muted/60" />
                   </div>
-                  <div className="h-4 w-20 rounded-full bg-slate-200" />
+                  <div className="h-4 w-20 rounded-full bg-muted" />
                 </div>
-                <div className="mt-4 h-2 w-full rounded-full bg-slate-100" />
+                <div className="mt-4 h-2 w-full rounded-full bg-muted/60" />
               </div>
             ))}
           </div>
         ) : totals.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-6 text-center">
-            <div className="text-sm font-semibold text-slate-900">Henüz ders yok</div>
-            <div className="mt-1 text-xs text-slate-500">
+          <div className="rounded-3xl border border-dashed border-border bg-card p-6 text-center">
+            <div className="text-sm font-semibold text-foreground">Henüz ders yok</div>
+            <div className="mt-1 text-xs text-muted-foreground">
               Ders eklediğinde toplamlar burada gözükecek.
             </div>
           </div>
@@ -189,12 +189,12 @@ export default function SummaryPage() {
                 <button
                   key={g.groupKey}
                   onClick={() => setExpandedGroup(g.groupKey)}
-                  className="w-full rounded-3xl bg-white p-4 shadow-sm border border-slate-100 text-left active:scale-[0.98] transition-all hover:border-slate-200"
+                  className="w-full rounded-3xl bg-card p-4 shadow-sm border border-border text-left active:scale-[0.98] transition-all hover:border-border"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2">
-                        <div className="text-sm font-semibold text-slate-900">{g.displayName}</div>
+                        <div className="text-sm font-semibold text-foreground">{g.displayName}</div>
                         <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
                           g.courseType === "lab"
                             ? "bg-violet-100 text-violet-700"
@@ -211,30 +211,30 @@ export default function SummaryPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="text-right text-xs">
-                        <div className="font-bold text-slate-900">
-                          {missed} <span className="font-normal text-slate-400">/</span> {limit} saat
+                        <div className="font-bold text-foreground">
+                          {missed} <span className="font-normal text-muted-foreground">/</span> {limit} saat
                         </div>
-                        <div className="text-slate-400 text-[10px]">{remaining} saat kaldı</div>
+                        <div className="text-muted-foreground text-[10px]">{remaining} saat kaldı</div>
                       </div>
                       <span className="text-slate-300 text-lg">›</span>
                     </div>
                   </div>
-                  <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                  <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
                     <div
                       className={`h-1.5 rounded-full transition-all duration-500 ${r.bar}`}
                       style={{ width: `${pct}%` }}
                     />
                   </div>
-                  <div className="mt-1.5 flex justify-between text-[10px] text-slate-400">
+                  <div className="mt-1.5 flex justify-between text-[10px] text-muted-foreground">
                     <span>0</span>
                     <span className="font-medium">%{pct} doldu</span>
                     <span>{limit} saat</span>
                   </div>
-                  <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-[10px] text-slate-400">
+                  <div className="mt-3 pt-2.5 border-t border-border flex items-center justify-between">
+                    <span className="text-[10px] text-muted-foreground">
                       {g.records.length > 0 ? `${g.records.length} kayıt` : "Henüz kayıt yok"}
                     </span>
-                    <span className="text-[10px] font-semibold bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-full">+ Devamsızlık Ekle</span>
+                    <span className="text-[10px] font-semibold bg-primary/10 text-primary px-2.5 py-1 rounded-full">+ Devamsızlık Ekle</span>
                   </div>
                 </button>
               );

@@ -28,8 +28,8 @@ function HourButtons({ blocks, current, onPick }: { blocks: number; current?: nu
           onClick={() => onPick(n)}
           className={`rounded-xl py-3 text-sm font-semibold border transition-all active:scale-95 ${
             current === n
-              ? "bg-indigo-600 text-white border-indigo-600 shadow-sm"
-              : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
+              ? "bg-primary text-primary-foreground border-primary shadow-sm"
+              : "bg-muted/50 border-border text-foreground hover:bg-muted"
           }`}
         >
           {n === blocks && n !== 1 && n !== 2 ? "Tamamı" : `${n} saat`}
@@ -108,50 +108,50 @@ export default function CourseDetailSheet({ open, displayName, sessions, records
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-[32px] bg-white shadow-2xl flex flex-col overflow-hidden"
+        className="w-full max-w-md rounded-[32px] bg-card shadow-2xl flex flex-col overflow-hidden"
         style={{ maxHeight: "88vh" }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0">
+        <div className="px-6 py-5 border-b border-border flex items-center justify-between bg-card shrink-0">
           <div>
-            <h2 className="text-lg font-bold text-slate-900 leading-tight">{displayName}</h2>
-            <p className="text-xs font-medium text-slate-500 mt-0.5">
+            <h2 className="text-lg font-bold text-foreground leading-tight">{displayName}</h2>
+            <p className="text-xs font-medium text-muted-foreground mt-0.5">
               {addMode ? "Eklemek istediğin günü seç" : `Toplam ${records.length} devamsızlık kaydı`}
             </p>
           </div>
           <button
             onClick={addMode ? () => { setAddMode(false); setSelectedDate(null); } : onClose}
-            className="h-9 w-9 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition"
+            className="h-9 w-9 rounded-2xl bg-muted flex items-center justify-center text-muted-foreground hover:bg-muted/80 transition"
           >
             <X size={18} />
           </button>
         </div>
 
         {/* İçerik */}
-        <div ref={(el) => { scrollRef.current = el; }} className="overflow-y-auto flex-1 bg-slate-50/30">
+        <div ref={(el) => { scrollRef.current = el; }} className="overflow-y-auto flex-1 bg-background/30">
           {addMode ? (
             <div className="px-5 py-4 space-y-4">
               {/* Ay Navigator */}
-              <div className="flex items-center justify-between bg-white rounded-2xl border border-slate-100 px-4 py-3 shadow-sm">
-                <button onClick={prevMonth} className="h-9 w-9 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition border border-slate-200">
-                  <ChevronLeft size={16} className="text-slate-700" />
+              <div className="flex items-center justify-between bg-card rounded-2xl border border-border px-4 py-3 shadow-sm">
+                <button onClick={prevMonth} className="h-9 w-9 flex items-center justify-center rounded-xl bg-muted hover:bg-muted/80 active:scale-95 transition border border-border">
+                  <ChevronLeft size={16} className="text-foreground" />
                 </button>
-                <span className="text-sm font-bold text-slate-900">
+                <span className="text-sm font-bold text-foreground">
                   {TR_MONTHS[addMonth.month]} {addMonth.year}
                 </span>
-                <button onClick={nextMonth} disabled={isCurrentMonth} className="h-9 w-9 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 transition border border-slate-200 disabled:opacity-30">
-                  <ChevronRight size={16} className="text-slate-700" />
+                <button onClick={nextMonth} disabled={isCurrentMonth} className="h-9 w-9 flex items-center justify-center rounded-xl bg-muted hover:bg-muted/80 active:scale-95 transition border border-border disabled:opacity-30">
+                  <ChevronRight size={16} className="text-foreground" />
                 </button>
               </div>
 
               {/* Chip'ler */}
               {chipDates.length === 0 ? (
-                <div className="py-10 text-center text-sm font-medium text-slate-400">
+                <div className="py-10 text-center text-sm font-medium text-muted-foreground">
                   Bu ayda eklenecek ders günü yok.
                 </div>
               ) : (
@@ -173,7 +173,7 @@ export default function CourseDetailSheet({ open, displayName, sessions, records
                             ? "bg-emerald-50 border-emerald-200 text-emerald-600 hover:border-indigo-300"
                             : isSelected
                             ? "bg-indigo-600 border-indigo-600 text-white shadow-md"
-                            : "bg-white border-slate-200 text-slate-700 hover:border-indigo-300"
+                            : "bg-card border-border text-foreground hover:border-primary/30"
                         }`}
                       >
                         <span className="text-[10px] font-semibold">{dayAbbr}</span>
@@ -193,8 +193,8 @@ export default function CourseDetailSheet({ open, displayName, sessions, records
                 const session = sessions.find((s) => s.day === dayNameTR(selectedDate));
                 if (!session) return null;
                 return (
-                  <div className="p-4 rounded-2xl bg-white border border-indigo-100 shadow-sm space-y-3 animate-in zoom-in-95 duration-150">
-                    <p className="text-xs font-semibold text-slate-500">{prettyTR(selectedDate)} — kaç saat gelmedin?</p>
+                  <div className="p-4 rounded-2xl bg-card border border-primary/20 shadow-sm space-y-3 animate-in zoom-in-95 duration-150">
+                    <p className="text-xs font-semibold text-muted-foreground">{prettyTR(selectedDate)} — kaç saat gelmedin?</p>
                     <HourButtons blocks={session.blocks} onPick={(n) => save(session.id, selectedDate, n)} />
                   </div>
                 );
@@ -204,10 +204,10 @@ export default function CourseDetailSheet({ open, displayName, sessions, records
             <div className="px-5 py-4 space-y-4">
               {sorted.length === 0 ? (
                 <div className="text-center py-16 px-10">
-                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 mb-4">
+                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground mb-4">
                     <Calendar size={24} />
                   </div>
-                  <p className="text-sm font-medium text-slate-500">Henüz bir devamsızlık kaydı girmedin.</p>
+                  <p className="text-sm font-medium text-muted-foreground">Henüz bir devamsızlık kaydı girmedin.</p>
                 </div>
               ) : sorted.map((rec) => {
                 const session = sessions.find((s) => String(s.id) === String(rec.course_id));
@@ -218,24 +218,24 @@ export default function CourseDetailSheet({ open, displayName, sessions, records
                     <button
                       onClick={() => setEditingKey(isEditing ? null : key)}
                       className={`w-full rounded-[24px] border px-5 py-4 flex items-center justify-between transition-all active:scale-[0.98] ${
-                        isEditing ? "bg-white border-indigo-200 shadow-md ring-4 ring-indigo-50" : "bg-white border-slate-100 shadow-sm hover:border-slate-200"
+                        isEditing ? "bg-card border-primary/30 shadow-md ring-4 ring-primary/10" : "bg-card border-border shadow-sm hover:border-border"
                       }`}
                     >
                       <div className="text-left">
-                        <div className="text-[14px] font-bold text-slate-900">{prettyTR(rec.date)}</div>
+                        <div className="text-[14px] font-bold text-foreground">{prettyTR(rec.date)}</div>
                         {session && (
-                          <div className="text-[11px] font-medium text-slate-500 mt-1 flex items-center gap-1">
+                          <div className="text-[11px] font-medium text-muted-foreground mt-1 flex items-center gap-1">
                             <Clock size={10} /> {session.start} — {session.end}
                           </div>
                         )}
                       </div>
-                      <span className={`text-sm font-bold px-3 py-1.5 rounded-xl ${isEditing ? "bg-indigo-600 text-white" : "bg-rose-50 text-rose-600"}`}>
+                      <span className={`text-sm font-bold px-3 py-1.5 rounded-xl ${isEditing ? "bg-primary text-primary-foreground" : "bg-rose-50 text-rose-600"}`}>
                         {rec.missed_blocks} saat
                       </span>
                     </button>
                     {isEditing && session && (
-                      <div className="p-4 rounded-[24px] bg-white border border-indigo-100 shadow-sm space-y-4 animate-in zoom-in-95 duration-200">
-                        <label className="text-xs font-semibold text-slate-800 ml-1">Süreyi Değiştir</label>
+                      <div className="p-4 rounded-[24px] bg-card border border-primary/20 shadow-sm space-y-4 animate-in zoom-in-95 duration-200">
+                        <label className="text-xs font-semibold text-foreground ml-1">Süreyi Değiştir</label>
                         <HourButtons blocks={session.blocks} current={rec.missed_blocks} onPick={(n) => save(rec.course_id, rec.date, n)} />
                         <button onClick={() => del(rec)} className="w-full py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 transition">
                           <Trash2 size={14} /> Kaydı Sil
@@ -251,10 +251,10 @@ export default function CourseDetailSheet({ open, displayName, sessions, records
 
         {/* Footer */}
         {!addMode && (
-          <div className="p-5 bg-white border-t border-slate-100 shrink-0">
+          <div className="p-5 bg-card border-t border-border shrink-0">
             <button
               onClick={() => { setAddMode(true); setSelectedDate(null); setAddMonth({ year: now.getFullYear(), month: now.getMonth() }); scrollRef.current?.scrollTo(0, 0); }}
-              className="w-full rounded-2xl bg-slate-900 py-4 text-sm font-bold text-white shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2"
+              className="w-full rounded-2xl bg-primary py-4 text-sm font-bold text-primary-foreground shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2"
             >
               <Plus size={18} /> Devamsızlık Ekle
             </button>

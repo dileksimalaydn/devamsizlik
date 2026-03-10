@@ -156,23 +156,23 @@ export default function SetupPage() {
   };
 
   const field =
-    "w-full rounded-2xl border border-slate-300 bg-slate-50 px-3 py-3 text-sm font-medium text-slate-900 outline-none placeholder:text-slate-400 focus:bg-white focus:border-slate-500 focus:ring-4 focus:ring-slate-100 transition";
+    "w-full rounded-2xl border border-border bg-muted/30 px-3 py-3 text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground focus:bg-background focus:border-ring focus:ring-4 focus:ring-ring/10 transition";
 
   if (school === null) {
     return (
-      <main className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="h-6 w-6 rounded-full border-2 border-slate-300 border-t-slate-800 animate-spin" />
+      <main className="min-h-screen bg-background flex items-center justify-center">
+        <div className="h-6 w-6 rounded-full border-2 border-border border-t-foreground animate-spin" />
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 pb-32">
+    <main className="min-h-screen bg-background pb-32">
       <AppHeader
         right={
           <button
             onClick={() => router.push("/dashboard")}
-            className="rounded-2xl bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-200 transition"
+            className="rounded-2xl bg-muted px-3 py-2 text-xs font-semibold text-foreground hover:bg-muted/80 transition"
           >
             Bitti
           </button>
@@ -180,12 +180,12 @@ export default function SetupPage() {
       />
 
       <div className="mx-auto max-w-md px-4 pt-4 space-y-4">
-        <div className="rounded-3xl bg-white p-4 shadow-sm border border-slate-100">
-          <div className="text-sm font-bold text-slate-900">Yeni Ders Tanımla</div>
+        <div className="rounded-3xl bg-card p-4 shadow-sm border border-border">
+          <div className="text-sm font-bold text-foreground">Yeni Ders Tanımla</div>
 
           <div className="mt-4 space-y-3">
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-800">Ders Adı</label>
+              <label className="mb-1 block text-xs font-semibold text-foreground">Ders Adı</label>
               <input
                 type="text"
                 placeholder="Örn: se116"
@@ -197,15 +197,15 @@ export default function SetupPage() {
 
             {/* Teorik / Lab toggle */}
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-800">Ders Türü</label>
+              <label className="mb-1 block text-xs font-semibold text-foreground">Ders Türü</label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => setCourseType("teorik")}
                   className={`rounded-2xl border py-3 text-sm font-semibold transition-all ${
                     courseType === "teorik"
-                      ? "bg-indigo-600 text-white border-indigo-600"
-                      : "bg-slate-50 text-slate-500 border-slate-300"
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-muted/50 text-muted-foreground border-border"
                   }`}
                 >
                   Teorik
@@ -216,8 +216,8 @@ export default function SetupPage() {
                   onClick={() => setCourseType("lab")}
                   className={`rounded-2xl border py-3 text-sm font-semibold transition-all ${
                     courseType === "lab"
-                      ? "bg-indigo-600 text-white border-indigo-600"
-                      : "bg-slate-50 text-slate-500 border-slate-300"
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-muted/50 text-muted-foreground border-border"
                   }`}
                 >
                   Lab / Uygulama
@@ -228,13 +228,13 @@ export default function SetupPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-800">Gün</label>
+                <label className="mb-1 block text-xs font-semibold text-foreground">Gün</label>
                 <select value={day} onChange={(e) => setDay(e.target.value)} className={field}>
                   {DAYS.map((d) => <option key={d}>{d}</option>)}
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-800">Başlangıç</label>
+                <label className="mb-1 block text-xs font-semibold text-foreground">Başlangıç</label>
                 {ieu ? (
                   <select value={start} onChange={(e) => setStart(e.target.value)} className={field}>
                     {slotTimes.map((t) => <option key={t}>{t}</option>)}
@@ -253,7 +253,7 @@ export default function SetupPage() {
             {!ieu && (
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-xs font-semibold text-slate-800">Ders süresi (dk)</label>
+                  <label className="mb-1 block text-xs font-semibold text-foreground">Ders süresi (dk)</label>
                   <input
                     type="number"
                     min={1}
@@ -263,7 +263,7 @@ export default function SetupPage() {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-semibold text-slate-800">Mola (dk)</label>
+                  <label className="mb-1 block text-xs font-semibold text-foreground">Mola (dk)</label>
                   <input
                     type="number"
                     min={0}
@@ -277,25 +277,25 @@ export default function SetupPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-800">Ders Saati</label>
+                <label className="mb-1 block text-xs font-semibold text-foreground">Ders Saati</label>
                 <select value={blocks} onChange={(e) => setBlocks(Number(e.target.value))} className={field}>
                   {[1, 2, 3, 4, 5, 6].map((b) => <option key={b} value={b}>{b}</option>)}
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-800">Bitiş</label>
-                <div className="rounded-2xl border border-slate-300 bg-slate-50 px-3 py-3 text-sm">
-                  <div className="font-bold text-slate-900">{computedEnd}</div>
-                  <div className="mt-1 text-[11px] text-slate-500">Otomatik hesaplanır</div>
+                <label className="mb-1 block text-xs font-semibold text-foreground">Bitiş</label>
+                <div className="rounded-2xl border border-border bg-muted/30 px-3 py-3 text-sm">
+                  <div className="font-bold text-foreground">{computedEnd}</div>
+                  <div className="mt-1 text-[11px] text-muted-foreground">Otomatik hesaplanır</div>
                 </div>
               </div>
             </div>
 
             {/* Özel limit */}
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-800">
+              <label className="mb-1 block text-xs font-semibold text-foreground">
                 Devamsızlık Limiti (saat)
-                <span className="ml-1 font-normal text-slate-400">— boş bırakırsan otomatik hesaplanır</span>
+                <span className="ml-1 font-normal text-muted-foreground">— boş bırakırsan otomatik hesaplanır</span>
               </label>
               <input
                 type="number"
@@ -320,7 +320,7 @@ export default function SetupPage() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="w-full rounded-2xl bg-slate-900 py-4 text-sm font-bold text-white hover:bg-slate-800 transition active:scale-95 disabled:opacity-60"
+              className="w-full rounded-2xl bg-primary py-4 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition active:scale-95 disabled:opacity-60"
             >
               {saving ? "Kaydediliyor..." : "Kaydet ve Listeye Ekle"}
             </button>
@@ -330,28 +330,28 @@ export default function SetupPage() {
         {/* Ders listesi */}
         <div className="space-y-3">
           <div className="flex items-center justify-between px-2">
-            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
               Programındaki Dersler
             </h3>
-            <span className="text-[10px] font-bold bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full">
+            <span className="text-[10px] font-bold bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
               {myCourses.length} Ders
             </span>
           </div>
 
           {myCourses.length === 0 ? (
-            <div className="p-8 text-center border-2 border-dashed border-slate-200 rounded-3xl text-slate-400 text-xs font-medium">
+            <div className="p-8 text-center border-2 border-dashed border-border rounded-3xl text-muted-foreground text-xs font-medium">
               Henüz ders eklenmedi.
             </div>
           ) : (
             myCourses.map((c) => (
               <div
                 key={c.id}
-                className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden"
+                className="bg-card rounded-3xl border border-border shadow-sm overflow-hidden"
               >
                 <div className="flex items-center justify-between p-4">
                   <div className="flex flex-col gap-0.5">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-extrabold text-slate-900">{c.course_name}</span>
+                      <span className="text-sm font-extrabold text-foreground">{c.course_name}</span>
                       <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
                         c.course_type === "lab"
                           ? "bg-violet-100 text-violet-700"
@@ -360,7 +360,7 @@ export default function SetupPage() {
                         {c.course_type === "lab" ? "LAB" : "TEORİK"}
                       </span>
                     </div>
-                    <span className="text-[10px] font-medium text-slate-500 uppercase tracking-tighter">
+                    <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-tighter">
                       {c.day} • {c.start} – {c.end}
                       {ieu && ` (${c.blocks} saat)`}
                     </span>
@@ -384,7 +384,7 @@ export default function SetupPage() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => setDeletingId(null)}
-                        className="rounded-xl bg-white border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700"
+                        className="rounded-xl bg-background border border-border px-3 py-1.5 text-xs font-semibold text-foreground"
                       >
                         İptal
                       </button>

@@ -46,7 +46,7 @@ export default function BottomNav() {
   const router = useRouter();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white/90 backdrop-blur-md">
+    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/90 backdrop-blur-md">
       <div className="mx-auto grid max-w-md grid-cols-4 px-2 py-2">
         {tabs.map((tab) => {
           const active = path === tab.href;
@@ -56,8 +56,8 @@ export default function BottomNav() {
               onClick={() => router.push(tab.href)}
               className={`flex flex-col items-center gap-1 rounded-2xl px-3 py-2 text-[10px] font-semibold transition-all ${
                 active
-                  ? "bg-indigo-600 text-white"
-                  : "text-slate-400 hover:text-slate-700"
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {tab.icon}
