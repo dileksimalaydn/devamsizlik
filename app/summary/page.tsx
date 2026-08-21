@@ -34,12 +34,12 @@ function fixNegZero(n: number) {
 function riskMeta(missed: number, limit: number) {
   const ratio = limit <= 0 ? 0 : missed / limit;
   if (ratio >= 0.8) {
-    return { label: "Riskli", bar: "bg-rose-500", text: "text-rose-600", badge: "bg-rose-100 text-rose-700" };
+    return { label: "Riskli", bar: "bg-rose-500", text: "text-rose-300", badge: "bg-rose-500/15 text-rose-300" };
   }
   if (ratio >= 0.5) {
-    return { label: "Dikkat", bar: "bg-amber-400", text: "text-amber-700", badge: "bg-amber-100 text-amber-700" };
+    return { label: "Dikkat", bar: "bg-amber-500", text: "text-amber-300", badge: "bg-amber-500/15 text-amber-300" };
   }
-  return { label: "Güvende", bar: "bg-emerald-400", text: "text-emerald-700", badge: "bg-emerald-100 text-emerald-700" };
+  return { label: "Güvende", bar: "bg-emerald-500", text: "text-emerald-300", badge: "bg-emerald-500/15 text-emerald-300" };
 }
 
 type GroupData = {
@@ -137,20 +137,20 @@ export default function SummaryPage() {
         {!loading && (criticalCount > 0 || warnCount > 0) && (
           <div className={`rounded-2xl border px-4 py-3 flex items-start gap-3 ${
             criticalCount > 0
-              ? "bg-rose-50 border-rose-200"
-              : "bg-amber-50 border-amber-200"
+              ? "bg-rose-500/10 border-rose-500/30"
+              : "bg-amber-500/10 border-amber-500/30"
           }`}>
             {criticalCount > 0
-              ? <AlertOctagon size={18} className="text-rose-600 shrink-0 mt-0.5" />
-              : <AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" />
+              ? <AlertOctagon size={18} className="text-rose-300 shrink-0 mt-0.5" />
+              : <AlertTriangle size={18} className="text-amber-300 shrink-0 mt-0.5" />
             }
             <div>
-              <div className={`text-sm font-bold ${criticalCount > 0 ? "text-rose-800" : "text-amber-800"}`}>
+              <div className={`text-sm font-bold ${criticalCount > 0 ? "text-rose-200" : "text-amber-200"}`}>
                 {criticalCount > 0
                   ? `${criticalCount} dersinde sınıra çok yaklaştın!`
                   : `${warnCount} dersinde dikkatli ol.`}
               </div>
-              <div className={`text-xs mt-0.5 ${criticalCount > 0 ? "text-rose-600" : "text-amber-600"}`}>
+              <div className={`text-xs mt-0.5 ${criticalCount > 0 ? "text-rose-300" : "text-amber-300"}`}>
                 {criticalCount > 0
                   ? "Devamsızlık hakkının %80'ini doldurdun."
                   : "Devamsızlık hakkının %50'sini doldurdun."}
@@ -201,8 +201,8 @@ export default function SummaryPage() {
                         <div className="text-sm font-semibold text-foreground">{g.displayName}</div>
                         <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
                           g.courseType === "lab"
-                            ? "bg-violet-100 text-violet-700"
-                            : "bg-sky-100 text-sky-700"
+                            ? "bg-violet-500/15 text-violet-300"
+                            : "bg-sky-500/15 text-sky-300"
                         }`}>
                           {g.courseType === "lab" ? "LAB" : "TEORİK"}
                         </span>
@@ -238,7 +238,7 @@ export default function SummaryPage() {
                     <span className="text-[10px] text-muted-foreground">
                       {g.records.length > 0 ? `${g.records.length} kayıt` : "Henüz kayıt yok"}
                     </span>
-                    <span className="text-[10px] font-semibold bg-primary/10 text-primary px-2.5 py-1 rounded-full">+ Devamsızlık Ekle</span>
+                    <span className="text-[10px] font-semibold bg-primary/10 text-violet-300 px-2.5 py-1 rounded-full">+ Devamsızlık Ekle</span>
                   </div>
                 </button>
               );

@@ -1,9 +1,15 @@
+// Ders bazlı renk kodlaması — koyu tema için tasarlandı.
+// `accent`: buton/çubuk zemini, üzerinde her zaman beyaz yazı var — bu yüzden
+// her ton WCAG AA (≥4.5:1 beyaz yazı kontrastı) geçecek şekilde seçildi.
+// `soft`+`text`: rozet/etiket kullanımı — koyu, hafif renkli zemin üzerinde
+// parlak renkli yazı (ölçülmüş kontrast ≥5:1).
 const palette = [
-  { soft: "bg-sky-50", accent: "bg-sky-400", text: "text-sky-700", ring: "ring-sky-200" },
-  { soft: "bg-pink-50", accent: "bg-pink-400", text: "text-pink-700", ring: "ring-pink-200" },
-  { soft: "bg-orange-50", accent: "bg-orange-400", text: "text-orange-700", ring: "ring-orange-200" },
-  { soft: "bg-violet-50", accent: "bg-violet-400", text: "text-violet-700", ring: "ring-violet-200" },
-  { soft: "bg-emerald-50", accent: "bg-emerald-400", text: "text-emerald-700", ring: "ring-emerald-200" },
+  { soft: "bg-indigo-500/15", accent: "bg-indigo-600", text: "text-indigo-300", ring: "ring-indigo-500/30" },
+  { soft: "bg-rose-500/15", accent: "bg-rose-600", text: "text-rose-300", ring: "ring-rose-500/30" },
+  { soft: "bg-amber-500/15", accent: "bg-amber-700", text: "text-amber-300", ring: "ring-amber-500/30" },
+  { soft: "bg-emerald-500/15", accent: "bg-emerald-700", text: "text-emerald-300", ring: "ring-emerald-500/30" },
+  { soft: "bg-sky-500/15", accent: "bg-sky-700", text: "text-sky-300", ring: "ring-sky-500/30" },
+  { soft: "bg-fuchsia-500/15", accent: "bg-fuchsia-600", text: "text-fuchsia-300", ring: "ring-fuchsia-500/30" },
 ];
 
 export function colorFor(name: string) {

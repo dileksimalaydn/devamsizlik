@@ -151,7 +151,7 @@ export default function CourseCatalogPicker({ open, onClose, onManualFallback, o
               </div>
 
               {loadError && (
-                <div className="rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-xs font-medium text-rose-700">
+                <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-3 py-2.5 text-xs font-medium text-rose-300">
                   {loadError}
                 </div>
               )}
@@ -287,7 +287,7 @@ export default function CourseCatalogPicker({ open, onClose, onManualFallback, o
               </div>
 
               {isMixedType ? (
-                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-[11px] font-medium text-amber-700">
+                <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-[11px] font-medium text-amber-300">
                   Bu ders hem teorik hem lab günü içerdiği için elle limit girilemiyor — her gün kendi yüzdesine göre ayrı hesaplanacak. Hoca ikisi için de tek bir sayı söylediyse, günlerin ikisini de aynı tipte işaretle.
                 </div>
               ) : (
@@ -308,7 +308,7 @@ export default function CourseCatalogPicker({ open, onClose, onManualFallback, o
               )}
 
               {saveError && (
-                <div className="rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-xs font-medium text-rose-700">
+                <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-3 py-2.5 text-xs font-medium text-rose-300">
                   {saveError}
                 </div>
               )}

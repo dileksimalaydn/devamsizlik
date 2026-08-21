@@ -53,7 +53,7 @@ export default function CourseCard({
                   e.stopPropagation();
                   onDelete();
                 }}
-                className="p-2 rounded-xl bg-rose-50 text-rose-500 hover:bg-rose-100 transition-colors"
+                className="p-2 rounded-xl bg-rose-500/15 text-rose-300 hover:bg-rose-500/25 transition-colors"
                 title="Dersi Sil"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -75,7 +75,7 @@ export default function CourseCard({
             </div>
 
             {safeMissed > 0 ? (
-              <div className="mt-2 text-sm font-semibold text-rose-600">
+              <div className="mt-2 text-sm font-semibold text-rose-300">
                 Devamsızlık: {safeMissed} saat
               </div>
             ) : (

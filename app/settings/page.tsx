@@ -105,8 +105,8 @@ function SettingsContent() {
 
         {/* Yeni kullanıcı banner */}
         {isNewUser && (
-          <div className="flex items-start gap-3 rounded-3xl border border-indigo-200 bg-indigo-50 px-4 py-4 text-sm text-indigo-800">
-            <AlertCircle size={16} className="mt-0.5 shrink-0 text-indigo-500" />
+          <div className="flex items-start gap-3 rounded-3xl border border-violet-500/30 bg-violet-500/10 px-4 py-4 text-sm text-violet-200">
+            <AlertCircle size={16} className="mt-0.5 shrink-0 text-violet-300" />
             <span>
               <strong>Üniversiteni seç!</strong> Google ile kaydoldun, devam etmeden önce hangi üniversitede okuduğunu belirt.
             </span>
@@ -149,7 +149,7 @@ function SettingsContent() {
               </select>
 
               {willReset && (
-                <div className="flex items-start gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs text-rose-700">
+                <div className="flex items-start gap-2 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-xs text-rose-300">
                   <AlertCircle size={14} className="mt-0.5 shrink-0" />
                   <span>
                     <strong>Dikkat:</strong> Bu değişiklik tüm derslerini ve devamsızlık kayıtlarını kalıcı olarak silecek. Geri alınamaz.
@@ -179,7 +179,7 @@ function SettingsContent() {
 
           {schoolMsg && (
             <div className={`flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm ${
-              schoolMsg.ok ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-rose-200 bg-rose-50 text-rose-700"
+              schoolMsg.ok ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" : "border-rose-500/30 bg-rose-500/10 text-rose-300"
             }`}>
               {schoolMsg.ok ? <CheckCircle2 size={15} /> : <AlertCircle size={15} />}
               {schoolMsg.text}
@@ -207,7 +207,7 @@ function SettingsContent() {
           </button>
           {msg && (
             <div className={`flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm ${
-              msg.ok ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-rose-200 bg-rose-50 text-rose-700"
+              msg.ok ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" : "border-rose-500/30 bg-rose-500/10 text-rose-300"
             }`}>
               {msg.ok ? <CheckCircle2 size={15} /> : <AlertCircle size={15} />}
               {msg.text}
@@ -218,7 +218,7 @@ function SettingsContent() {
         {/* Çıkış yap */}
         <button
           onClick={async () => { await supabase.auth.signOut(); router.push("/"); }}
-          className="w-full rounded-2xl border border-rose-200 bg-card py-3 text-sm font-bold text-rose-600 hover:bg-rose-50/10 transition active:scale-95"
+          className="w-full rounded-2xl border border-rose-500/30 bg-card py-3 text-sm font-bold text-rose-300 hover:bg-rose-500/10 transition active:scale-95"
         >
           Çıkış Yap
         </button>

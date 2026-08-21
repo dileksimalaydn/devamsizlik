@@ -44,14 +44,14 @@ export default function WeeklyPage() {
 
   if (school === null) {
     return (
-      <main className="min-h-screen bg-white flex items-center justify-center">
-        <div className="h-6 w-6 rounded-full border-2 border-slate-200 border-t-slate-800 animate-spin" />
+      <main className="min-h-screen bg-background flex items-center justify-center">
+        <div className="h-6 w-6 rounded-full border-2 border-border border-t-foreground animate-spin" />
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-white pb-24 text-slate-900">
+    <main className="min-h-screen bg-background pb-24 text-foreground">
       <AppHeader
         left={<button onClick={() => router.push('/dashboard')} className="p-2 text-2xl">‹</button>}
       />
@@ -59,25 +59,25 @@ export default function WeeklyPage() {
       {isIEU(school) ? (
         /* IEU: Orijinal grid görünümü */
         <div className="p-2 overflow-x-auto">
-          <table className="w-full min-w-[800px] border-collapse border border-slate-200 shadow-sm">
+          <table className="w-full min-w-[800px] border-collapse border border-border shadow-sm">
             <thead>
-              <tr className="bg-slate-900 text-white">
-                <th className="p-2 border border-slate-700 text-[10px] uppercase w-20">Saat</th>
+              <tr className="bg-card text-foreground">
+                <th className="p-2 border border-border text-[10px] uppercase w-20">Saat</th>
                 {DAYS.map(day => (
-                  <th key={day} className="p-2 border border-slate-700 text-[11px] uppercase">{day}</th>
+                  <th key={day} className="p-2 border border-border text-[11px] uppercase">{day}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {TIME_SLOTS.map((time) => (
                 <tr key={time} className="h-12">
-                  <td className="bg-slate-50 border border-slate-200 text-center text-[10px] font-bold text-slate-400">
+                  <td className="bg-muted/30 border border-border text-center text-[10px] font-bold text-muted-foreground">
                     {time}
                   </td>
                   {DAYS.map(day => {
                     const course = getCourseForCell(day, time);
                     return (
-                      <td key={day + time} className="border border-slate-100 p-1 min-w-[120px]">
+                      <td key={day + time} className="border border-border p-1 min-w-[120px]">
                         {course ? (
                           <div className={`h-full w-full rounded p-1 flex items-center justify-center text-center text-[10px] font-black uppercase tracking-tighter ${colorFor(course.course_name).soft} ${colorFor(course.course_name).text}`}>
                             {course.course_name}
@@ -102,22 +102,22 @@ export default function WeeklyPage() {
             if (dayCourses.length === 0) return null;
 
             return (
-              <div key={day} className="rounded-3xl bg-white border border-slate-100 shadow-sm overflow-hidden">
-                <div className="px-4 py-3 bg-slate-900">
-                  <span className="text-xs font-bold text-white uppercase tracking-widest">{day}</span>
+              <div key={day} className="rounded-3xl bg-card border border-border shadow-sm overflow-hidden">
+                <div className="px-4 py-3 bg-muted/50">
+                  <span className="text-xs font-bold text-foreground uppercase tracking-widest">{day}</span>
                 </div>
-                <div className="divide-y divide-slate-100">
+                <div className="divide-y divide-border">
                   {dayCourses.map(c => (
                     <div key={c.id} className="flex items-center gap-3 px-4 py-3">
                       <div className={`h-9 w-9 rounded-xl flex items-center justify-center text-[9px] font-black uppercase ${colorFor(c.course_name).soft} ${colorFor(c.course_name).text}`}>
                         {c.course_name.slice(0, 3)}
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-slate-900">{c.course_name}</p>
-                        <p className="text-[11px] text-slate-500">
+                        <p className="text-sm font-bold text-foreground">{c.course_name}</p>
+                        <p className="text-[11px] text-muted-foreground">
                           {c.start} – {c.end}
                           <span className={`ml-2 text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
-                            c.course_type === "lab" ? "bg-violet-100 text-violet-700" : "bg-sky-100 text-sky-700"
+                            c.course_type === "lab" ? "bg-violet-500/15 text-violet-300" : "bg-sky-500/15 text-sky-300"
                           }`}>
                             {c.course_type === "lab" ? "LAB" : "TEORİK"}
                           </span>
@@ -131,7 +131,7 @@ export default function WeeklyPage() {
           })}
 
           {courses.length === 0 && (
-            <div className="p-12 text-center text-slate-400 text-sm">
+            <div className="p-12 text-center text-muted-foreground text-sm">
               Henüz ders eklenmedi.
             </div>
           )}
