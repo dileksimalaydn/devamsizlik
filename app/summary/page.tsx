@@ -9,7 +9,11 @@ import type { Course, AttendanceRecord } from "@/lib/types";
 import { normalizeCourseName } from "@/lib/normalize";
 import { supabase } from "@/lib/supabaseClient";
 
-// IEU kuralı: teorik %30, lab %20 devamsızlık hakkı (14 haftalık dönem)
+// IEU kuralı: teorik %30, lab %20 devamsızlık hakkı.
+// WEEKS = gerçek ders haftası sayısı (vize/final haftaları hariç).
+// 2026-2027 güz: ders başlangıcı 21 Eylül, vize 7-15 Kasım (1 hafta ders yok),
+// final 4-13 Ocak (dönem dışı) → 15 takvim haftası - 1 vize haftası = 14.
+// Yeni dönemde IEU akademik takviminden aynı mantıkla yeniden hesaplanmalı.
 const WEEKS = 14;
 
 function calcLimit(sessions: Course[]): number {

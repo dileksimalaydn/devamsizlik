@@ -4,9 +4,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
+import CourseCatalogPicker from "@/components/CourseCatalogPicker";
 import { supabase } from "@/lib/supabaseClient";
 import type { Course } from "@/lib/types";
+import type { CatalogSection } from "@/lib/catalog";
 import { isIEU } from "@/lib/schools";
+import { Search } from "lucide-react";
 
 function toMinutes(hhmm: string) {
   const [h, m] = hhmm.split(":").map(Number);
@@ -45,8 +48,11 @@ export default function SetupPage() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [myCourses, setMyCourses] = useState<Course[]>([]);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [manualMode, setManualMode] = useState(false);
 
   const ieu = isIEU(school);
+  const showManualForm = !ieu || manualMode;
 
   // Her iki mod için de bitiş otomatik hesaplanır
   const computedEnd = useMemo(() => {
@@ -155,6 +161,69 @@ export default function SetupPage() {
     loadCourses();
   };
 
+  const handleCatalogAdd = async (
+    course: { code: string; name: string },
+    section: CatalogSection,
+    catalogCourseType: "teorik" | "lab"
+  ): Promise<{ error?: string }> => {
+    const meetings = section.meetings;
+
+    // Aynı section içindeki günlerin kendi aralarında çakışıp çakışmadığı
+    const withinBatch = meetings.find((m, i) =>
+      meetings.some((other, j) => {
+        if (i === j || other.day !== m.day) return false;
+        const aStart = toMinutes(m.start), aEnd = toMinutes(m.end);
+        const bStart = toMinutes(other.start), bEnd = toMinutes(other.end);
+        return aStart < bEnd && aEnd > bStart;
+      })
+    );
+    if (withinBatch) {
+      return { error: "Bu section'ın kendi günleri çakışıyor gibi görünüyor, kataloğu kontrol et." };
+    }
+
+    // Mevcut derslerle çakışma kontrolü (her gün için)
+    for (const m of meetings) {
+      const newStartMin = toMinutes(m.start);
+      const newEndMin = toMinutes(m.end);
+      const collision = myCourses.find((existing) => {
+        if (existing.day !== m.day) return false;
+        const existStart = toMinutes(existing.start.substring(0, 5));
+        const existEnd = toMinutes(existing.end.substring(0, 5));
+        return newStartMin < existEnd && newEndMin > existStart;
+      });
+      if (collision) {
+        return { error: `${m.day} ${m.start}–${m.end} saatinde zaten "${collision.course_name}" dersin var.` };
+      }
+    }
+
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError || !userData?.user) {
+      router.push("/login");
+      return { error: "Oturum bulunamadı, tekrar giriş yapman gerekiyor." };
+    }
+
+    const name = course.code.trim().toUpperCase();
+    const rows = meetings.map((m) => ({
+      id: crypto.randomUUID(),
+      user_id: userData.user.id,
+      course_name: name,
+      day: m.day,
+      start: m.start,
+      end: m.end,
+      blocks: m.blocks,
+      course_type: catalogCourseType,
+      custom_limit: null,
+    }));
+
+    const { error } = await supabase.from("courses").insert(rows);
+    if (error) {
+      return { error: "Kayıt sırasında hata oluştu: " + error.message };
+    }
+
+    await loadCourses();
+    return {};
+  };
+
   const field =
     "w-full rounded-2xl border border-border bg-muted/30 px-3 py-3 text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground focus:bg-background focus:border-ring focus:ring-4 focus:ring-ring/10 transition";
 
@@ -180,8 +249,34 @@ export default function SetupPage() {
       />
 
       <div className="mx-auto max-w-md px-4 pt-4 space-y-4">
+        {!showManualForm && (
+          <button
+            onClick={() => setPickerOpen(true)}
+            className="w-full rounded-3xl bg-card p-5 shadow-sm border border-border flex items-center gap-3 hover:border-primary/30 transition text-left"
+          >
+            <div className="h-11 w-11 shrink-0 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+              <Search size={18} />
+            </div>
+            <div className="min-w-0">
+              <div className="text-sm font-bold text-foreground">Ders Ekle</div>
+              <div className="text-xs font-medium text-muted-foreground">Kod veya ad ile IEU kataloğundan ara</div>
+            </div>
+          </button>
+        )}
+
+        {showManualForm && (
         <div className="rounded-3xl bg-card p-4 shadow-sm border border-border">
-          <div className="text-sm font-bold text-foreground">Yeni Ders Tanımla</div>
+          <div className="flex items-center justify-between">
+            <div className="text-sm font-bold text-foreground">Yeni Ders Tanımla</div>
+            {ieu && (
+              <button
+                onClick={() => setManualMode(false)}
+                className="text-[11px] font-semibold text-primary hover:underline"
+              >
+                Kataloğdan seç
+              </button>
+            )}
+          </div>
 
           <div className="mt-4 space-y-3">
             <div>
@@ -326,6 +421,7 @@ export default function SetupPage() {
             </button>
           </div>
         </div>
+        )}
 
         {/* Ders listesi */}
         <div className="space-y-3">
@@ -402,6 +498,16 @@ export default function SetupPage() {
           )}
         </div>
       </div>
+
+      {ieu && (
+        <CourseCatalogPicker
+          open={pickerOpen}
+          onClose={() => setPickerOpen(false)}
+          onManualFallback={() => setManualMode(true)}
+          onAdd={handleCatalogAdd}
+        />
+      )}
+
       <BottomNav />
     </main>
   );
