@@ -4,10 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
-import CourseCatalogPicker from "@/components/CourseCatalogPicker";
+import CourseCatalogPicker, { type TypedMeeting } from "@/components/CourseCatalogPicker";
 import { supabase } from "@/lib/supabaseClient";
 import type { Course } from "@/lib/types";
-import type { CatalogSection } from "@/lib/catalog";
 import { isIEU } from "@/lib/schools";
 import { Search } from "lucide-react";
 
@@ -163,11 +162,8 @@ export default function SetupPage() {
 
   const handleCatalogAdd = async (
     course: { code: string; name: string },
-    section: CatalogSection,
-    catalogCourseType: "teorik" | "lab"
+    meetings: TypedMeeting[]
   ): Promise<{ error?: string }> => {
-    const meetings = section.meetings;
-
     // Aynı section içindeki günlerin kendi aralarında çakışıp çakışmadığı
     const withinBatch = meetings.find((m, i) =>
       meetings.some((other, j) => {
@@ -211,7 +207,7 @@ export default function SetupPage() {
       start: m.start,
       end: m.end,
       blocks: m.blocks,
-      course_type: catalogCourseType,
+      course_type: m.type,
       custom_limit: null,
     }));
 

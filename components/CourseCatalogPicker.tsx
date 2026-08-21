@@ -2,7 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Search, X, ChevronLeft, User, Clock, Check, Loader2 } from "lucide-react";
-import { fetchCatalog, searchCatalog, type CatalogCourse, type CatalogSection } from "@/lib/catalog";
+import { fetchCatalog, searchCatalog, type CatalogCourse, type CatalogSection, type CatalogMeeting } from "@/lib/catalog";
+
+export type TypedMeeting = CatalogMeeting & { type: "teorik" | "lab" };
 
 type Props = {
   open: boolean;
@@ -10,8 +12,7 @@ type Props = {
   onManualFallback: () => void;
   onAdd: (
     course: { code: string; name: string },
-    section: CatalogSection,
-    courseType: "teorik" | "lab"
+    meetings: TypedMeeting[]
   ) => Promise<{ error?: string }>;
 };
 
@@ -21,7 +22,7 @@ export default function CourseCatalogPicker({ open, onClose, onManualFallback, o
   const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<CatalogCourse | null>(null);
   const [selectedSection, setSelectedSection] = useState<CatalogSection | null>(null);
-  const [courseType, setCourseType] = useState<"teorik" | "lab">("teorik");
+  const [meetingTypes, setMeetingTypes] = useState<("teorik" | "lab")[]>([]);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -36,9 +37,18 @@ export default function CourseCatalogPicker({ open, onClose, onManualFallback, o
     setQuery("");
     setSelectedCourse(null);
     setSelectedSection(null);
-    setCourseType("teorik");
+    setMeetingTypes([]);
     setSaveError(null);
     onClose();
+  };
+
+  const pickSection = (s: CatalogSection) => {
+    setSelectedSection(s);
+    setMeetingTypes(s.meetings.map(() => "teorik"));
+  };
+
+  const setMeetingType = (index: number, type: "teorik" | "lab") => {
+    setMeetingTypes((prev) => prev.map((t, i) => (i === index ? type : t)));
   };
 
   const results = useMemo(() => {
@@ -64,11 +74,11 @@ export default function CourseCatalogPicker({ open, onClose, onManualFallback, o
     if (!selectedCourse || !selectedSection) return;
     setSaving(true);
     setSaveError(null);
-    const res = await onAdd(
-      { code: selectedCourse.code, name: selectedCourse.name },
-      selectedSection,
-      courseType
-    );
+    const meetings: TypedMeeting[] = selectedSection.meetings.map((m, i) => ({
+      ...m,
+      type: meetingTypes[i] ?? "teorik",
+    }));
+    const res = await onAdd({ code: selectedCourse.code, name: selectedCourse.name }, meetings);
     setSaving(false);
     if (res.error) {
       setSaveError(res.error);
@@ -185,7 +195,7 @@ export default function CourseCatalogPicker({ open, onClose, onManualFallback, o
               {selectedCourse.sections.map((s) => (
                 <button
                   key={s.section}
-                  onClick={() => setSelectedSection(s)}
+                  onClick={() => pickSection(s)}
                   className="w-full text-left rounded-2xl border border-border bg-card px-4 py-3 hover:border-primary/30 hover:bg-muted/30 transition active:scale-[0.98] space-y-1.5"
                 >
                   <div className="flex items-center justify-between">
@@ -210,53 +220,58 @@ export default function CourseCatalogPicker({ open, onClose, onManualFallback, o
 
           {step === "confirm" && selectedCourse && selectedSection && (
             <div className="px-5 py-4 space-y-4">
-              <div className="rounded-2xl border border-border bg-card p-4 space-y-2">
-                {selectedSection.instructor && (
-                  <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                    <User size={12} /> {selectedSection.instructor}
-                  </div>
-                )}
-                <div className="flex flex-col gap-1.5">
-                  {selectedSection.meetings.map((m, i) => (
-                    <div key={i} className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                      <Clock size={12} className="text-muted-foreground" /> {m.day} · {m.start}–{m.end} · {m.blocks} saat
-                    </div>
-                  ))}
+              {selectedSection.instructor && (
+                <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground px-1">
+                  <User size={12} /> {selectedSection.instructor}
                 </div>
-                <p className="text-[10px] font-medium text-muted-foreground pt-1">
-                  {selectedSection.meetings.length > 1
-                    ? "Bu ders programına ayrı ayrı günler olarak eklenecek, devamsızlık hesabında birlikte sayılacak."
-                    : "Programına eklenecek."}
-                </p>
-              </div>
+              )}
 
               <div>
-                <label className="mb-1 block text-xs font-semibold text-foreground">Ders Türü</label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setCourseType("teorik")}
-                    className={`rounded-2xl border py-3 text-sm font-semibold transition-all ${
-                      courseType === "teorik"
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-muted/50 text-muted-foreground border-border"
-                    }`}
-                  >
-                    Teorik
-                    <span className="block text-[10px] font-normal opacity-70">%30 devamsızlık hakkı</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setCourseType("lab")}
-                    className={`rounded-2xl border py-3 text-sm font-semibold transition-all ${
-                      courseType === "lab"
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-muted/50 text-muted-foreground border-border"
-                    }`}
-                  >
-                    Lab / Uygulama
-                    <span className="block text-[10px] font-normal opacity-70">%20 devamsızlık hakkı</span>
-                  </button>
+                <label className="mb-1.5 block text-xs font-semibold text-foreground">
+                  Her gün için ders türü
+                  {selectedSection.meetings.length > 1 && (
+                    <span className="ml-1 font-normal text-muted-foreground">
+                      — bu dersin hangi günü teorik, hangi günü lab, sen işaretle
+                    </span>
+                  )}
+                </label>
+                <div className="space-y-2">
+                  {selectedSection.meetings.map((m, i) => {
+                    const type = meetingTypes[i] ?? "teorik";
+                    return (
+                      <div key={i} className="rounded-2xl border border-border bg-card p-3 space-y-2">
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                          <Clock size={12} className="text-muted-foreground" /> {m.day} · {m.start}–{m.end} · {m.blocks} saat
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setMeetingType(i, "teorik")}
+                            className={`rounded-xl border py-2 text-xs font-semibold transition-all ${
+                              type === "teorik"
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : "bg-muted/50 text-muted-foreground border-border"
+                            }`}
+                          >
+                            Teorik
+                            <span className="block text-[9px] font-normal opacity-70">%30 hak</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setMeetingType(i, "lab")}
+                            className={`rounded-xl border py-2 text-xs font-semibold transition-all ${
+                              type === "lab"
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : "bg-muted/50 text-muted-foreground border-border"
+                            }`}
+                          >
+                            Lab / Uygulama
+                            <span className="block text-[9px] font-normal opacity-70">%20 hak</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
                 <p className="mt-1.5 text-[10px] text-muted-foreground">
                   Katalogda ders türü bilgisi yok, bunu sen seçiyorsun — sonra ders listesinden değiştiremezsin, yanlışsa silip tekrar ekle.
