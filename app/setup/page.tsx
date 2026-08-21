@@ -162,7 +162,8 @@ export default function SetupPage() {
 
   const handleCatalogAdd = async (
     course: { code: string; name: string },
-    meetings: TypedMeeting[]
+    meetings: TypedMeeting[],
+    customLimit: number | null
   ): Promise<{ error?: string }> => {
     // Aynı section içindeki günlerin kendi aralarında çakışıp çakışmadığı
     const withinBatch = meetings.find((m, i) =>
@@ -208,7 +209,7 @@ export default function SetupPage() {
       end: m.end,
       blocks: m.blocks,
       course_type: m.type,
-      custom_limit: null,
+      custom_limit: customLimit,
     }));
 
     const { error } = await supabase.from("courses").insert(rows);
