@@ -53,7 +53,7 @@ export default function CourseCard({
                   e.stopPropagation();
                   onDelete();
                 }}
-                className="p-2 rounded-xl bg-rose-500/15 text-rose-300 hover:bg-rose-500/25 transition-colors"
+                className="p-2 rounded-xl bg-rose-500/20 text-rose-300 hover:bg-rose-500/25 transition-colors"
                 title="Dersi Sil"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">

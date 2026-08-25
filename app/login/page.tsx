@@ -162,17 +162,17 @@ function LoginContent() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-12">
       {/* Logo */}
       <div className="mb-8 flex flex-col items-center gap-3">
-        <div className="grid h-16 w-16 place-items-center rounded-3xl bg-indigo-600 shadow-lg shadow-indigo-900/30">
+        <div className="grid h-16 w-16 place-items-center rounded-3xl bg-primary shadow-lg shadow-primary/30">
           <GraduationCap size={32} className="text-white" />
         </div>
         <div className="text-center">
-          <h1 className="text-2xl font-extrabold tracking-tight text-white">
+          <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
             yoklama
           </h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-muted-foreground">
             {isReset
               ? "Yeni şifreni gir."
               : isForgot
@@ -185,8 +185,8 @@ function LoginContent() {
       </div>
 
       {/* Kart */}
-      <div className="w-full max-w-sm rounded-3xl bg-slate-900 p-6 shadow-2xl border border-slate-800">
-        <h2 className="mb-5 text-base font-bold text-white">
+      <div className="w-full max-w-sm rounded-3xl bg-card p-6 shadow-2xl border border-border">
+        <h2 className="mb-5 text-base font-bold text-foreground">
           {isMfa ? "İki Faktörlü Doğrulama" : isReset ? "Yeni Şifre Belirle" : isForgot ? "Şifremi Unuttum" : isSignUp ? "Hesap Oluştur" : "Tekrar Hoş Geldin"}
         </h2>
 
@@ -194,7 +194,7 @@ function LoginContent() {
           {/* Şifre sıfırlama modu */}
           {isMfa ? (
             <>
-              <p className="text-sm text-slate-400 -mt-2">Authenticator uygulamanızdaki 6 haneli kodu gir.</p>
+              <p className="text-sm text-muted-foreground -mt-2">Authenticator uygulamanızdaki 6 haneli kodu gir.</p>
               <input
                 type="text"
                 inputMode="numeric"
@@ -202,14 +202,14 @@ function LoginContent() {
                 value={mfaCode}
                 onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                 onKeyDown={(e) => e.key === "Enter" && handleMfaChallenge()}
-                className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-700 transition-all tracking-widest text-center text-lg"
+                className="w-full rounded-2xl border border-border bg-muted px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/20 transition-all tracking-widest text-center text-lg"
                 maxLength={6}
                 autoFocus
               />
               <button
                 onClick={handleMfaChallenge}
                 disabled={loading || mfaCode.length !== 6}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-slate-900 transition-all hover:bg-slate-100 active:scale-[0.98] disabled:opacity-60"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60"
               >
                 {loading ? <Loader2 size={18} className="animate-spin" /> : "Doğrula"}
               </button>
@@ -222,12 +222,12 @@ function LoginContent() {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleResetPassword()}
-                className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-700 transition-all"
+                className="w-full rounded-2xl border border-border bg-muted px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/20 transition-all"
               />
               <button
                 onClick={handleResetPassword}
                 disabled={loading}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-slate-900 transition-all hover:bg-slate-100 active:scale-[0.98] disabled:opacity-60"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60"
               >
                 {loading ? <Loader2 size={18} className="animate-spin" /> : "Şifreyi Güncelle"}
               </button>
@@ -240,7 +240,7 @@ function LoginContent() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleForgot()}
-                className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-700 transition-all"
+                className="w-full rounded-2xl border border-border bg-muted px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/20 transition-all"
               />
               <Turnstile
                 ref={turnstileRef}
@@ -252,14 +252,14 @@ function LoginContent() {
               <button
                 onClick={() => handleForgot()}
                 disabled={loading}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-slate-900 transition-all hover:bg-slate-100 active:scale-[0.98] disabled:opacity-60"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60"
               >
                 {loading ? <Loader2 size={18} className="animate-spin" /> : "Sıfırlama Maili Gönder"}
               </button>
-              <p className="pt-1 text-center text-sm text-slate-400">
+              <p className="pt-1 text-center text-sm text-muted-foreground">
                 <button
                   onClick={() => { setIsForgot(false); setMsg(null); setCaptchaToken(null); turnstileRef.current?.reset(); }}
-                  className="font-semibold text-white hover:underline"
+                  className="font-semibold text-foreground hover:underline"
                 >
                   Geri Dön
                 </button>
@@ -280,19 +280,19 @@ function LoginContent() {
                 />
                 Google ile devam et
               </button>
-              <p className="text-[11px] text-slate-400 text-center leading-relaxed">
+              <p className="text-[11px] text-muted-foreground text-center leading-relaxed">
                 Google ile devam ederek{" "}
-                <a href="/kvkk" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline font-medium">KVKK Aydınlatma Metni</a>'ni
+                <a href="/kvkk" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">KVKK Aydınlatma Metni</a>'ni
                 {" "}okuduğunu ve kişisel verilerinin işlenmesini kabul ettiğini onaylarsın.
               </p>
 
               {/* Ayırıcı */}
               <div className="flex items-center gap-3 py-1">
-                <div className="h-px flex-1 bg-slate-700" />
-                <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">
+                <div className="h-px flex-1 bg-border" />
+                <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                   veya
                 </span>
-                <div className="h-px flex-1 bg-slate-700" />
+                <div className="h-px flex-1 bg-border" />
               </div>
 
               {/* E-posta */}
@@ -302,7 +302,7 @@ function LoginContent() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleAuth()}
-                className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-700 transition-all"
+                className="w-full rounded-2xl border border-border bg-muted px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/20 transition-all"
               />
 
               {/* Şifre */}
@@ -312,19 +312,19 @@ function LoginContent() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleAuth()}
-                className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-700 transition-all"
+                className="w-full rounded-2xl border border-border bg-muted px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/20 transition-all"
               />
 
               {/* Okul seçimi — sadece kayıt modunda */}
               {isSignUp && (
                 <div>
-                  <label className="mb-1 block text-xs font-semibold text-slate-400">
+                  <label className="mb-1 block text-xs font-semibold text-muted-foreground">
                     Üniversiten
                   </label>
                   <select
                     value={school}
                     onChange={(e) => setSchool(e.target.value)}
-                    className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-sm text-white outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-700 transition-all"
+                    className="w-full rounded-2xl border border-border bg-muted px-4 py-3 text-sm text-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/20 transition-all"
                   >
                     {SCHOOLS.map((s) => (
                       <option key={s.value} value={s.value}>
@@ -333,7 +333,7 @@ function LoginContent() {
                     ))}
                   </select>
                   {school !== "ieu" && (
-                    <p className="mt-1.5 text-[11px] text-slate-500">
+                    <p className="mt-1.5 text-[11px] text-muted-foreground">
                       Ders saatlerini manuel girebilirsin.
                     </p>
                   )}
@@ -347,10 +347,10 @@ function LoginContent() {
                     type="checkbox"
                     checked={kvkkAccepted}
                     onChange={(e) => setKvkkAccepted(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 rounded border-slate-600 bg-slate-800 text-indigo-500 accent-indigo-500 shrink-0 cursor-pointer"
+                    className="mt-0.5 h-4 w-4 rounded border-border bg-muted text-primary accent-primary shrink-0 cursor-pointer"
                   />
-                  <span className="text-xs text-slate-400 leading-relaxed">
-                    <a href="/kvkk" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:underline font-medium">KVKK Aydınlatma Metni</a>'ni okudum; kişisel verilerimin burada belirtilen amaçlar doğrultusunda işlenmesini ve aktarılmasını <span className="text-white font-medium">açık rızamla onaylıyorum</span>.
+                  <span className="text-xs text-muted-foreground leading-relaxed">
+                    <a href="/kvkk" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">KVKK Aydınlatma Metni</a>'ni okudum; kişisel verilerimin burada belirtilen amaçlar doğrultusunda işlenmesini ve aktarılmasını <span className="text-foreground font-medium">açık rızamla onaylıyorum</span>.
                   </span>
                 </label>
               )}
@@ -368,7 +368,7 @@ function LoginContent() {
               <button
                 onClick={() => handleAuth()}
                 disabled={loading}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-bold text-slate-900 transition-all hover:bg-slate-100 active:scale-[0.98] disabled:opacity-60"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.98] disabled:opacity-60"
               >
                 {loading ? (
                   <Loader2 size={18} className="animate-spin" />
@@ -380,12 +380,12 @@ function LoginContent() {
               </button>
 
               {/* Toggle + Şifremi Unuttum */}
-              <div className="pt-1 flex items-center justify-between text-sm text-slate-400">
+              <div className="pt-1 flex items-center justify-between text-sm text-muted-foreground">
                 <span>
                   {isSignUp ? "Hesabın var mı?" : "Hesabın yok mu?"}{" "}
                   <button
                     onClick={() => { setIsSignUp(!isSignUp); setMsg(null); }}
-                    className="font-semibold text-white hover:underline"
+                    className="font-semibold text-foreground hover:underline"
                   >
                     {isSignUp ? "Giriş Yap" : "Kayıt Ol"}
                   </button>
@@ -393,7 +393,7 @@ function LoginContent() {
                 {!isSignUp && (
                   <button
                     onClick={() => { setIsForgot(true); setMsg(null); }}
-                    className="text-slate-500 hover:text-white hover:underline transition-colors"
+                    className="text-muted-foreground hover:text-foreground hover:underline transition-colors"
                   >
                     Şifremi unuttum
                   </button>
@@ -407,8 +407,8 @@ function LoginContent() {
             <div
               className={`flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm ${
                 msg.ok
-                  ? "border-emerald-800 bg-emerald-950 text-emerald-400"
-                  : "border-rose-900 bg-rose-950 text-rose-400"
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                  : "border-rose-500/30 bg-rose-500/10 text-rose-300"
               }`}
             >
               {msg.ok ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
@@ -418,7 +418,7 @@ function LoginContent() {
         </div>
       </div>
 
-      <p className="mt-8 text-xs text-slate-300 font-medium">
+      <p className="mt-8 text-xs text-muted-foreground font-medium">
         Developed by Dilek Şimal Aydın · devamsizlik.com
       </p>
     </div>

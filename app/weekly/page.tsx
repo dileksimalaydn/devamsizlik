@@ -117,7 +117,7 @@ export default function WeeklyPage() {
                         <p className="text-[11px] text-muted-foreground">
                           {c.start} – {c.end}
                           <span className={`ml-2 text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
-                            c.course_type === "lab" ? "bg-violet-500/15 text-violet-300" : "bg-sky-500/15 text-sky-300"
+                            c.course_type === "lab" ? "bg-violet-500/20 text-violet-300" : "bg-sky-500/20 text-sky-300"
                           }`}>
                             {c.course_type === "lab" ? "LAB" : "TEORİK"}
                           </span>

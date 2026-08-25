@@ -34,7 +34,7 @@ function fixNegZero(n: number) {
 function riskMeta(missed: number, limit: number) {
   const ratio = limit <= 0 ? 0 : missed / limit;
   if (ratio >= 0.8) {
-    return { label: "Riskli", bar: "bg-rose-500", text: "text-rose-300", badge: "bg-rose-500/15 text-rose-300" };
+    return { label: "Riskli", bar: "bg-rose-500", text: "text-rose-300", badge: "bg-rose-500/20 text-rose-300" };
   }
   if (ratio >= 0.5) {
     return { label: "Dikkat", bar: "bg-amber-500", text: "text-amber-300", badge: "bg-amber-500/15 text-amber-300" };
@@ -201,8 +201,8 @@ export default function SummaryPage() {
                         <div className="text-sm font-semibold text-foreground">{g.displayName}</div>
                         <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
                           g.courseType === "lab"
-                            ? "bg-violet-500/15 text-violet-300"
-                            : "bg-sky-500/15 text-sky-300"
+                            ? "bg-violet-500/20 text-violet-300"
+                            : "bg-sky-500/20 text-sky-300"
                         }`}>
                           {g.courseType === "lab" ? "LAB" : "TEORİK"}
                         </span>
@@ -220,7 +220,7 @@ export default function SummaryPage() {
                         </div>
                         <div className="text-muted-foreground text-[10px]">{remaining} saat kaldı</div>
                       </div>
-                      <span className="text-slate-300 text-lg">›</span>
+                      <span className="text-muted-foreground text-lg">›</span>
                     </div>
                   </div>
                   <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-muted">
@@ -238,7 +238,7 @@ export default function SummaryPage() {
                     <span className="text-[10px] text-muted-foreground">
                       {g.records.length > 0 ? `${g.records.length} kayıt` : "Henüz kayıt yok"}
                     </span>
-                    <span className="text-[10px] font-semibold bg-primary/10 text-violet-300 px-2.5 py-1 rounded-full">+ Devamsızlık Ekle</span>
+                    <span className="text-[10px] font-semibold bg-primary/15 text-violet-300 px-2.5 py-1 rounded-full">+ Devamsızlık Ekle</span>
                   </div>
                 </button>
               );

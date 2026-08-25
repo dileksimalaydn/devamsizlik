@@ -190,7 +190,7 @@ export default function DashboardPage() {
 
         {/* Eski kullanıcı — bir kerelik okul özelliği bildirimi */}
         {showFeatureNotif && (
-          <div className="flex items-start justify-between gap-3 rounded-3xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 mb-3">
+          <div className="flex items-start justify-between gap-3 rounded-3xl border border-amber-500/30 bg-amber-500/15 px-4 py-3 mb-3">
             <p className="text-sm text-amber-200">
               Artık üniversiteni <a href="/settings" className="underline font-semibold">Ayarlar</a>'dan istediğin zaman değiştirebilirsin.
             </p>
@@ -202,7 +202,7 @@ export default function DashboardPage() {
 
         {/* Hoş geldin banner — ilk Google girişi */}
         {showWelcome && (
-          <div className="flex items-start justify-between gap-3 rounded-3xl border border-violet-500/30 bg-violet-500/10 px-4 py-3 mb-3">
+          <div className="flex items-start justify-between gap-3 rounded-3xl border border-violet-500/30 bg-violet-500/15 px-4 py-3 mb-3">
             <p className="text-sm text-violet-200">
               <strong>Hoş geldin!</strong> Üniversiten <strong>IEU</strong> olarak ayarlandı. Farklıysa{" "}
               <a href="/settings" className="underline font-semibold">Ayarlar</a>'dan değiştirebilirsin.
@@ -230,7 +230,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <button
               onClick={goPrev}
-              className="flex items-center gap-1 rounded-2xl bg-primary/10 border border-primary/20 px-3 py-2 text-xs font-semibold text-violet-300 hover:bg-primary/20 transition-colors"
+              className="flex items-center gap-1 rounded-2xl bg-primary/15 border border-primary/30 px-3 py-2 text-xs font-semibold text-violet-300 hover:bg-primary/25 transition-colors"
             >
               <ChevronLeft size={14} /> Önceki
             </button>
@@ -251,7 +251,7 @@ export default function DashboardPage() {
 
             <div className="flex items-center gap-1.5">
               {/* Takvim — uzak tarihler için */}
-              <label className="flex items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 p-2 text-violet-300 hover:bg-primary/20 transition-colors cursor-pointer">
+              <label className="flex items-center justify-center rounded-2xl bg-primary/15 border border-primary/30 p-2 text-violet-300 hover:bg-primary/25 transition-colors cursor-pointer">
                 <Calendar size={16} />
                 <input
                   type="date"
@@ -264,7 +264,7 @@ export default function DashboardPage() {
               <button
                 onClick={goNext}
                 disabled={isToday}
-                className="flex items-center gap-1 rounded-2xl bg-primary/10 border border-primary/20 px-3 py-2 text-xs font-semibold text-violet-300 hover:bg-primary/20 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                className="flex items-center gap-1 rounded-2xl bg-primary/15 border border-primary/30 px-3 py-2 text-xs font-semibold text-violet-300 hover:bg-primary/25 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 Sonraki <ChevronRight size={14} />
               </button>

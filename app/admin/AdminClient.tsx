@@ -161,10 +161,10 @@ export default function AdminClient() {
   }
 
   if (loading) return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">Yükleniyor...</div>
+    <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Yükleniyor...</div>
   );
   if (error) return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center text-rose-400">Hata: {error}</div>
+    <div className="min-h-screen bg-background flex items-center justify-center text-rose-400">Hata: {error}</div>
   );
 
   const now = new Date();
@@ -181,14 +181,14 @@ export default function AdminClient() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white p-4 md:p-6 space-y-5">
+    <div className="min-h-screen bg-background text-foreground p-4 md:p-6 space-y-5">
 
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">Admin Panel</h1>
         <button
           onClick={async () => { await supabase.auth.signOut(); router.replace("/"); }}
-          className="text-sm text-slate-400 hover:text-white transition-colors"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           Çıkış Yap
         </button>
@@ -197,21 +197,21 @@ export default function AdminClient() {
       {/* İstatistikler */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: "Toplam", value: users.length, color: "text-white" },
-          { label: "Bugün Aktif", value: todayCount, color: "text-indigo-400" },
+          { label: "Toplam", value: users.length, color: "text-foreground" },
+          { label: "Bugün Aktif", value: todayCount, color: "text-primary" },
           { label: "Son 7 Gün", value: weekCount, color: "text-emerald-400" },
           { label: "Son 30 Gün", value: monthCount, color: "text-amber-400" },
         ].map(({ label, value, color }) => (
-          <div key={label} className="rounded-2xl bg-slate-900 border border-slate-800 p-4">
-            <p className="text-xs text-slate-400 mb-1">{label}</p>
+          <div key={label} className="rounded-2xl bg-card border border-border p-4">
+            <p className="text-xs text-muted-foreground mb-1">{label}</p>
             <p className={`text-3xl font-bold ${color}`}>{value}</p>
           </div>
         ))}
       </div>
 
       {/* Online */}
-      <div className="rounded-2xl border border-slate-800 overflow-hidden">
-        <div className="bg-slate-900 px-4 py-3 flex items-center gap-2">
+      <div className="rounded-2xl border border-border overflow-hidden">
+        <div className="bg-card px-4 py-3 flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
           <span className="text-sm font-semibold">Şu An Online ({online.length})</span>
         </div>
@@ -221,18 +221,18 @@ export default function AdminClient() {
             users.some((u) => u.id === o.user_id)
           );
           return verifiedOnline.length === 0 ? (
-            <p className="px-4 py-3 text-sm text-slate-500">Kimse online değil.</p>
+            <p className="px-4 py-3 text-sm text-muted-foreground">Kimse online değil.</p>
           ) : (
-            <div className="divide-y divide-slate-800">
+            <div className="divide-y divide-border">
               {verifiedOnline.map((o) => {
                 const realUser = users.find((u) => u.id === o.user_id);
                 return (
                   <div key={o.user_id} className="px-4 py-3 flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium">{realUser?.email ?? "—"}</p>
-                      <p className="text-xs text-slate-400">{o.page}</p>
+                      <p className="text-xs text-muted-foreground">{o.page}</p>
                     </div>
-                    <span className="text-xs text-slate-500">{new Date(o.online_at).toLocaleTimeString("tr-TR")}</span>
+                    <span className="text-xs text-muted-foreground">{new Date(o.online_at).toLocaleTimeString("tr-TR")}</span>
                   </div>
                 );
               })}
@@ -247,18 +247,18 @@ export default function AdminClient() {
         placeholder="E-posta ile ara..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full rounded-2xl bg-slate-900 border border-slate-800 px-4 py-3 text-sm text-white placeholder:text-slate-500 outline-none focus:border-slate-600 transition"
+        className="w-full rounded-2xl bg-card border border-border px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-ring transition"
       />
 
       {/* Kullanıcı tablosu */}
-      <div className="rounded-2xl border border-slate-800 overflow-hidden">
-        <div className="bg-slate-900 px-4 py-3 flex items-center justify-between">
+      <div className="rounded-2xl border border-border overflow-hidden">
+        <div className="bg-card px-4 py-3 flex items-center justify-between">
           <span className="text-sm font-semibold">Kullanıcılar</span>
-          <span className="text-xs text-slate-400">{filtered.length} sonuç</span>
+          <span className="text-xs text-muted-foreground">{filtered.length} sonuç</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-slate-900/50 text-slate-400 text-left">
+            <thead className="bg-card/50 text-muted-foreground text-left">
               <tr>
                 <th className="px-4 py-3 font-medium">E-posta</th>
                 <th className="px-4 py-3 font-medium">Okul</th>
@@ -274,31 +274,31 @@ export default function AdminClient() {
                 <>
                   <tr
                     key={u.id}
-                    className={`cursor-pointer hover:bg-slate-800/50 transition-colors ${i % 2 === 0 ? "bg-slate-950" : "bg-slate-900/30"}`}
+                    className={`cursor-pointer hover:bg-muted/50 transition-colors ${i % 2 === 0 ? "bg-background" : "bg-card/30"}`}
                     onClick={() => openDetail(u)}
                   >
                     <td className="px-4 py-3 font-medium">{u.email ?? "—"}</td>
                     <td className="px-4 py-3">
-                      <span className="text-xs font-bold uppercase tracking-wide text-slate-300 bg-slate-800 border border-slate-700 px-2 py-0.5 rounded-full">
+                      <span className="text-xs font-bold uppercase tracking-wide text-foreground bg-muted border border-border px-2 py-0.5 rounded-full">
                         {u.school ?? "ieu"}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-indigo-400">{u.course_count}</td>
+                    <td className="px-4 py-3 text-primary">{u.course_count}</td>
                     <td className="px-4 py-3 text-amber-400">{u.attendance_count}</td>
-                    <td className="px-4 py-3 text-slate-400">{new Date(u.created_at).toLocaleDateString("tr-TR")}</td>
-                    <td className="px-4 py-3 text-slate-400">
+                    <td className="px-4 py-3 text-muted-foreground">{new Date(u.created_at).toLocaleDateString("tr-TR")}</td>
+                    <td className="px-4 py-3 text-muted-foreground">
                       {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString("tr-TR") : "—"}
                     </td>
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       {deletingId === u.id ? (
                         <div className="flex gap-2">
                           <button onClick={() => handleDelete(u.id)} className="text-xs text-rose-400 hover:text-rose-300 font-semibold">Sil</button>
-                          <button onClick={() => setDeletingId(null)} className="text-xs text-slate-400 hover:text-white">İptal</button>
+                          <button onClick={() => setDeletingId(null)} className="text-xs text-muted-foreground hover:text-foreground">İptal</button>
                         </div>
                       ) : (
                         <button
                           onClick={() => setDeletingId(u.id)}
-                          className="text-xs text-slate-500 hover:text-rose-400 transition-colors"
+                          className="text-xs text-muted-foreground hover:text-rose-400 transition-colors"
                         >
                           Sil
                         </button>
@@ -307,19 +307,19 @@ export default function AdminClient() {
                   </tr>
                   {/* Detay satırı */}
                   {selectedUser?.id === u.id && (
-                    <tr key={`${u.id}-detail`} className="bg-slate-900/60">
+                    <tr key={`${u.id}-detail`} className="bg-card/60">
                       <td colSpan={6} className="px-4 py-4">
                         {detailLoading ? (
-                          <p className="text-xs text-slate-400">Yükleniyor...</p>
+                          <p className="text-xs text-muted-foreground">Yükleniyor...</p>
                         ) : userCourses.length === 0 ? (
-                          <p className="text-xs text-slate-500">Kayıtlı ders yok.</p>
+                          <p className="text-xs text-muted-foreground">Kayıtlı ders yok.</p>
                         ) : (
                           <div className="flex flex-wrap gap-2">
                             {userCourses.map((c, idx) => (
-                              <span key={idx} className="rounded-xl bg-slate-800 border border-slate-700 px-3 py-1.5 text-xs">
-                                <span className="font-bold text-white">{c.course_name}</span>
-                                <span className="text-slate-400 ml-1">{c.day} {c.start}–{c.end}</span>
-                                <span className={`ml-1 font-semibold ${c.course_type === "lab" ? "text-violet-400" : "text-sky-400"}`}>
+                              <span key={idx} className="rounded-xl bg-muted border border-border px-3 py-1.5 text-xs">
+                                <span className="font-bold text-foreground">{c.course_name}</span>
+                                <span className="text-muted-foreground ml-1">{c.day} {c.start}–{c.end}</span>
+                                <span className={`ml-1 font-semibold ${c.course_type === "lab" ? "text-violet-300" : "text-sky-300"}`}>
                                   {c.course_type === "lab" ? "LAB" : "TEORİK"}
                                 </span>
                               </span>
@@ -337,7 +337,7 @@ export default function AdminClient() {
       </div>
 
       {/* 2FA */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 space-y-3">
+      <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold">İki Faktörlü Doğrulama (2FA)</p>
           {mfaEnrolled && (
@@ -346,18 +346,18 @@ export default function AdminClient() {
         </div>
 
         {mfaEnrolled ? (
-          <p className="text-xs text-slate-400">2FA aktif. Giriş yaparken telefon kodu gerekiyor.</p>
+          <p className="text-xs text-muted-foreground">2FA aktif. Giriş yaparken telefon kodu gerekiyor.</p>
         ) : mfaStep === "idle" ? (
           <button
             onClick={handleMfaEnroll}
             disabled={mfaLoading}
-            className="flex items-center justify-center gap-2 rounded-xl bg-slate-800 border border-slate-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700 transition disabled:opacity-60"
+            className="flex items-center justify-center gap-2 rounded-xl bg-muted border border-border px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-muted/70 transition disabled:opacity-60"
           >
             {mfaLoading ? "Yükleniyor..." : "2FA Kur"}
           </button>
         ) : (
           <div className="space-y-3">
-            <p className="text-xs text-slate-400">Google Authenticator ile QR kodu okut, ardından 6 haneli kodu gir.</p>
+            <p className="text-xs text-muted-foreground">Google Authenticator ile QR kodu okut, ardından 6 haneli kodu gir.</p>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={qrCode} alt="2FA QR" className="w-36 h-36 rounded-xl bg-white p-1" />
             <input
@@ -368,12 +368,12 @@ export default function AdminClient() {
               onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
               onKeyDown={(e) => e.key === "Enter" && handleMfaVerify()}
               maxLength={6}
-              className="w-48 rounded-xl border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-white placeholder:text-slate-500 outline-none focus:border-slate-500 tracking-widest text-center"
+              className="w-48 rounded-xl border border-border bg-muted px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-ring tracking-widest text-center"
             />
             <button
               onClick={handleMfaVerify}
               disabled={totpCode.length !== 6 || mfaLoading}
-              className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 transition disabled:opacity-60"
+              className="flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition disabled:opacity-60"
             >
               {mfaLoading ? "Doğrulanıyor..." : "Doğrula ve Aktifleştir"}
             </button>

@@ -193,7 +193,7 @@ export default function CourseDetailSheet({ open, displayName, sessions, records
                 const session = sessions.find((s) => s.day === dayNameTR(selectedDate));
                 if (!session) return null;
                 return (
-                  <div className="p-4 rounded-2xl bg-card border border-primary/20 shadow-sm space-y-3 animate-in zoom-in-95 duration-150">
+                  <div className="p-4 rounded-2xl bg-card border border-primary/30 shadow-sm space-y-3 animate-in zoom-in-95 duration-150">
                     <p className="text-xs font-semibold text-muted-foreground">{prettyTR(selectedDate)} — kaç saat gelmedin?</p>
                     <HourButtons blocks={session.blocks} onPick={(n) => save(session.id, selectedDate, n)} />
                   </div>
@@ -229,15 +229,15 @@ export default function CourseDetailSheet({ open, displayName, sessions, records
                           </div>
                         )}
                       </div>
-                      <span className={`text-sm font-bold px-3 py-1.5 rounded-xl ${isEditing ? "bg-primary text-primary-foreground" : "bg-rose-500/15 text-rose-300"}`}>
+                      <span className={`text-sm font-bold px-3 py-1.5 rounded-xl ${isEditing ? "bg-primary text-primary-foreground" : "bg-rose-500/20 text-rose-300"}`}>
                         {rec.missed_blocks} saat
                       </span>
                     </button>
                     {isEditing && session && (
-                      <div className="p-4 rounded-[24px] bg-card border border-primary/20 shadow-sm space-y-4 animate-in zoom-in-95 duration-200">
+                      <div className="p-4 rounded-[24px] bg-card border border-primary/30 shadow-sm space-y-4 animate-in zoom-in-95 duration-200">
                         <label className="text-xs font-semibold text-foreground ml-1">Süreyi Değiştir</label>
                         <HourButtons blocks={session.blocks} current={rec.missed_blocks} onPick={(n) => save(rec.course_id, rec.date, n)} />
-                        <button onClick={() => del(rec)} className="w-full py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold text-rose-300 bg-rose-500/15 hover:bg-rose-500/25 transition">
+                        <button onClick={() => del(rec)} className="w-full py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold text-rose-300 bg-rose-500/20 hover:bg-rose-500/25 transition">
                           <Trash2 size={14} /> Kaydı Sil
                         </button>
                       </div>
