@@ -8,31 +8,14 @@ import CourseDetailSheet from "@/components/CourseDetailSheet";
 import type { Course, AttendanceRecord } from "@/lib/types";
 import { normalizeCourseName } from "@/lib/normalize";
 import { supabase } from "@/lib/supabaseClient";
-
-// IEU kuralı: teorik %30, lab %20 devamsızlık hakkı.
-// WEEKS = gerçek ders haftası sayısı (vize/final haftaları hariç).
-// 2026-2027 güz: ders başlangıcı 21 Eylül, vize 7-15 Kasım (1 hafta ders yok),
-// final 4-13 Ocak (dönem dışı) → 15 takvim haftası - 1 vize haftası = 14.
-// Yeni dönemde IEU akademik takviminden aynı mantıkla yeniden hesaplanmalı.
-const WEEKS = 14;
-
-function calcLimit(sessions: Course[]): number {
-  // Eğer herhangi bir session'da custom_limit varsa onu kullan
-  const customLimits = sessions.map(s => s.custom_limit).filter(Boolean) as number[];
-  if (customLimits.length > 0) return customLimits[0];
-  // Yoksa otomatik hesapla
-  const type = sessions[0]?.course_type || "teorik";
-  const ratio = type === "lab" ? 0.20 : 0.30;
-  const totalBlocks = sessions.reduce((sum, s) => sum + s.blocks, 0);
-  return Math.max(1, Math.round(totalBlocks * WEEKS * ratio));
-}
+import { calcLimit, riskRatio } from "@/lib/attendance";
 
 function fixNegZero(n: number) {
   return Object.is(n, -0) ? 0 : n;
 }
 
 function riskMeta(missed: number, limit: number) {
-  const ratio = limit <= 0 ? 0 : missed / limit;
+  const ratio = riskRatio(missed, limit);
   if (ratio >= 0.8) {
     return { label: "Riskli", bar: "bg-rose-500", text: "text-rose-300", badge: "bg-rose-500/20 text-rose-300" };
   }
@@ -123,8 +106,11 @@ export default function SummaryPage() {
     : null;
 
   // Risk uyarı banner verisi
-  const criticalCount = totals.filter((g) => g.missed / g.limit >= 0.8).length;
-  const warnCount = totals.filter((g) => g.missed / g.limit >= 0.5 && g.missed / g.limit < 0.8).length;
+  const criticalCount = totals.filter((g) => riskRatio(g.missed, g.limit) >= 0.8).length;
+  const warnCount = totals.filter((g) => {
+    const r = riskRatio(g.missed, g.limit);
+    return r >= 0.5 && r < 0.8;
+  }).length;
 
   return (
     <main className="min-h-screen bg-background pb-24">
@@ -186,7 +172,7 @@ export default function SummaryPage() {
             {totals.map((g) => {
               const { missed, limit } = g;
               const remaining = fixNegZero(Math.max(0, limit - missed));
-              const pct = limit <= 0 ? 0 : Math.min(100, Math.round((missed / limit) * 100));
+              const pct = Math.min(100, Math.round(riskRatio(missed, limit) * 100));
               const r = riskMeta(missed, limit);
 
               return (

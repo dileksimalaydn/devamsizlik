@@ -8,6 +8,7 @@ import CourseCatalogPicker, { type TypedMeeting } from "@/components/CourseCatal
 import { supabase } from "@/lib/supabaseClient";
 import type { Course } from "@/lib/types";
 import { isIEU } from "@/lib/schools";
+import { parseCustomLimitInput } from "@/lib/attendance";
 import { Search } from "lucide-react";
 
 function toMinutes(hhmm: string) {
@@ -116,6 +117,12 @@ export default function SetupPage() {
       return;
     }
 
+    const { value: parsedCustomLimit, error: limitError } = parseCustomLimitInput(customLimit);
+    if (limitError) {
+      setSaveError(limitError);
+      return;
+    }
+
     setSaveError(null);
     setSaving(true);
 
@@ -135,7 +142,7 @@ export default function SetupPage() {
       end: endStr,
       blocks: finalBlocks,
       course_type: courseType,
-      custom_limit: customLimit ? parseInt(customLimit) : null,
+      custom_limit: parsedCustomLimit,
     });
 
     setSaving(false);
@@ -391,7 +398,7 @@ export default function SetupPage() {
               </label>
               <input
                 type="number"
-                min={1}
+                min={0}
                 placeholder="Örn: 6"
                 value={customLimit}
                 onChange={(e) => { setCustomLimit(e.target.value); setSaveError(null); }}

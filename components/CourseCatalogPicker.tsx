@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Search, X, ChevronLeft, User, Clock, Check, Loader2 } from "lucide-react";
 import { fetchCatalog, searchCatalog, type CatalogCourse, type CatalogSection, type CatalogMeeting } from "@/lib/catalog";
+import { parseCustomLimitInput } from "@/lib/attendance";
 
 export type TypedMeeting = CatalogMeeting & { type: "teorik" | "lab" };
 
@@ -75,15 +76,23 @@ export default function CourseCatalogPicker({ open, onClose, onManualFallback, o
 
   const handleAdd = async () => {
     if (!selectedCourse || !selectedSection) return;
+
+    const isMixedType = new Set(meetingTypes).size > 1;
+    const { value: parsedLimit, error: limitError } = isMixedType
+      ? { value: null, error: null }
+      : parseCustomLimitInput(customLimit);
+    if (limitError) {
+      setSaveError(limitError);
+      return;
+    }
+
     setSaving(true);
     setSaveError(null);
     const meetings: TypedMeeting[] = selectedSection.meetings.map((m, i) => ({
       ...m,
       type: meetingTypes[i] ?? "teorik",
     }));
-    const isMixedType = new Set(meetingTypes).size > 1;
-    const limit = !isMixedType && customLimit.trim() ? parseInt(customLimit, 10) : null;
-    const res = await onAdd({ code: selectedCourse.code, name: selectedCourse.name }, meetings, limit);
+    const res = await onAdd({ code: selectedCourse.code, name: selectedCourse.name }, meetings, parsedLimit);
     setSaving(false);
     if (res.error) {
       setSaveError(res.error);
@@ -298,7 +307,7 @@ export default function CourseCatalogPicker({ open, onClose, onManualFallback, o
                   </label>
                   <input
                     type="number"
-                    min={1}
+                    min={0}
                     placeholder="Hoca farklı bir sayı söylediyse buraya yaz — örn: 13"
                     value={customLimit}
                     onChange={(e) => { setCustomLimit(e.target.value); setSaveError(null); }}

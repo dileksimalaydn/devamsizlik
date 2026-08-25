@@ -75,25 +75,36 @@ function SettingsContent() {
     setSchoolLoading(true);
     setSchoolMsg(null);
 
-    // IEU <-> diğer geçişinde tüm verileri sil
-    const { data: { user } } = await supabase.auth.getUser();
-    if (willReset && user) {
-      await supabase.from("courses").delete().eq("user_id", user.id);
-    }
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setSchoolMsg({ text: "Oturumun sona ermiş, tekrar giriş yapman gerekiyor.", ok: false });
+        router.replace("/login");
+        return;
+      }
 
-    const { error } = await supabase
-      .from("profiles")
-      .upsert({ user_id: user!.id, school: pendingSchool });
-    if (error) {
-      setSchoolMsg({ text: "Hata: " + error.message, ok: false });
-    } else {
-      setSchool(pendingSchool);
-      setSchoolMode(false);
-      if (isNewUser) { router.replace("/setup"); return; }
-      setSchoolMsg({ text: "Okul güncellendi!", ok: true });
-      setTimeout(() => setSchoolMsg(null), 3000);
+      // IEU <-> diğer geçişinde tüm verileri sil
+      if (willReset) {
+        await supabase.from("courses").delete().eq("user_id", user.id);
+      }
+
+      const { error } = await supabase
+        .from("profiles")
+        .upsert({ user_id: user.id, school: pendingSchool });
+      if (error) {
+        setSchoolMsg({ text: "Hata: " + error.message, ok: false });
+      } else {
+        setSchool(pendingSchool);
+        setSchoolMode(false);
+        if (isNewUser) { router.replace("/setup"); return; }
+        setSchoolMsg({ text: "Okul güncellendi!", ok: true });
+        setTimeout(() => setSchoolMsg(null), 3000);
+      }
+    } catch {
+      setSchoolMsg({ text: "Beklenmeyen bir hata oluştu, tekrar dene.", ok: false });
+    } finally {
+      setSchoolLoading(false);
     }
-    setSchoolLoading(false);
   }
 
   const field = "w-full rounded-2xl border border-border bg-muted/30 px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:bg-background focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all";

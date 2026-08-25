@@ -3,6 +3,8 @@ import { Resend } from "resend";
 import { NextResponse } from "next/server";
 import { timingSafeEqual } from "crypto";
 import type { Course } from "@/lib/types";
+import { calcLimit, riskRatio } from "@/lib/attendance";
+import { normalizeCourseName } from "@/lib/normalize";
 
 function escapeHtml(str: string): string {
   return str
@@ -35,9 +37,40 @@ const TURKISH_DAYS = [
   "Cumartesi",
 ];
 
-function getLimit(course: Course): number {
-  const rate = course.course_type === "lab" ? 0.2 : 0.3;
-  return Math.round(course.blocks * 14 * rate);
+type WarningGroup = {
+  displayName: string;
+  missed: number;
+  limit: number;
+};
+
+/**
+ * Aynı dersin farklı gün/saatlerdeki oturumlarını (ör. Pazartesi + Çarşamba)
+ * tek grupta toplayıp özel limiti/otomatik limiti hesaplar — özet sayfasıyla
+ * (app/summary/page.tsx) BİREBİR aynı mantık, yoksa uygulama ve mail farklı
+ * sayı söyler.
+ */
+function buildWarningGroups(
+  courses: Course[],
+  missedByCourse: Record<string, number>
+): WarningGroup[] {
+  const groups: Record<string, { displayName: string; missed: number; sessions: Course[] }> = {};
+
+  for (const c of courses) {
+    const key = normalizeCourseName(c.course_name) + ":" + (c.course_type || "teorik");
+    if (!groups[key]) {
+      groups[key] = { displayName: c.course_name, missed: 0, sessions: [] };
+    }
+    groups[key].sessions.push(c);
+    groups[key].missed += missedByCourse[c.id] || 0;
+  }
+
+  return Object.values(groups)
+    .map((g) => ({
+      displayName: g.displayName,
+      missed: g.missed,
+      limit: calcLimit(g.sessions),
+    }))
+    .filter((g) => riskRatio(g.missed, g.limit) >= 0.7);
 }
 
 export async function GET(req: Request) {
@@ -120,28 +153,23 @@ export async function GET(req: Request) {
           (missedByCourse[record.course_id] || 0) + record.missed_blocks;
       }
 
-      const warningCourses = (allCourses as Course[]).filter((c) => {
-        const limit = getLimit(c);
-        const missed = missedByCourse[c.id] || 0;
-        return missed > 0 && missed >= limit * 0.7;
-      });
+      const warningGroups = buildWarningGroups(allCourses as Course[], missedByCourse);
 
       // Hafta içi: ders yoksa ve uyarı da yoksa atla
       // Hafta sonu: her zaman gönder (hafta sonu hatırlatması)
       if (
         !isWeekend &&
         todayCourses.length === 0 &&
-        warningCourses.length === 0
+        warningGroups.length === 0
       ) {
         skipped++;
         continue;
       }
 
-      const subject = buildSubject(todayCourses, warningCourses, isWeekend);
+      const subject = buildSubject(todayCourses, warningGroups, isWeekend);
       const html = buildEmailHtml({
         todayCourses,
-        warningCourses,
-        missedByCourse,
+        warningGroups,
         todayDay,
         todayStr,
         appUrl,
@@ -149,24 +177,29 @@ export async function GET(req: Request) {
       });
       const text = buildEmailText({
         todayCourses,
-        warningCourses,
-        missedByCourse,
+        warningGroups,
         todayDay,
         todayStr,
         appUrl,
         isWeekend,
       });
 
-      const { data: emailData, error: emailError } = await resend.emails.send({
-        from: fromEmail,
-        to: user.email,
-        subject,
-        html,
-        text,
-        headers: {
-          "X-Entity-Ref-ID": `${user.id}-${todayStr}`,
+      // idempotencyKey: Vercel cron aynı günü tekrar tetiklerse (retry/timeout)
+      // Resend aynı isteği ikinci kez işlemez — kullanıcı aynı gün iki mail almaz.
+      const idempotencyKey = `notify-${user.id}-${todayStr}`;
+      const { data: emailData, error: emailError } = await resend.emails.send(
+        {
+          from: fromEmail,
+          to: user.email,
+          subject,
+          html,
+          text,
+          headers: {
+            "X-Entity-Ref-ID": idempotencyKey,
+          },
         },
-      });
+        { idempotencyKey }
+      );
 
       if (emailError) {
         console.error(`Mail gönderilemedi [${user.email}]:`, emailError);
@@ -193,36 +226,34 @@ export const POST = GET;
 
 function buildSubject(
   todayCourses: Course[],
-  warningCourses: Course[],
+  warningGroups: WarningGroup[],
   isWeekend: boolean
 ): string {
   if (isWeekend) {
-    if (warningCourses.length > 0) {
-      return `Hafta sonu — ${warningCourses.length} dersinde devamsızlık sınırına yaklaşıyorsun`;
+    if (warningGroups.length > 0) {
+      return `Hafta sonu — ${warningGroups.length} dersinde devamsızlık sınırına yaklaşıyorsun`;
     }
     return "Hafta sonu — devamsızlıklarını güncelledin mi?";
   }
-  if (warningCourses.length > 0 && todayCourses.length > 0) {
+  if (warningGroups.length > 0 && todayCourses.length > 0) {
     return `Devamsızlık uyarısı + bugün ${todayCourses.length} ders var`;
   }
-  if (warningCourses.length > 0) {
-    return `${warningCourses.length} dersinde devamsızlık sınırına yaklaşıyorsun`;
+  if (warningGroups.length > 0) {
+    return `${warningGroups.length} dersinde devamsızlık sınırına yaklaşıyorsun`;
   }
   return `Bugün ${todayCourses.length} ders var — devamsızlık kaydettin mi?`;
 }
 
 function buildEmailText({
   todayCourses,
-  warningCourses,
-  missedByCourse,
+  warningGroups,
   todayDay,
   todayStr,
   appUrl,
   isWeekend,
 }: {
   todayCourses: Course[];
-  warningCourses: Course[];
-  missedByCourse: Record<string, number>;
+  warningGroups: WarningGroup[];
   todayDay: string;
   todayStr: string;
   appUrl: string;
@@ -235,14 +266,12 @@ function buildEmailText({
     lines.push("");
   }
 
-  if (warningCourses.length > 0) {
+  if (warningGroups.length > 0) {
     lines.push("DEVAMSIZLIK UYARISI");
-    for (const c of warningCourses) {
-      const limit = getLimit(c);
-      const missed = missedByCourse[c.id] || 0;
-      const remaining = limit - missed;
+    for (const g of warningGroups) {
+      const remaining = Math.max(0, g.limit - g.missed);
       lines.push(
-        `- ${c.course_name}: ${missed}/${limit} saat (${remaining} saat kaldı)`
+        `- ${g.displayName}: ${g.missed}/${g.limit} saat (${remaining} saat kaldı)`
       );
     }
     lines.push("");
@@ -262,16 +291,14 @@ function buildEmailText({
 
 function buildEmailHtml({
   todayCourses,
-  warningCourses,
-  missedByCourse,
+  warningGroups,
   todayDay,
   todayStr,
   appUrl,
   isWeekend,
 }: {
   todayCourses: Course[];
-  warningCourses: Course[];
-  missedByCourse: Record<string, number>;
+  warningGroups: WarningGroup[];
   todayDay: string;
   todayStr: string;
   appUrl: string;
@@ -296,14 +323,14 @@ function buildEmailHtml({
     </div>`;
   }
 
-  if (warningCourses.length > 0) {
-    const rows = warningCourses
-      .map((c) => {
-        const limit = getLimit(c);
-        const missed = missedByCourse[c.id] || 0;
-        const remaining = limit - missed;
-        const pct = Math.min(100, Math.round((missed / limit) * 100));
-        const name = escapeHtml(c.course_name);
+  if (warningGroups.length > 0) {
+    const rows = warningGroups
+      .map((g) => {
+        const missed = g.missed;
+        const limit = g.limit;
+        const remaining = Math.max(0, limit - missed);
+        const pct = Math.min(100, Math.round(riskRatio(missed, limit) * 100));
+        const name = escapeHtml(g.displayName);
         return `
         <tr>
           <td style="padding:12px 0;border-bottom:1px solid #fed7aa;">

@@ -21,17 +21,20 @@ export default function PresenceBroadcaster() {
     // Sadece izin verilen 4 sayfada yayın yap
     if (!ALLOWED_PATHS.has(pathname)) return;
 
+    let cancelled = false;
     let channel: ReturnType<typeof supabase.channel> | null = null;
 
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session?.user) return;
+      // Effect zaten temizlenmişse (örn. sayfa hızlıca değiştiyse) kanal hiç
+      // açılmasın — açılıp da kimse unsubscribe etmezse sızıntıya yol açar.
+      if (cancelled || !session?.user) return;
 
       channel = supabase.channel("app-presence", {
         config: { presence: { key: session.user.id } },
       });
 
       channel.subscribe(async (status) => {
-        if (status === "SUBSCRIBED") {
+        if (status === "SUBSCRIBED" && !cancelled) {
           await channel!.track({
             user_id: session.user.id,
             // Email yok — başka kullanıcılar presence kanalını okuyabilir
@@ -43,6 +46,7 @@ export default function PresenceBroadcaster() {
     });
 
     return () => {
+      cancelled = true;
       channel?.unsubscribe();
     };
   }, [pathname]);

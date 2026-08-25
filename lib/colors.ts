@@ -1,3 +1,5 @@
+import { normalizeCourseName } from "@/lib/normalize";
+
 // Ders bazlı renk kodlaması — koyu tema için tasarlandı.
 // `accent`: buton/çubuk zemini, üzerinde her zaman beyaz yazı var — bu yüzden
 // her ton WCAG AA (≥4.5:1 beyaz yazı kontrastı) geçecek şekilde seçildi.
@@ -13,7 +15,11 @@ const palette = [
 ];
 
 export function colorFor(name: string) {
+  // Normalize edilmeden hash'lenirse "SE 116" ve "se116" (aynı ders, farklı
+  // yazım) farklı renk alır — summary sayfası zaten bunları aynı ders olarak
+  // gruplamıştı, renk de aynı mantıkla eşleşmeli.
+  const key = normalizeCourseName(name);
   let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+  for (let i = 0; i < key.length; i++) hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
   return palette[hash % palette.length];
 }
