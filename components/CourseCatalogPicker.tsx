@@ -77,10 +77,7 @@ export default function CourseCatalogPicker({ open, onClose, onManualFallback, o
   const handleAdd = async () => {
     if (!selectedCourse || !selectedSection) return;
 
-    const isMixedType = new Set(meetingTypes).size > 1;
-    const { value: parsedLimit, error: limitError } = isMixedType
-      ? { value: null, error: null }
-      : parseCustomLimitInput(customLimit);
+    const { value: parsedLimit, error: limitError } = parseCustomLimitInput(customLimit);
     if (limitError) {
       setSaveError(limitError);
       return;
@@ -295,26 +292,22 @@ export default function CourseCatalogPicker({ open, onClose, onManualFallback, o
                 </p>
               </div>
 
-              {isMixedType ? (
-                <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-[11px] font-medium text-amber-300">
-                  Bu ders hem teorik hem lab günü içerdiği için elle limit girilemiyor — her gün kendi yüzdesine göre ayrı hesaplanacak. Hoca ikisi için de tek bir sayı söylediyse, günlerin ikisini de aynı tipte işaretle.
-                </div>
-              ) : (
-                <div>
-                  <label className="mb-1 block text-xs font-semibold text-foreground">
-                    Devamsızlık Limiti (saat)
-                    <span className="ml-1 font-normal text-muted-foreground">— boş bırakırsan otomatik hesaplanır</span>
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    placeholder="Hoca farklı bir sayı söylediyse buraya yaz — örn: 13"
-                    value={customLimit}
-                    onChange={(e) => { setCustomLimit(e.target.value); setSaveError(null); }}
-                    className="w-full rounded-2xl border border-border bg-muted/30 px-3 py-3 text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground focus:bg-background focus:border-ring focus:ring-4 focus:ring-ring/10 transition"
-                  />
-                </div>
-              )}
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-foreground">
+                  Devamsızlık Limiti (saat)
+                  <span className="ml-1 font-normal text-muted-foreground">
+                    — boş bırakırsan {isMixedType ? "her gün kendi yüzdesine göre ayrı" : "otomatik"} hesaplanır
+                  </span>
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  placeholder="Hoca farklı bir sayı söylediyse buraya yaz — örn: 13"
+                  value={customLimit}
+                  onChange={(e) => { setCustomLimit(e.target.value); setSaveError(null); }}
+                  className="w-full rounded-2xl border border-border bg-muted/30 px-3 py-3 text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground focus:bg-background focus:border-ring focus:ring-4 focus:ring-ring/10 transition"
+                />
+              </div>
 
               {saveError && (
                 <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-3 py-2.5 text-xs font-medium text-rose-300">
