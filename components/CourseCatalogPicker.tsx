@@ -157,7 +157,7 @@ export default function CourseCatalogPicker({ open, onClose, onManualFallback, o
               </div>
 
               {loadError && (
-                <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-3 py-2.5 text-xs font-medium text-rose-300">
+                <div className="rounded-2xl border border-rose-300 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 px-3 py-2.5 text-xs font-medium text-rose-700 dark:text-rose-300">
                   {loadError}
                 </div>
               )}
@@ -310,7 +310,7 @@ export default function CourseCatalogPicker({ open, onClose, onManualFallback, o
               </div>
 
               {saveError && (
-                <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-3 py-2.5 text-xs font-medium text-rose-300">
+                <div className="rounded-2xl border border-rose-300 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 px-3 py-2.5 text-xs font-medium text-rose-700 dark:text-rose-300">
                   {saveError}
                 </div>
               )}

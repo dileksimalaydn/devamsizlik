@@ -3,6 +3,7 @@ import PresenceBroadcaster from "@/components/PresenceBroadcaster";
 import { Analytics } from "@vercel/analytics/react";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import Script from "next/script";
+import { NO_FLASH_THEME_SCRIPT } from "@/lib/theme";
 
 export const metadata = {
   title: "devamsızlık – Devamsızlık Takip",
@@ -29,8 +30,14 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="tr" className="dark">
+    <html lang="tr" className="dark" suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground">
+        {/* Kayıtlı tema tercihi "açık" ise, sayfa boyanmadan ÖNCE dark class'ını
+            kaldırır — böylece açık tema seçen kullanıcı bir anlığına bile koyu
+            temayı görmez. */}
+        <Script id="theme-init" strategy="beforeInteractive">
+          {NO_FLASH_THEME_SCRIPT}
+        </Script>
         <PresenceBroadcaster />
         <Analytics />
         {children}

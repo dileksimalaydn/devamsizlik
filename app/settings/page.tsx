@@ -5,8 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import AppHeader from "@/components/AppHeader";
 import BottomNav from "@/components/BottomNav";
-import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { CheckCircle2, AlertCircle, Loader2, Moon, Sun } from "lucide-react";
 import { SCHOOLS, isIEU, schoolLabel } from "@/lib/schools";
+import { getStoredTheme, applyTheme, type Theme } from "@/lib/theme";
 
 export default function SettingsPage() {
   return (
@@ -33,6 +34,16 @@ function SettingsContent() {
   const [schoolMsg, setSchoolMsg] = useState<{ text: string; ok: boolean } | null>(null);
 
   const willReset = isIEU(school) !== isIEU(pendingSchool);
+
+  // Görünüm (tema)
+  const [theme, setTheme] = useState<Theme>("dark");
+  useEffect(() => {
+    setTheme(getStoredTheme());
+  }, []);
+  const handleThemeChange = (t: Theme) => {
+    setTheme(t);
+    applyTheme(t);
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -116,13 +127,42 @@ function SettingsContent() {
 
         {/* Yeni kullanıcı banner */}
         {isNewUser && (
-          <div className="flex items-start gap-3 rounded-3xl border border-violet-500/30 bg-violet-500/10 px-4 py-4 text-sm text-violet-200">
-            <AlertCircle size={16} className="mt-0.5 shrink-0 text-violet-300" />
+          <div className="flex items-start gap-3 rounded-3xl border border-violet-300 dark:border-violet-500/30 bg-violet-50 dark:bg-violet-500/10 px-4 py-4 text-sm text-violet-800 dark:text-violet-200">
+            <AlertCircle size={16} className="mt-0.5 shrink-0 text-violet-700 dark:text-violet-300" />
             <span>
               <strong>Üniversiteni seç!</strong> Google ile kaydoldun, devam etmeden önce hangi üniversitede okuduğunu belirt.
             </span>
           </div>
         )}
+
+        {/* Görünüm (tema) */}
+        <div className="rounded-3xl bg-card border border-border shadow-sm p-5 space-y-3">
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-0.5">Görünüm</p>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => handleThemeChange("dark")}
+              className={`flex items-center justify-center gap-2 rounded-2xl border py-3 text-sm font-semibold transition-all ${
+                theme === "dark"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-muted/50 text-muted-foreground border-border"
+              }`}
+            >
+              <Moon size={15} /> Koyu
+            </button>
+            <button
+              type="button"
+              onClick={() => handleThemeChange("light")}
+              className={`flex items-center justify-center gap-2 rounded-2xl border py-3 text-sm font-semibold transition-all ${
+                theme === "light"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-muted/50 text-muted-foreground border-border"
+              }`}
+            >
+              <Sun size={15} /> Açık
+            </button>
+          </div>
+        </div>
 
         {/* Hesap bilgisi */}
         <div className="rounded-3xl bg-card border border-border shadow-sm p-5">
@@ -160,7 +200,7 @@ function SettingsContent() {
               </select>
 
               {willReset && (
-                <div className="flex items-start gap-2 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-xs text-rose-300">
+                <div className="flex items-start gap-2 rounded-2xl border border-rose-300 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 px-4 py-3 text-xs text-rose-700 dark:text-rose-300">
                   <AlertCircle size={14} className="mt-0.5 shrink-0" />
                   <span>
                     <strong>Dikkat:</strong> Bu değişiklik tüm derslerini ve devamsızlık kayıtlarını kalıcı olarak silecek. Geri alınamaz.
@@ -190,7 +230,7 @@ function SettingsContent() {
 
           {schoolMsg && (
             <div className={`flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm ${
-              schoolMsg.ok ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" : "border-rose-500/30 bg-rose-500/10 text-rose-300"
+              schoolMsg.ok ? "border-emerald-300 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" : "border-rose-300 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300"
             }`}>
               {schoolMsg.ok ? <CheckCircle2 size={15} /> : <AlertCircle size={15} />}
               {schoolMsg.text}
@@ -218,7 +258,7 @@ function SettingsContent() {
           </button>
           {msg && (
             <div className={`flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm ${
-              msg.ok ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" : "border-rose-500/30 bg-rose-500/10 text-rose-300"
+              msg.ok ? "border-emerald-300 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" : "border-rose-300 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300"
             }`}>
               {msg.ok ? <CheckCircle2 size={15} /> : <AlertCircle size={15} />}
               {msg.text}
@@ -229,7 +269,7 @@ function SettingsContent() {
         {/* Çıkış yap */}
         <button
           onClick={async () => { await supabase.auth.signOut(); router.push("/"); }}
-          className="w-full rounded-2xl border border-rose-500/30 bg-card py-3 text-sm font-bold text-rose-300 hover:bg-rose-500/10 transition active:scale-95"
+          className="w-full rounded-2xl border border-rose-300 dark:border-rose-500/30 bg-card py-3 text-sm font-bold text-rose-700 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition active:scale-95"
         >
           Çıkış Yap
         </button>

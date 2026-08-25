@@ -258,7 +258,7 @@ export default function SetupPage() {
             onClick={() => setPickerOpen(true)}
             className="w-full rounded-3xl bg-card p-5 shadow-sm border border-border flex items-center gap-3 hover:border-primary/30 transition text-left"
           >
-            <div className="h-11 w-11 shrink-0 rounded-2xl bg-primary/15 flex items-center justify-center text-violet-300">
+            <div className="h-11 w-11 shrink-0 rounded-2xl bg-primary/15 flex items-center justify-center text-violet-700 dark:text-violet-300">
               <Search size={18} />
             </div>
             <div className="min-w-0">
@@ -275,7 +275,7 @@ export default function SetupPage() {
             {ieu && (
               <button
                 onClick={() => setManualMode(false)}
-                className="text-[11px] font-semibold text-violet-300 hover:underline"
+                className="text-[11px] font-semibold text-violet-700 dark:text-violet-300 hover:underline"
               >
                 Kataloğdan seç
               </button>
@@ -408,7 +408,7 @@ export default function SetupPage() {
 
             {/* Hata mesajı */}
             {saveError && (
-              <div className="flex items-center gap-2 rounded-2xl border border-rose-500/30 bg-rose-500/10 px-3 py-2.5 text-xs font-medium text-rose-300">
+              <div className="flex items-center gap-2 rounded-2xl border border-rose-300 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 px-3 py-2.5 text-xs font-medium text-rose-700 dark:text-rose-300">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
                 </svg>
@@ -454,8 +454,8 @@ export default function SetupPage() {
                       <span className="text-sm font-extrabold text-foreground">{c.course_name}</span>
                       <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
                         c.course_type === "lab"
-                          ? "bg-violet-500/20 text-violet-300"
-                          : "bg-sky-500/20 text-sky-300"
+                          ? "bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-300"
+                          : "bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300"
                       }`}>
                         {c.course_type === "lab" ? "LAB" : "TEORİK"}
                       </span>
@@ -467,7 +467,7 @@ export default function SetupPage() {
                   </div>
                   <button
                     onClick={() => setDeletingId(String(c.id))}
-                    className="grid h-10 w-10 place-items-center rounded-2xl bg-rose-500/20 text-rose-300 hover:bg-rose-500/25 transition active:scale-90"
+                    className="grid h-10 w-10 place-items-center rounded-2xl bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300 hover:bg-rose-200 dark:hover:bg-rose-500/25 transition active:scale-90"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -477,8 +477,8 @@ export default function SetupPage() {
 
                 {/* Satır içi silme onayı */}
                 {deletingId === String(c.id) && (
-                  <div className="flex items-center justify-between gap-2 border-t border-rose-500/20 bg-rose-500/10 px-4 py-3">
-                    <span className="text-xs font-semibold text-rose-300">
+                  <div className="flex items-center justify-between gap-2 border-t border-rose-200 dark:border-rose-500/20 bg-rose-50 dark:bg-rose-500/10 px-4 py-3">
+                    <span className="text-xs font-semibold text-rose-700 dark:text-rose-300">
                       Bu dersi silmek istediğine emin misin?
                     </span>
                     <div className="flex gap-2">

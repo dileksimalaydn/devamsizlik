@@ -108,7 +108,7 @@ export default function KvkkPage() {
                 <li>Devamsızlık sınırına yaklaşıldığında uyarı e-postası iletilmesi</li>
               </ul>
               <p className="text-muted-foreground text-xs mt-1">Açık rızaya dayalı işlemler için rızanızı her zaman geri alma hakkınız saklıdır.</p>
-              <p className="text-amber-600/80 text-xs mt-2 border-l-2 border-amber-700/50 pl-3">
+              <p className="text-amber-700 dark:text-amber-600/80 text-xs mt-2 border-l-2 border-amber-300 dark:border-amber-700/50 pl-3">
                 E-posta bildirimleri yardımcı hatırlatma niteliğindedir. Teknik aksaklıklar, spam filtreleri veya servis kesintileri nedeniyle kullanıcıya ulaşmayabilir. Nihai takip sorumluluğu kullanıcıya aittir.
               </p>
             </div>
@@ -281,10 +281,10 @@ export default function KvkkPage() {
 
         <section className="space-y-4">
           <h2 className="text-xl font-bold text-foreground border-b border-border pb-2">10. Uygulamanın Bağımsızlığı ve Hizmet Niteliği</h2>
-          <div className="bg-amber-950/40 border border-amber-800/50 rounded-2xl p-5 text-sm space-y-3">
-            <p className="text-amber-300 font-semibold">Önemli Açıklama</p>
+          <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 rounded-2xl p-5 text-sm space-y-3">
+            <p className="text-amber-700 dark:text-amber-300 font-semibold">Önemli Açıklama</p>
             <p className="text-muted-foreground leading-relaxed">
-              <strong className="text-foreground">devamsızlık (devamsizlik.com)</strong>; herhangi bir üniversite, yükseköğretim kurumu, Yükseköğretim Kurulu (YÖK), Millî Eğitim Bakanlığı veya başka bir kamu ya da özel kuruluşla <strong className="text-amber-300">hiçbir organik, hukuki veya ticari bağlantısı bulunmayan bağımsız bir kişisel takip uygulamasıdır</strong>.
+              <strong className="text-foreground">devamsızlık (devamsizlik.com)</strong>; herhangi bir üniversite, yükseköğretim kurumu, Yükseköğretim Kurulu (YÖK), Millî Eğitim Bakanlığı veya başka bir kamu ya da özel kuruluşla <strong className="text-amber-700 dark:text-amber-300">hiçbir organik, hukuki veya ticari bağlantısı bulunmayan bağımsız bir kişisel takip uygulamasıdır</strong>.
             </p>
             <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
               <li>Uygulama; resmi yoklama sistemi, devlet kaydı veya herhangi bir kurumun veri tabanıyla entegre değildir ve bu sistemlere erişim sağlamaz.</li>
@@ -341,8 +341,8 @@ export default function KvkkPage() {
 
         <section className="space-y-4">
           <h2 className="text-xl font-bold text-foreground border-b border-border pb-2">13. Yetkisiz Erişim ve Hukuki Yaptırımlar</h2>
-          <div className="bg-rose-950/40 border border-rose-800/50 rounded-2xl p-5 text-sm space-y-4">
-            <p className="text-rose-300 font-semibold text-base">Yasal Uyarı</p>
+          <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/50 rounded-2xl p-5 text-sm space-y-4">
+            <p className="text-rose-700 dark:text-rose-300 font-semibold text-base">Yasal Uyarı</p>
             <p className="text-muted-foreground leading-relaxed">
               Uygulamaya kayıtlı kullanıcılara ait hesaplara, kişisel verilere veya sistem bileşenlerine <strong className="text-foreground">yetkisiz erişim girişimi; Türk Ceza Kanunu ve ilgili mevzuat kapsamında ağır suç teşkil etmekte olup hukuki ve cezai yaptırımlara tabidir.</strong>
             </p>
@@ -350,10 +350,10 @@ export default function KvkkPage() {
               <div className="bg-card/60 rounded-xl p-4 space-y-2">
                 <p className="text-foreground font-semibold">5237 Sayılı Türk Ceza Kanunu</p>
                 <ul className="space-y-2 text-muted-foreground">
-                  <li><span className="text-rose-400 font-semibold">Madde 243 – Bilişim Sistemine Girme:</span> Bir bilişim sistemine yetkisiz olarak giren kişi <strong className="text-foreground">1 yıla kadar hapis</strong> cezasıyla cezalandırılır. Sistem içinde kalma veya sistem içindeki verilerin değiştirilmesi halinde ceza artırılır.</li>
-                  <li><span className="text-rose-400 font-semibold">Madde 244 – Sistemi Engelleme, Bozma, Verileri Yok Etme:</span> Sistemi kasten işlemez hâle getirme, veri bozma veya silme fiilleri <strong className="text-foreground">1 ila 5 yıl hapis</strong> cezasını gerektirir.</li>
-                  <li><span className="text-rose-400 font-semibold">Madde 135 – Kişisel Verilerin Kaydedilmesi:</span> Hukuka aykırı olarak kişisel verileri kaydeden kişi <strong className="text-foreground">1 ila 3 yıl hapis</strong> cezasıyla cezalandırılır.</li>
-                  <li><span className="text-rose-400 font-semibold">Madde 136 – Verileri Hukuka Aykırı Olarak Ele Geçirme:</span> Kişisel verileri başkasına veren, yayan veya ele geçiren kişi <strong className="text-foreground">2 ila 4 yıl hapis</strong> cezasıyla cezalandırılır.</li>
+                  <li><span className="text-rose-600 dark:text-rose-400 font-semibold">Madde 243 – Bilişim Sistemine Girme:</span> Bir bilişim sistemine yetkisiz olarak giren kişi <strong className="text-foreground">1 yıla kadar hapis</strong> cezasıyla cezalandırılır. Sistem içinde kalma veya sistem içindeki verilerin değiştirilmesi halinde ceza artırılır.</li>
+                  <li><span className="text-rose-600 dark:text-rose-400 font-semibold">Madde 244 – Sistemi Engelleme, Bozma, Verileri Yok Etme:</span> Sistemi kasten işlemez hâle getirme, veri bozma veya silme fiilleri <strong className="text-foreground">1 ila 5 yıl hapis</strong> cezasını gerektirir.</li>
+                  <li><span className="text-rose-600 dark:text-rose-400 font-semibold">Madde 135 – Kişisel Verilerin Kaydedilmesi:</span> Hukuka aykırı olarak kişisel verileri kaydeden kişi <strong className="text-foreground">1 ila 3 yıl hapis</strong> cezasıyla cezalandırılır.</li>
+                  <li><span className="text-rose-600 dark:text-rose-400 font-semibold">Madde 136 – Verileri Hukuka Aykırı Olarak Ele Geçirme:</span> Kişisel verileri başkasına veren, yayan veya ele geçiren kişi <strong className="text-foreground">2 ila 4 yıl hapis</strong> cezasıyla cezalandırılır.</li>
                 </ul>
               </div>
               <div className="bg-card/60 rounded-xl p-4 space-y-2">

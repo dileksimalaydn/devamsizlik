@@ -17,18 +17,18 @@ function fixNegZero(n: number) {
 function riskMeta(missed: number, limit: number) {
   const ratio = riskRatio(missed, limit);
   if (ratio >= 0.8) {
-    return { label: "Riskli", bar: "bg-rose-500", text: "text-rose-300", badge: "bg-rose-500/20 text-rose-300" };
+    return { label: "Riskli", bar: "bg-rose-500", text: "text-rose-700 dark:text-rose-300", badge: "bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-300" };
   }
   if (ratio >= 0.5) {
-    return { label: "Dikkat", bar: "bg-amber-500", text: "text-amber-300", badge: "bg-amber-500/15 text-amber-300" };
+    return { label: "Dikkat", bar: "bg-amber-500", text: "text-amber-700 dark:text-amber-300", badge: "bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300" };
   }
-  return { label: "Güvende", bar: "bg-emerald-500", text: "text-emerald-300", badge: "bg-emerald-500/15 text-emerald-300" };
+  return { label: "Güvende", bar: "bg-emerald-500", text: "text-emerald-700 dark:text-emerald-300", badge: "bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" };
 }
 
 type GroupData = {
   groupKey: string;
   displayName: string;
-  courseType: "teorik" | "lab";
+  courseType: "teorik" | "lab" | "mixed";
   missed: number;
   limit: number;
   sessions: Course[];
@@ -59,18 +59,37 @@ export default function SummaryPage() {
   useEffect(() => { loadData(); }, [loadData]);
 
   const totals = useMemo<GroupData[]>(() => {
+    // Elle özel limit girilen dersler: teorik/lab günleri ayrı gruplanırsa
+    // aynı sayı her ikisine de tekrar tekrar uygulanır (6 girilince 6+6=12
+    // gibi). Bu yüzden bir dersin ismine elle limit girilmişse, o dersin TÜM
+    // günleri (teorik+lab fark etmeksizin) TEK bir grupta, TEK limitte
+    // birleştirilir. Elle limit yoksa davranış eskisi gibi: her tür kendi
+    // yüzdesine göre ayrı hesaplanır.
+    const hasCustomLimitByName = new Set<string>();
+    for (const c of courses) {
+      if (c.custom_limit !== null && c.custom_limit !== undefined && c.custom_limit >= 0) {
+        hasCustomLimitByName.add(normalizeCourseName(c.course_name || "Adsız Ders"));
+      }
+    }
+    const groupKeyFor = (c: Course) => {
+      const nameKey = normalizeCourseName(c.course_name || "Adsız Ders");
+      const type = c.course_type || "teorik";
+      return hasCustomLimitByName.has(nameKey) ? nameKey : nameKey + ":" + type;
+    };
+
     const groups: Record<
       string,
-      { displayName: string; courseType: "teorik" | "lab"; missed: number; sessions: Course[]; records: AttendanceRecord[] }
+      { displayName: string; courseType: "teorik" | "lab" | "mixed"; missed: number; sessions: Course[]; records: AttendanceRecord[] }
     > = {};
 
     for (const c of courses) {
       const rawName = c.course_name || "Adsız Ders";
       const type = c.course_type || "teorik";
-      // Teorik ve lab ayrı gruplar — ikisi birbirinden bağımsız değerlendirilir
-      const g = normalizeCourseName(rawName) + ":" + type;
+      const g = groupKeyFor(c);
       if (!groups[g]) {
         groups[g] = { displayName: rawName.trim(), courseType: type, missed: 0, sessions: [], records: [] };
+      } else if (groups[g].courseType !== type) {
+        groups[g].courseType = "mixed";
       }
       groups[g].sessions.push(c);
     }
@@ -78,8 +97,7 @@ export default function SummaryPage() {
     for (const record of attendanceRecords) {
       const relatedCourse = courses.find((c) => String(c.id) === String(record.course_id));
       if (!relatedCourse) continue;
-      const type = relatedCourse.course_type || "teorik";
-      const g = normalizeCourseName(relatedCourse.course_name) + ":" + type;
+      const g = groupKeyFor(relatedCourse);
       if (groups[g]) {
         groups[g].missed += Number(record.missed_blocks) || 0;
         groups[g].records.push(record);
@@ -123,20 +141,20 @@ export default function SummaryPage() {
         {!loading && (criticalCount > 0 || warnCount > 0) && (
           <div className={`rounded-2xl border px-4 py-3 flex items-start gap-3 ${
             criticalCount > 0
-              ? "bg-rose-500/10 border-rose-500/30"
-              : "bg-amber-500/10 border-amber-500/30"
+              ? "bg-rose-50 dark:bg-rose-500/10 border-rose-300 dark:border-rose-500/30"
+              : "bg-amber-50 dark:bg-amber-500/10 border-amber-300 dark:border-amber-500/30"
           }`}>
             {criticalCount > 0
-              ? <AlertOctagon size={18} className="text-rose-300 shrink-0 mt-0.5" />
-              : <AlertTriangle size={18} className="text-amber-300 shrink-0 mt-0.5" />
+              ? <AlertOctagon size={18} className="text-rose-700 dark:text-rose-300 shrink-0 mt-0.5" />
+              : <AlertTriangle size={18} className="text-amber-700 dark:text-amber-300 shrink-0 mt-0.5" />
             }
             <div>
-              <div className={`text-sm font-bold ${criticalCount > 0 ? "text-rose-200" : "text-amber-200"}`}>
+              <div className={`text-sm font-bold ${criticalCount > 0 ? "text-rose-800 dark:text-rose-200" : "text-amber-800 dark:text-amber-200"}`}>
                 {criticalCount > 0
                   ? `${criticalCount} dersinde sınıra çok yaklaştın!`
                   : `${warnCount} dersinde dikkatli ol.`}
               </div>
-              <div className={`text-xs mt-0.5 ${criticalCount > 0 ? "text-rose-300" : "text-amber-300"}`}>
+              <div className={`text-xs mt-0.5 ${criticalCount > 0 ? "text-rose-700 dark:text-rose-300" : "text-amber-700 dark:text-amber-300"}`}>
                 {criticalCount > 0
                   ? "Devamsızlık hakkının %80'ini doldurdun."
                   : "Devamsızlık hakkının %50'sini doldurdun."}
@@ -186,11 +204,13 @@ export default function SummaryPage() {
                       <div className="flex items-center gap-2">
                         <div className="text-sm font-semibold text-foreground">{g.displayName}</div>
                         <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
-                          g.courseType === "lab"
-                            ? "bg-violet-500/20 text-violet-300"
-                            : "bg-sky-500/20 text-sky-300"
+                          g.courseType === "mixed"
+                            ? "bg-primary/20 text-primary"
+                            : g.courseType === "lab"
+                            ? "bg-violet-100 dark:bg-violet-500/20 text-violet-700 dark:text-violet-300"
+                            : "bg-sky-100 dark:bg-sky-500/20 text-sky-700 dark:text-sky-300"
                         }`}>
-                          {g.courseType === "lab" ? "LAB" : "TEORİK"}
+                          {g.courseType === "mixed" ? "TEORİK + LAB" : g.courseType === "lab" ? "LAB" : "TEORİK"}
                         </span>
                       </div>
                       <div className="mt-1">
@@ -224,7 +244,7 @@ export default function SummaryPage() {
                     <span className="text-[10px] text-muted-foreground">
                       {g.records.length > 0 ? `${g.records.length} kayıt` : "Henüz kayıt yok"}
                     </span>
-                    <span className="text-[10px] font-semibold bg-primary/15 text-violet-300 px-2.5 py-1 rounded-full">+ Devamsızlık Ekle</span>
+                    <span className="text-[10px] font-semibold bg-primary/15 text-violet-700 dark:text-violet-300 px-2.5 py-1 rounded-full">+ Devamsızlık Ekle</span>
                   </div>
                 </button>
               );

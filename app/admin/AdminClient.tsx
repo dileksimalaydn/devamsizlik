@@ -164,7 +164,7 @@ export default function AdminClient() {
     <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground">Yükleniyor...</div>
   );
   if (error) return (
-    <div className="min-h-screen bg-background flex items-center justify-center text-rose-400">Hata: {error}</div>
+    <div className="min-h-screen bg-background flex items-center justify-center text-rose-600 dark:text-rose-400">Hata: {error}</div>
   );
 
   const now = new Date();
@@ -199,8 +199,8 @@ export default function AdminClient() {
         {[
           { label: "Toplam", value: users.length, color: "text-foreground" },
           { label: "Bugün Aktif", value: todayCount, color: "text-primary" },
-          { label: "Son 7 Gün", value: weekCount, color: "text-emerald-400" },
-          { label: "Son 30 Gün", value: monthCount, color: "text-amber-400" },
+          { label: "Son 7 Gün", value: weekCount, color: "text-emerald-600 dark:text-emerald-400" },
+          { label: "Son 30 Gün", value: monthCount, color: "text-amber-600 dark:text-amber-400" },
         ].map(({ label, value, color }) => (
           <div key={label} className="rounded-2xl bg-card border border-border p-4">
             <p className="text-xs text-muted-foreground mb-1">{label}</p>
@@ -284,7 +284,7 @@ export default function AdminClient() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-primary">{u.course_count}</td>
-                    <td className="px-4 py-3 text-amber-400">{u.attendance_count}</td>
+                    <td className="px-4 py-3 text-amber-600 dark:text-amber-400">{u.attendance_count}</td>
                     <td className="px-4 py-3 text-muted-foreground">{new Date(u.created_at).toLocaleDateString("tr-TR")}</td>
                     <td className="px-4 py-3 text-muted-foreground">
                       {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString("tr-TR") : "—"}
@@ -292,13 +292,13 @@ export default function AdminClient() {
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       {deletingId === u.id ? (
                         <div className="flex gap-2">
-                          <button onClick={() => handleDelete(u.id)} className="text-xs text-rose-400 hover:text-rose-300 font-semibold">Sil</button>
+                          <button onClick={() => handleDelete(u.id)} className="text-xs text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 font-semibold">Sil</button>
                           <button onClick={() => setDeletingId(null)} className="text-xs text-muted-foreground hover:text-foreground">İptal</button>
                         </div>
                       ) : (
                         <button
                           onClick={() => setDeletingId(u.id)}
-                          className="text-xs text-muted-foreground hover:text-rose-400 transition-colors"
+                          className="text-xs text-muted-foreground hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
                         >
                           Sil
                         </button>
@@ -319,7 +319,7 @@ export default function AdminClient() {
                               <span key={idx} className="rounded-xl bg-muted border border-border px-3 py-1.5 text-xs">
                                 <span className="font-bold text-foreground">{c.course_name}</span>
                                 <span className="text-muted-foreground ml-1">{c.day} {c.start}–{c.end}</span>
-                                <span className={`ml-1 font-semibold ${c.course_type === "lab" ? "text-violet-300" : "text-sky-300"}`}>
+                                <span className={`ml-1 font-semibold ${c.course_type === "lab" ? "text-violet-700 dark:text-violet-300" : "text-sky-700 dark:text-sky-300"}`}>
                                   {c.course_type === "lab" ? "LAB" : "TEORİK"}
                                 </span>
                               </span>
@@ -341,7 +341,7 @@ export default function AdminClient() {
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold">İki Faktörlü Doğrulama (2FA)</p>
           {mfaEnrolled && (
-            <span className="text-xs font-bold text-emerald-400 bg-emerald-900/40 border border-emerald-800 px-2 py-0.5 rounded-full">Aktif</span>
+            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/40 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-full">Aktif</span>
           )}
         </div>
 
@@ -381,7 +381,7 @@ export default function AdminClient() {
         )}
 
         {mfaMsg && (
-          <p className={`text-xs font-medium ${mfaMsg.ok ? "text-emerald-400" : "text-rose-400"}`}>
+          <p className={`text-xs font-medium ${mfaMsg.ok ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
             {mfaMsg.text}
           </p>
         )}

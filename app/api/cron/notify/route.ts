@@ -53,10 +53,25 @@ function buildWarningGroups(
   courses: Course[],
   missedByCourse: Record<string, number>
 ): WarningGroup[] {
+  // Elle özel limit girilen dersler: teorik/lab günleri ayrı gruplanırsa aynı
+  // sayı ikisine de tekrar tekrar uygulanır. Bu yüzden elle limitli bir
+  // dersin TÜM günleri tek grupta birleşir — özet sayfasıyla (app/summary/
+  // page.tsx) BİREBİR aynı mantık.
+  const hasCustomLimitByName = new Set<string>();
+  for (const c of courses) {
+    if (c.custom_limit !== null && c.custom_limit !== undefined && c.custom_limit >= 0) {
+      hasCustomLimitByName.add(normalizeCourseName(c.course_name));
+    }
+  }
+  const keyFor = (c: Course) => {
+    const nameKey = normalizeCourseName(c.course_name);
+    return hasCustomLimitByName.has(nameKey) ? nameKey : nameKey + ":" + (c.course_type || "teorik");
+  };
+
   const groups: Record<string, { displayName: string; missed: number; sessions: Course[] }> = {};
 
   for (const c of courses) {
-    const key = normalizeCourseName(c.course_name) + ":" + (c.course_type || "teorik");
+    const key = keyFor(c);
     if (!groups[key]) {
       groups[key] = { displayName: c.course_name, missed: 0, sessions: [] };
     }
